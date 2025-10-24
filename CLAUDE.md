@@ -4,25 +4,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a new website project for weaver-yuwono.com, set up for deployment with Vercel and hosted in an iCloud-synced directory.
+This is a landing page website for weaver-yuwono.com, featuring animated gradients, custom fonts, and dynamic video background effects. Deployed with Vercel and hosted in an iCloud-synced directory.
 
 ## Important Setup Notes
 
 - **iCloud Integration**: This project is stored in iCloud Drive. The .gitignore is configured to exclude iCloud-specific files (`.icloud`, `*.icloud`, `.DS_Store*`).
-- **Deployment**: Project is intended for Vercel deployment using existing Vercel and GitHub setups.
-- **Git Repository**: Initialized as a fresh git repository.
+- **Deployment**: Project is deployed to Vercel. GitHub repository: https://github.com/mwyuwono/Weaver-Yuwono-Home-Page
+- **Technology Stack**: Vanilla HTML/CSS/JavaScript with Google Fonts (Playfair Display, Inter)
 
 ## Development Workflow
 
-Since this is a new project with no build tools or framework configured yet, development commands will depend on the technology stack chosen. When setting up the project:
+This is a static website with no build process. To deploy:
 
-1. Choose appropriate web framework/technology
-2. Configure build and development scripts in package.json
-3. Set up appropriate linting and testing tools
-4. Update this CLAUDE.md with specific commands once established
+1. Make changes to HTML/CSS/JS files
+2. Commit changes to git
+3. Push to GitHub: `git push origin main`
+4. Deploy to Vercel: `vercel --prod`
+
+## CSS Modification Policy
+
+**IMPORTANT**: The user has custom-tweaked the CSS styling. Do NOT modify CSS files without explicit user instruction or permission. This includes:
+- Font sizes, weights, and styles
+- Colors and gradients
+- Spacing, margins, and padding
+- Animation timings and properties
+- Any other CSS properties
+
+Only modify CSS when:
+1. User explicitly requests a specific CSS change
+2. User asks you to fix a bug or issue
+3. User gives clear permission to update styling
 
 ## File Structure Considerations
 
 - Ensure all new files respect the iCloud-safe .gitignore configuration
-- Follow Vercel deployment best practices for chosen framework
+- Follow Vercel deployment best practices
 - Maintain clean separation between source and build artifacts
