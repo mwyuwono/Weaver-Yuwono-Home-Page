@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+# Note: material3.web.json and material3.web.md are committed for CI verification
+# material3.web.css is generated but can be regenerated, so it's optional to commit
+
+# TypeScript
+*.tsbuildinfo
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+

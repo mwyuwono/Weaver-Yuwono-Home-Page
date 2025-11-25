@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sliders - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <style>
+    .slider-container {
+      padding: 16px 0;
+    }
+    .slider-track {
+      position: relative;
+      height: 4px;
+      background-color: var(--md-sys-color-surface-container-highest);
+      border-radius: 2px;
+      margin: 20px 0;
+    }
+    .slider-active {
+      height: 4px;
+      background-color: var(--md-sys-color-primary);
+      border-radius: 2px;
+      width: 50%;
+    }
+    .slider-thumb {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: var(--md-sys-color-primary);
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .slider-thumb-hover {
+      width: 24px;
+      height: 24px;
+      top: -10px;
+    }
+    .slider-label {
+      font-size: 12px;
+      font-family: var(--md-sys-typescale-meta-font-family);
+      font-weight: var(--md-sys-typescale-meta-font-weight);
+      letter-spacing: var(--md-sys-typescale-meta-letter-spacing);
+      line-height: var(--md-sys-typescale-meta-line-height);
+      color: var(--md-sys-color-on-surface-variant);
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Sliders</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>Variants</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Continuous</h4>
+            <div class="slider-container">
+              <div class="slider-label">Value: 50</div>
+              <div class="slider-track">
+                <div class="slider-active"></div>
+                <div class="slider-thumb"></div>
+              </div>
+            </div>
+            <div class="token-reference">md.sys.color.primary</div>
+          </div>
+          <div class="variant-item">
+            <h4>Discrete (with ticks)</h4>
+            <div class="slider-container">
+              <div class="slider-label">Value: 3</div>
+              <div class="slider-track">
+                <div class="slider-active" style="width: 60%;"></div>
+                <div class="slider-thumb" style="left: 60%;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--md-sys-color-on-surface-variant); margin-top: 4px;">
+                <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>States</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Default</h4>
+            <div class="slider-container">
+              <div class="slider-track">
+                <div class="slider-active"></div>
+                <div class="slider-thumb"></div>
+              </div>
+            </div>
+          </div>
+          <div class="variant-item">
+            <h4>Hover</h4>
+            <div class="slider-container">
+              <div class="slider-track">
+                <div class="slider-active"></div>
+                <div class="slider-thumb slider-thumb-hover"></div>
+              </div>
+            </div>
+            <span class="state-label">Simulated</span>
+          </div>
+          <div class="variant-item">
+            <h4>Disabled</h4>
+            <div class="slider-container" style="opacity: 0.38;">
+              <div class="slider-track">
+                <div class="slider-active"></div>
+                <div class="slider-thumb"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

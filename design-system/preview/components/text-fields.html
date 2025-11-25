@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Fields - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <style>
+    .text-field {
+      position: relative;
+      margin: 16px 0;
+    }
+    .text-field-input {
+      width: 100%;
+      height: 56px;
+      padding: 16px;
+      border: 1px solid var(--md-sys-color-outline);
+      border-radius: 4px;
+      background: transparent;
+      font-size: var(--md-sys-typescale-body-large-size);
+      font-family: var(--md-sys-typescale-body-large-font-family);
+      font-weight: var(--md-sys-typescale-body-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-body-large-letter-spacing);
+      line-height: var(--md-sys-typescale-body-large-line-height);
+    }
+    .text-field-input:focus {
+      outline: none;
+      border-color: var(--md-sys-color-primary);
+      border-width: 2px;
+    }
+    .text-field-label {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      color: var(--md-sys-color-on-surface-variant);
+      pointer-events: none;
+      transition: all 0.2s;
+      background: var(--md-sys-color-surface);
+      padding: 0 4px;
+      font-family: var(--md-sys-typescale-body-large-font-family);
+      font-weight: var(--md-sys-typescale-body-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-body-large-letter-spacing);
+    }
+    .text-field-input:focus + .text-field-label,
+    .text-field-input:not(:placeholder-shown) + .text-field-label {
+      top: -8px;
+      font-size: 12px;
+    }
+    .text-field-filled {
+      background-color: var(--md-sys-color-surface-container-highest);
+      border: none;
+      border-bottom: 1px solid var(--md-sys-color-outline);
+      border-radius: 4px 4px 0 0;
+    }
+    .text-field-helper {
+      margin-top: 4px;
+      font-size: 12px;
+      font-family: var(--md-sys-typescale-meta-font-family);
+      font-weight: var(--md-sys-typescale-meta-font-weight);
+      letter-spacing: var(--md-sys-typescale-meta-letter-spacing);
+      line-height: var(--md-sys-typescale-meta-line-height);
+      color: var(--md-sys-color-on-surface-variant);
+      padding-left: 16px;
+    }
+    .text-field-error {
+      border-color: var(--md-sys-color-error);
+    }
+    .text-field-error-label {
+      color: var(--md-sys-color-error);
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Text Fields</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>Variants</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Outlined</h4>
+            <div class="text-field">
+              <input type="text" class="text-field-input" placeholder=" " id="outlined-1">
+              <label for="outlined-1" class="text-field-label">Label</label>
+              <div class="text-field-helper">Supporting text</div>
+            </div>
+            <div class="token-reference">md.sys.color.outline, md.sys.color.primary</div>
+          </div>
+          <div class="variant-item">
+            <h4>Filled</h4>
+            <div class="text-field">
+              <input type="text" class="text-field-input text-field-filled" placeholder=" " id="filled-1">
+              <label for="filled-1" class="text-field-label">Label</label>
+              <div class="text-field-helper">Supporting text</div>
+            </div>
+            <div class="token-reference">md.sys.color.surface-container-highest</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>States</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Default</h4>
+            <div class="text-field">
+              <input type="text" class="text-field-input" placeholder=" " id="default-1">
+              <label for="default-1" class="text-field-label">Label</label>
+            </div>
+          </div>
+          <div class="variant-item">
+            <h4>Focused</h4>
+            <div class="text-field">
+              <input type="text" class="text-field-input" placeholder=" " id="focused-1" value="Focused" style="border-color: var(--md-sys-color-primary); border-width: 2px;">
+              <label for="focused-1" class="text-field-label" style="top: -8px; font-size: 12px;">Label</label>
+            </div>
+            <span class="state-label">Simulated</span>
+          </div>
+          <div class="variant-item">
+            <h4>Error</h4>
+            <div class="text-field">
+              <input type="text" class="text-field-input text-field-error" placeholder=" " id="error-1" aria-invalid="true">
+              <label for="error-1" class="text-field-label text-field-error-label">Label</label>
+              <div class="text-field-helper" style="color: var(--md-sys-color-error);">Error message</div>
+            </div>
+            <div class="token-reference">md.sys.color.error</div>
+          </div>
+          <div class="variant-item">
+            <h4>Disabled</h4>
+            <div class="text-field">
+              <input type="text" class="text-field-input" placeholder=" " id="disabled-1" disabled style="opacity: 0.38;">
+              <label for="disabled-1" class="text-field-label">Label</label>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

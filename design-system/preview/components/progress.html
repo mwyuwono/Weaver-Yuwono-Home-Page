@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress Indicators - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <style>
+    .progress-linear {
+      width: 100%;
+      height: 4px;
+      background-color: var(--md-sys-color-surface-container-highest);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-linear-active {
+      height: 100%;
+      background-color: var(--md-sys-color-primary);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+    .progress-circular {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--md-sys-color-surface-container-highest);
+      border-top-color: var(--md-sys-color-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Progress Indicators</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>Types</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Linear - Determinate</h4>
+            <div class="progress-linear">
+              <div class="progress-linear-active" style="width: 50%;"></div>
+            </div>
+            <div class="token-reference">md.sys.color.primary (50% progress)</div>
+          </div>
+          <div class="variant-item">
+            <h4>Linear - Indeterminate</h4>
+            <div class="progress-linear">
+              <div class="progress-linear-active" style="width: 30%; animation: indeterminate 1.5s ease-in-out infinite;"></div>
+            </div>
+            <style>
+              @keyframes indeterminate {
+                0% { transform: translateX(-100%); }
+                50% { transform: translateX(300%); }
+                100% { transform: translateX(-100%); }
+              }
+            </style>
+            <div class="token-reference">Animated</div>
+          </div>
+          <div class="variant-item">
+            <h4>Circular - Determinate</h4>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="position: relative; width: 48px; height: 48px;">
+                <svg width="48" height="48" viewBox="0 0 48 48" style="transform: rotate(-90deg);">
+                  <circle cx="24" cy="24" r="20" fill="none" stroke="var(--md-sys-color-surface-container-highest)" stroke-width="4"/>
+                  <circle cx="24" cy="24" r="20" fill="none" stroke="var(--md-sys-color-primary)" stroke-width="4" stroke-dasharray="125.6" stroke-dashoffset="62.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span>50%</span>
+            </div>
+            <div class="token-reference">md.sys.color.primary</div>
+          </div>
+          <div class="variant-item">
+            <h4>Circular - Indeterminate</h4>
+            <div class="progress-circular"></div>
+            <div class="token-reference">md.sys.color.primary (animated)</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

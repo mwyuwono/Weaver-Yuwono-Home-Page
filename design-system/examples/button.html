@@ -1,0 +1,37 @@
+---
+component: Button
+tokensUsed: md.sys.color.primary, md.sys.color.on-primary, md.sys.shape.corner.full
+purpose: Demonstrate filled button with hover, focus, and pressed states
+states: default, hover, focus, pressed, disabled
+---
+
+<!-- Material Design 3 Filled Button Example -->
+<button class="m3-button m3-button--filled" aria-label="Submit form">
+  Submit
+</button>
+
+<style>
+  /* Token usage: md.sys.color.primary, md.sys.color.on-primary, md.sys.shape.corner.full */
+  .m3-button {
+    min-height: 40px;
+    padding: 12px 24px;
+    border: none;
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-size: var(--md-sys-typescale-label-large-size);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .m3-button--filled {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-radius: var(--md-sys-shape-corner-full);
+  }
+  
+  .m3-button:hover { opacity: 0.92; } /* State layer */
+  .m3-button:focus-visible { outline: 2px solid var(--md-sys-color-primary); }
+  .m3-button:active { transform: scale(0.98); }
+  .m3-button:disabled { opacity: 0.38; cursor: not-allowed; }
+</style>
+
+

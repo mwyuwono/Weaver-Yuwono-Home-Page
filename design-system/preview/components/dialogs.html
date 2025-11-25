@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dialogs - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <style>
+    .dialog {
+      background: var(--md-sys-color-surface-container-high);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: var(--md-sys-elevation-level3);
+      max-width: 560px;
+      min-width: 280px;
+    }
+    .dialog-title {
+      margin: 0 0 16px 0;
+      font-size: var(--md-sys-typescale-title-large-size);
+      font-family: var(--md-sys-typescale-title-large-font-family);
+      font-weight: var(--md-sys-typescale-title-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-title-large-letter-spacing);
+      line-height: var(--md-sys-typescale-title-large-line-height);
+    }
+    .dialog-content {
+      margin-bottom: 24px;
+      font-family: var(--md-sys-typescale-body-large-font-family);
+      font-weight: var(--md-sys-typescale-body-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-body-large-letter-spacing);
+      line-height: var(--md-sys-typescale-body-large-line-height);
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .dialog-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .dialog-button {
+      min-height: 40px;
+      padding: 10px 24px;
+      border: none;
+      background: transparent;
+      color: var(--md-sys-color-primary);
+      cursor: pointer;
+      border-radius: 20px;
+    }
+    .dialog-backdrop {
+      background: rgba(0, 0, 0, 0.32);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Dialogs</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>Types</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Alert Dialog</h4>
+            <div class="dialog">
+              <h3 class="dialog-title">Alert Title</h3>
+              <div class="dialog-content">
+                <p>This is an alert dialog with a message.</p>
+              </div>
+              <div class="dialog-actions">
+                <button class="dialog-button">Cancel</button>
+                <button class="dialog-button">OK</button>
+              </div>
+            </div>
+            <div class="token-reference">md.sys.color.surface-container-high, md.sys.elevation.level3</div>
+          </div>
+          <div class="variant-item">
+            <h4>Simple Dialog</h4>
+            <div class="dialog">
+              <h3 class="dialog-title">Simple Dialog</h3>
+              <div class="dialog-content">
+                <p>Simple dialog with content and actions.</p>
+              </div>
+              <div class="dialog-actions">
+                <button class="dialog-button">Action</button>
+              </div>
+            </div>
+          </div>
+          <div class="variant-item">
+            <h4>Confirmation Dialog</h4>
+            <div class="dialog">
+              <h3 class="dialog-title">Confirm Action</h3>
+              <div class="dialog-content">
+                <p>Are you sure you want to proceed?</p>
+              </div>
+              <div class="dialog-actions">
+                <button class="dialog-button">Cancel</button>
+                <button class="dialog-button">Confirm</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chips - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <!-- Google Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      background-color: var(--md-sys-color-surface-container-highest);
+      color: var(--md-sys-color-on-surface-variant);
+      border: none;
+      font-size: var(--md-sys-typescale-label-large-size);
+      font-family: var(--md-sys-typescale-label-large-font-family);
+      font-weight: var(--md-sys-typescale-label-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-letter-spacing);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      cursor: pointer;
+      gap: 8px;
+    }
+    .chip-selected {
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+    }
+    .chip-icon {
+      font-family: 'Material Symbols Outlined';
+      font-size: 18px;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      width: 18px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Chips</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>Types</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Assist</h4>
+            <button class="chip">Assist Chip</button>
+            <div class="token-reference">md.sys.color.surface-container-highest</div>
+          </div>
+          <div class="variant-item">
+            <h4>Filter</h4>
+            <button class="chip chip-selected">Filter Chip</button>
+            <div class="token-reference">md.sys.color.secondary-container (selected)</div>
+          </div>
+          <div class="variant-item">
+            <h4>Input</h4>
+            <button class="chip">Input Chip <span class="chip-icon">close</span></button>
+            <div class="token-reference">With trailing remove icon</div>
+          </div>
+          <div class="variant-item">
+            <h4>Suggestion</h4>
+            <button class="chip">Suggestion Chip</button>
+            <div class="token-reference">md.sys.color.surface-container-highest</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>With Icons</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Leading Icon</h4>
+            <button class="chip"><span class="chip-icon">favorite</span> Chip with Icon</button>
+          </div>
+          <div class="variant-item">
+            <h4>Trailing Icon</h4>
+            <button class="chip">Chip with Icon <span class="chip-icon">close</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>States</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Default</h4>
+            <button class="chip">Default Chip</button>
+          </div>
+          <div class="variant-item">
+            <h4>Selected</h4>
+            <button class="chip chip-selected">Selected Chip</button>
+          </div>
+          <div class="variant-item">
+            <h4>Disabled</h4>
+            <button class="chip" disabled style="opacity: 0.38;">Disabled Chip</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

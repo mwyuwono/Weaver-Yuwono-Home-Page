@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Material Design 3 Color Palette</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="colors-config.js"></script>
+  <style>
+    .color-swatch {
+      color: white;
+    }
+    .color-swatch.light {
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Material Design 3 Color Palette</h1>
+      <nav class="preview-nav">
+        <a href="index.html">Components</a>
+        <a href="colors.html">Colors</a>
+        <a href="icons.html">Icons</a>
+        <a href="typography.html">Typography</a>
+        <a href="../README.md">Documentation</a>
+      </nav>
+    </header>
+
+    <main>
+      <div style="background: var(--md-sys-color-surface-container); padding: 16px; border-radius: 12px; margin-bottom: 24px;">
+        <strong>💡 Customize Colors:</strong> Edit <code>colors-config.js</code> to update colors across all preview pages. Changes apply automatically when you refresh.
+      </div>
+      <p>Color tokens organized by category. Values shown are from the Material Design 3 token system.</p>
+
+      <section class="preview-section">
+        <h2>Primary Colors</h2>
+        <div class="color-grid">
+          <div class="color-swatch" style="background-color: var(--md-sys-color-primary);">
+            <div class="color-swatch-info">
+              <div><code>md.sys.color.primary</code></div>
+              <div id="primary-value">#6750a4</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-on-primary);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.on-primary</code></div>
+              <div id="on-primary-value">#ffffff</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-primary-container);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.primary-container</code></div>
+              <div id="primary-container-value">#eaddff</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-on-primary-container);">
+            <div class="color-swatch-info">
+              <div><code>md.sys.color.on-primary-container</code></div>
+              <div id="on-primary-container-value">#21005d</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Secondary Colors</h2>
+        <div class="color-grid">
+          <div class="color-swatch" style="background-color: var(--md-sys-color-secondary);">
+            <div class="color-swatch-info">
+              <div><code>md.sys.color.secondary</code></div>
+              <div id="secondary-value">#625b71</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-on-secondary);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.on-secondary</code></div>
+              <div id="on-secondary-value">#ffffff</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-secondary-container);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.secondary-container</code></div>
+              <div id="secondary-container-value">#e8def8</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-on-secondary-container);">
+            <div class="color-swatch-info">
+              <div><code>md.sys.color.on-secondary-container</code></div>
+              <div id="on-secondary-container-value">#1d192b</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Surface Colors</h2>
+        <div class="color-grid">
+          <div class="color-swatch" style="background-color: var(--md-sys-color-surface);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.surface</code></div>
+              <div id="surface-value">#fffbfe</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-on-surface);">
+            <div class="color-swatch-info">
+              <div><code>md.sys.color.on-surface</code></div>
+              <div id="on-surface-value">#1c1b1f</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-surface-variant);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.surface-variant</code></div>
+              <div id="surface-variant-value">#e7e0ec</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-on-surface-variant);">
+            <div class="color-swatch-info">
+              <div><code>md.sys.color.on-surface-variant</code></div>
+              <div id="on-surface-variant-value">#49454f</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-surface-container);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.surface-container</code></div>
+              <div id="surface-container-value">#f3edf7</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-surface-container-high);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.surface-container-high</code></div>
+              <div id="surface-container-high-value">#ece6f0</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-surface-container-highest);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.surface-container-highest</code></div>
+              <div id="surface-container-highest-value">#e6e0e9</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Background Colors</h2>
+        <div class="color-grid">
+          <div class="color-swatch" style="background-color: var(--md-sys-color-background);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.background</code></div>
+              <div id="background-value">#fffbfe</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-on-background);">
+            <div class="color-swatch-info">
+              <div><code>md.sys.color.on-background</code></div>
+              <div id="on-background-value">#1c1b1f</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Outline Colors</h2>
+        <div class="color-grid">
+          <div class="color-swatch" style="background-color: var(--md-sys-color-outline);">
+            <div class="color-swatch-info">
+              <div><code>md.sys.color.outline</code></div>
+              <div id="outline-value">#79747e</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-outline-variant);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.outline-variant</code></div>
+              <div id="outline-variant-value">#cac4d0</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Error Colors</h2>
+        <div class="color-grid">
+          <div class="color-swatch" style="background-color: var(--md-sys-color-error);">
+            <div class="color-swatch-info">
+              <div><code>md.sys.color.error</code></div>
+              <div id="error-value">#ba1a1a</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-on-error);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.on-error</code></div>
+              <div id="on-error-value">#ffffff</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-error-container);">
+            <div class="color-swatch-info light">
+              <div><code>md.sys.color.error-container</code></div>
+              <div id="error-container-value">#ffdad6</div>
+            </div>
+          </div>
+          <div class="color-swatch" style="background-color: var(--md-sys-color-on-error-container);">
+            <div class="color-swatch-info">
+              <div><code>md.sys.color.on-error-container</code></div>
+              <div id="on-error-container-value">#410002</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    // Update displayed color values from CSS custom properties
+    function updateColorValues() {
+      const root = getComputedStyle(document.documentElement);
+      const colorMap = {
+        'primary-value': '--md-sys-color-primary',
+        'on-primary-value': '--md-sys-color-on-primary',
+        'primary-container-value': '--md-sys-color-primary-container',
+        'on-primary-container-value': '--md-sys-color-on-primary-container',
+        'secondary-value': '--md-sys-color-secondary',
+        'on-secondary-value': '--md-sys-color-on-secondary',
+        'secondary-container-value': '--md-sys-color-secondary-container',
+        'on-secondary-container-value': '--md-sys-color-on-secondary-container',
+        'surface-value': '--md-sys-color-surface',
+        'on-surface-value': '--md-sys-color-on-surface',
+        'surface-variant-value': '--md-sys-color-surface-variant',
+        'on-surface-variant-value': '--md-sys-color-on-surface-variant',
+        'surface-container-value': '--md-sys-color-surface-container',
+        'surface-container-high-value': '--md-sys-color-surface-container-high',
+        'surface-container-highest-value': '--md-sys-color-surface-container-highest',
+        'background-value': '--md-sys-color-background',
+        'on-background-value': '--md-sys-color-on-background',
+        'outline-value': '--md-sys-color-outline',
+        'outline-variant-value': '--md-sys-color-outline-variant',
+        'error-value': '--md-sys-color-error',
+        'on-error-value': '--md-sys-color-on-error',
+        'error-container-value': '--md-sys-color-error-container',
+        'on-error-container-value': '--md-sys-color-on-error-container',
+      };
+      
+      Object.entries(colorMap).forEach(([id, prop]) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent = root.getPropertyValue(prop).trim();
+        }
+      });
+    }
+    
+    // Update values after colors are applied
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(updateColorValues, 100);
+      });
+    } else {
+      setTimeout(updateColorValues, 100);
+    }
+  </script>
+</body>
+</html>
+

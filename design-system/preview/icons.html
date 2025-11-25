@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Material Symbols Icons - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="colors-config.js"></script>
+  <!-- Google Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+    .icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      border-radius: 12px;
+      background: var(--md-sys-color-surface-container);
+      transition: background 0.2s;
+    }
+    .icon-item:hover {
+      background: var(--md-sys-color-surface-container-high);
+    }
+    .icon-display {
+      font-family: 'Material Symbols Outlined';
+      font-size: 48px;
+      color: var(--md-sys-color-on-surface);
+      margin-bottom: 8px;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .icon-display.filled {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .icon-name {
+      font-size: 12px;
+      font-family: var(--md-sys-typescale-meta-font-family);
+      color: var(--md-sys-color-on-surface-variant);
+      text-align: center;
+      word-break: break-word;
+    }
+    .icon-category {
+      margin-top: 48px;
+    }
+    .icon-category:first-child {
+      margin-top: 0;
+    }
+    .icon-size-demo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--md-sys-color-surface-container);
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+    .icon-size {
+      font-family: 'Material Symbols Outlined';
+      color: var(--md-sys-color-on-surface);
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .icon-size-18 { font-size: 18px; }
+    .icon-size-24 { font-size: 24px; }
+    .icon-size-36 { font-size: 36px; }
+    .icon-size-48 { font-size: 48px; }
+    .icon-weight-demo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--md-sys-color-surface-container);
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+    .icon-weight {
+      font-family: 'Material Symbols Outlined';
+      font-size: 24px;
+      color: var(--md-sys-color-on-surface);
+      font-variation-settings: 'FILL' 0, 'GRAD' 0, 'opsz' 24;
+    }
+    .icon-weight-100 { font-variation-settings: 'FILL' 0, 'wght' 100, 'GRAD' 0, 'opsz' 24; }
+    .icon-weight-200 { font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+    .icon-weight-300 { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+    .icon-weight-400 { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .icon-weight-500 { font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
+    .icon-weight-600 { font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24; }
+    .icon-weight-700 { font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 24; }
+    .icon-fill-demo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--md-sys-color-surface-container);
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+    .icon-fill {
+      font-family: 'Material Symbols Outlined';
+      font-size: 24px;
+      color: var(--md-sys-color-on-surface);
+      font-variation-settings: 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .icon-fill-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .icon-fill-filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Material Symbols Icons</h1>
+      <nav class="preview-nav">
+        <a href="index.html">Components</a>
+        <a href="colors.html">Colors</a>
+        <a href="icons.html">Icons</a>
+        <a href="typography.html">Typography</a>
+        <a href="../README.md">Documentation</a>
+      </nav>
+    </header>
+
+    <main>
+      <p>Google Material Symbols icon font. Use <code>font-family: 'Material Symbols Outlined'</code> and icon names as content.</p>
+
+      <section class="preview-section">
+        <h2>Common Icons</h2>
+        <div class="icon-grid">
+          <div class="icon-item">
+            <span class="icon-display">home</span>
+            <span class="icon-name">home</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">menu</span>
+            <span class="icon-name">menu</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">search</span>
+            <span class="icon-name">search</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">favorite</span>
+            <span class="icon-name">favorite</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">settings</span>
+            <span class="icon-name">settings</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">close</span>
+            <span class="icon-name">close</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">check</span>
+            <span class="icon-name">check</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">add</span>
+            <span class="icon-name">add</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">delete</span>
+            <span class="icon-name">delete</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">edit</span>
+            <span class="icon-name">edit</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">share</span>
+            <span class="icon-name">share</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">more_vert</span>
+            <span class="icon-name">more_vert</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">arrow_back</span>
+            <span class="icon-name">arrow_back</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">arrow_forward</span>
+            <span class="icon-name">arrow_forward</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">chevron_right</span>
+            <span class="icon-name">chevron_right</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">chevron_left</span>
+            <span class="icon-name">chevron_left</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">expand_more</span>
+            <span class="icon-name">expand_more</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">expand_less</span>
+            <span class="icon-name">expand_less</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">info</span>
+            <span class="icon-name">info</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">warning</span>
+            <span class="icon-name">warning</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">error</span>
+            <span class="icon-name">error</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">check_circle</span>
+            <span class="icon-name">check_circle</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">notifications</span>
+            <span class="icon-name">notifications</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">account_circle</span>
+            <span class="icon-name">account_circle</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section icon-category">
+        <h2>Navigation Icons</h2>
+        <div class="icon-grid">
+          <div class="icon-item">
+            <span class="icon-display">dashboard</span>
+            <span class="icon-name">dashboard</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">folder</span>
+            <span class="icon-name">folder</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">file</span>
+            <span class="icon-name">file</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">history</span>
+            <span class="icon-name">history</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">bookmark</span>
+            <span class="icon-name">bookmark</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">star</span>
+            <span class="icon-name">star</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section icon-category">
+        <h2>Action Icons</h2>
+        <div class="icon-grid">
+          <div class="icon-item">
+            <span class="icon-display">save</span>
+            <span class="icon-name">save</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">download</span>
+            <span class="icon-name">download</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">upload</span>
+            <span class="icon-name">upload</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">print</span>
+            <span class="icon-name">print</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">refresh</span>
+            <span class="icon-name">refresh</span>
+          </div>
+          <div class="icon-item">
+            <span class="icon-display">filter_list</span>
+            <span class="icon-name">filter_list</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section icon-category">
+        <h2>Icon Sizes</h2>
+        <div class="icon-size-demo">
+          <span class="icon-size icon-size-18">home</span>
+          <span>18px</span>
+        </div>
+        <div class="icon-size-demo">
+          <span class="icon-size icon-size-24">home</span>
+          <span>24px (default)</span>
+        </div>
+        <div class="icon-size-demo">
+          <span class="icon-size icon-size-36">home</span>
+          <span>36px</span>
+        </div>
+        <div class="icon-size-demo">
+          <span class="icon-size icon-size-48">home</span>
+          <span>48px</span>
+        </div>
+      </section>
+
+      <section class="preview-section icon-category">
+        <h2>Icon Weights</h2>
+        <div class="icon-weight-demo">
+          <span class="icon-weight icon-weight-100">home</span>
+          <span>100</span>
+        </div>
+        <div class="icon-weight-demo">
+          <span class="icon-weight icon-weight-200">home</span>
+          <span>200</span>
+        </div>
+        <div class="icon-weight-demo">
+          <span class="icon-weight icon-weight-300">home</span>
+          <span>300</span>
+        </div>
+        <div class="icon-weight-demo">
+          <span class="icon-weight icon-weight-400">home</span>
+          <span>400 (default)</span>
+        </div>
+        <div class="icon-weight-demo">
+          <span class="icon-weight icon-weight-500">home</span>
+          <span>500</span>
+        </div>
+        <div class="icon-weight-demo">
+          <span class="icon-weight icon-weight-600">home</span>
+          <span>600</span>
+        </div>
+        <div class="icon-weight-demo">
+          <span class="icon-weight icon-weight-700">home</span>
+          <span>700</span>
+        </div>
+      </section>
+
+      <section class="preview-section icon-category">
+        <h2>Fill Styles</h2>
+        <div class="icon-fill-demo">
+          <span class="icon-fill icon-fill-outlined">favorite</span>
+          <span>Outlined (FILL: 0)</span>
+        </div>
+        <div class="icon-fill-demo">
+          <span class="icon-fill icon-fill-filled">favorite</span>
+          <span>Filled (FILL: 1)</span>
+        </div>
+      </section>
+
+      <section class="preview-section icon-category">
+        <h2>Usage Example</h2>
+        <pre style="background: var(--md-sys-color-surface-container); padding: 16px; border-radius: 12px; overflow-x: auto;"><code>&lt;!-- HTML --&gt;
+&lt;span class="material-icon"&gt;home&lt;/span&gt;
+
+&lt;!-- CSS --&gt;
+.material-icon {
+  font-family: 'Material Symbols Outlined';
+  font-size: 24px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}</code></pre>
+        <p style="margin-top: 16px;">Load the font via Google Fonts:</p>
+        <pre style="background: var(--md-sys-color-surface-container); padding: 16px; border-radius: 12px; overflow-x: auto;"><code>&lt;link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" /&gt;</code></pre>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

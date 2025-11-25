@@ -1,0 +1,6 @@
+{
+  "_comment": "Custom token overrides. Edit values here to customize Material Design 3 tokens.",
+  "_instructions": "Add token IDs as keys with their custom values. Run 'npm run build' to regenerate tokens."
+}
+
+

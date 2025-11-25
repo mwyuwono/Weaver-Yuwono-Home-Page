@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buttons - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <!-- Google Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    .button {
+      min-height: 40px;
+      padding: 12px 24px;
+      border: none;
+      font-size: var(--md-sys-typescale-label-large-size);
+      font-family: var(--md-sys-typescale-label-large-font-family);
+      font-weight: var(--md-sys-typescale-label-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-letter-spacing);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 20px;
+    }
+    .button-filled {
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+    .button-outlined {
+      background-color: transparent;
+      color: var(--md-sys-color-primary);
+      border: 1px solid var(--md-sys-color-outline);
+    }
+    .button-text {
+      background-color: transparent;
+      color: var(--md-sys-color-primary);
+    }
+    .button-tonal {
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+    }
+    .button-icon {
+      min-width: 40px;
+      min-height: 40px;
+      padding: 8px;
+      border-radius: 20px;
+      font-family: 'Material Symbols Outlined';
+      font-size: 24px;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .button:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+    }
+    .button:hover:not(:disabled) {
+      opacity: 0.92;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Buttons</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>Variants</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Filled</h4>
+            <button class="button button-filled">Filled Button</button>
+            <div class="token-reference">md.sys.color.primary, md.sys.color.on-primary</div>
+          </div>
+          <div class="variant-item">
+            <h4>Outlined</h4>
+            <button class="button button-outlined">Outlined Button</button>
+            <div class="token-reference">md.sys.color.primary, md.sys.color.outline</div>
+          </div>
+          <div class="variant-item">
+            <h4>Text</h4>
+            <button class="button button-text">Text Button</button>
+            <div class="token-reference">md.sys.color.primary</div>
+          </div>
+          <div class="variant-item">
+            <h4>Tonal</h4>
+            <button class="button button-tonal">Tonal Button</button>
+            <div class="token-reference">md.sys.color.secondary-container</div>
+          </div>
+          <div class="variant-item">
+            <h4>Icon</h4>
+            <button class="button button-filled button-icon" aria-label="Favorite">favorite</button>
+            <div class="token-reference">md.sys.color.primary</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>States</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Default</h4>
+            <button class="button button-filled">Default</button>
+          </div>
+          <div class="variant-item">
+            <h4>Hover</h4>
+            <button class="button button-filled" style="opacity: 0.92;">Hover</button>
+            <span class="state-label">Simulated</span>
+          </div>
+          <div class="variant-item">
+            <h4>Focus</h4>
+            <button class="button button-filled" style="outline: 2px solid var(--md-sys-color-primary); outline-offset: 2px;">Focus</button>
+            <span class="state-label">Simulated</span>
+          </div>
+          <div class="variant-item">
+            <h4>Disabled</h4>
+            <button class="button button-filled" disabled>Disabled</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

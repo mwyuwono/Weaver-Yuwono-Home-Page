@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tables - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <style>
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--md-sys-color-surface);
+    }
+    .table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: var(--md-sys-typescale-label-large-size);
+      font-family: var(--md-sys-typescale-label-large-font-family);
+      font-weight: var(--md-sys-typescale-label-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-label-large-letter-spacing);
+      line-height: var(--md-sys-typescale-label-large-line-height);
+      color: var(--md-sys-color-on-surface);
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      height: 56px;
+    }
+    .table td {
+      padding: 12px 16px;
+      font-size: var(--md-sys-typescale-body-medium-size);
+      font-family: var(--md-sys-typescale-body-medium-font-family);
+      font-weight: var(--md-sys-typescale-body-medium-font-weight);
+      letter-spacing: var(--md-sys-typescale-body-medium-letter-spacing);
+      line-height: var(--md-sys-typescale-body-medium-line-height);
+      color: var(--md-sys-color-on-surface);
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      height: 52px;
+    }
+    .table tbody tr:hover {
+      background: rgba(28, 27, 31, 0.04);
+    }
+    .table tbody tr.selected {
+      background: var(--md-sys-color-secondary-container);
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Tables</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>Data Table</h2>
+        <div class="variant-grid">
+          <div class="variant-item" style="grid-column: 1 / -1;">
+            <h4>Standard Table</h4>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>John Doe</td>
+                  <td>Developer</td>
+                  <td>Active</td>
+                </tr>
+                <tr class="selected">
+                  <td>Jane Smith</td>
+                  <td>Designer</td>
+                  <td>Active</td>
+                </tr>
+                <tr>
+                  <td>Bob Johnson</td>
+                  <td>Manager</td>
+                  <td>Inactive</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="token-reference">md.sys.color.surface, md.sys.color.on-surface, 52px row height</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>States</h2>
+        <div class="variant-grid">
+          <div class="variant-item" style="grid-column: 1 / -1;">
+            <h4>Row States</h4>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Default</td>
+                  <td>Default row</td>
+                </tr>
+                <tr style="background: rgba(28, 27, 31, 0.04);">
+                  <td>Hover</td>
+                  <td>Hovered row</td>
+                </tr>
+                <tr class="selected">
+                  <td>Selected</td>
+                  <td>Selected row</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="token-reference">md.sys.color.secondary-container (selected)</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

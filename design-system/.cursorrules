@@ -1,0 +1,28 @@
+# Cursor Rules for M3 Guidelines Repository
+
+**IMPORTANT**: Read `LLM_CONTEXT.md` first - it is the single source of truth for this repository.
+
+## Quick Reference
+
+- **Token values**: Read `tokens/material3.web.json` (structured JSON with metadata)
+- **Customize tokens**: Edit `tokens/custom.json` ONLY, then run `npm run build`
+- **Component patterns**: Read `guidelines/components/*.md` (YAML frontmatter + token references)
+- **Code structure**: Reference `examples/*.html` (canonical HTML structure)
+
+## Key Rules
+
+1. **Never edit generated files** (`tokens/material3.web.json`, `tokens/material3.web.md`)
+2. **Single customization source**: Only `tokens/custom.json` for token overrides
+3. **Preserve token IDs**: Use exact upstream format (e.g., `md.sys.color.primary`)
+4. **Web-only**: No Android/iOS guidance or code
+5. **Human-readable**: All files readable by humans, structured for LLM parsing
+
+## When Helping Users
+
+- **Get token value**: Read `tokens/material3.web.json`, search by `id` field
+- **Customize token**: Edit `tokens/custom.json`, inform user to run `npm run build`
+- **Implement component**: Read `guidelines/components/[name].md`, look up tokens, reference examples
+- **Understand structure**: Read `LLM_CONTEXT.md` for complete repository documentation
+
+See `LLM_CONTEXT.md` for complete documentation.
+

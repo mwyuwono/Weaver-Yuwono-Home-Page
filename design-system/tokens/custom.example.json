@@ -1,0 +1,20 @@
+{
+  "_comment": "Example customization file. Copy this to custom.json and edit values.",
+  "_instructions": "Override any Material Design 3 token by adding its ID and new value. Run 'npm run build' to regenerate tokens.",
+  
+  "examples": {
+    "color_primary": "md.sys.color.primary",
+    "color_on_primary": "md.sys.color.on-primary",
+    "typography_scale": "md.sys.typescale.body-large.font",
+    "shape_corner": "md.sys.shape.corner.medium"
+  },
+  
+  "customization_examples": {
+    "md.sys.color.primary": "#0066CC",
+    "md.sys.color.on-primary": "#FFFFFF",
+    "md.sys.color.secondary": "#00A86B",
+    "md.sys.color.on-secondary": "#FFFFFF"
+  }
+}
+
+

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typography - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="colors-config.js"></script>
+  <style>
+    .typography-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+    .typography-item {
+      background: var(--md-sys-color-surface-container);
+      border-radius: var(--md-sys-shape-corner-medium);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .typography-sample {
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      padding-bottom: 16px;
+    }
+    .typography-sample:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .typography-label {
+      font-size: 12px;
+      font-family: var(--md-sys-typescale-meta-font-family);
+      color: var(--md-sys-color-on-surface-variant);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .typography-preview {
+      margin-bottom: 8px;
+    }
+    .typography-tokens {
+      font-size: 11px;
+      font-family: monospace;
+      color: var(--md-sys-color-on-surface-variant);
+      background: var(--md-sys-color-surface-container-high);
+      padding: 8px;
+      border-radius: 4px;
+      line-height: 1.6;
+    }
+    .font-family-demo {
+      background: var(--md-sys-color-surface-container);
+      border-radius: var(--md-sys-shape-corner-medium);
+      padding: 24px;
+      margin-top: 24px;
+    }
+    .font-family-item {
+      margin-bottom: 24px;
+    }
+    .font-family-item:last-child {
+      margin-bottom: 0;
+    }
+    .font-family-name {
+      font-size: var(--md-sys-typescale-title-large-size);
+      font-family: var(--md-sys-typescale-title-large-font-family);
+      margin-bottom: 8px;
+    }
+    .font-family-sample {
+      font-size: var(--md-sys-typescale-body-large-size);
+      margin-bottom: 8px;
+    }
+    .usage-example {
+      background: var(--md-sys-color-surface-container);
+      padding: 16px;
+      border-radius: 12px;
+      margin-top: 24px;
+    }
+    .usage-example pre {
+      background: var(--md-sys-color-surface-container-high);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Typography</h1>
+      <nav class="preview-nav">
+        <a href="index.html">Components</a>
+        <a href="colors.html">Colors</a>
+        <a href="icons.html">Icons</a>
+        <a href="typography.html">Typography</a>
+        <a href="../README.md">Documentation</a>
+      </nav>
+    </header>
+
+    <main>
+      <p>Typography scale using custom font families. All values are configurable via <code>colors-config.js</code>.</p>
+
+      <section class="preview-section">
+        <h2>Font Families</h2>
+        <div class="font-family-demo">
+          <div class="font-family-item">
+            <div class="font-family-name">Heading Font: Palatino Linotype</div>
+            <div class="font-family-sample" style="font-family: var(--md-sys-typescale-heading-font-family);">
+              The quick brown fox jumps over the lazy dog. 1234567890
+            </div>
+            <div class="typography-tokens">
+              Token: md-sys-typescale-heading-font-family<br>
+              Value: <span id="heading-font-value">Palatino Linotype</span>
+            </div>
+          </div>
+          
+          <div class="font-family-item">
+            <div class="font-family-name">Body Font: brandon-grotesque</div>
+            <div class="font-family-sample" style="font-family: var(--md-sys-typescale-body-font-family);">
+              The quick brown fox jumps over the lazy dog. 1234567890
+            </div>
+            <div class="typography-tokens">
+              Token: md-sys-typescale-body-font-family<br>
+              Value: <span id="body-font-value">brandon-grotesque</span>
+            </div>
+          </div>
+          
+          <div class="font-family-item">
+            <div class="font-family-name">Meta Font: adelle-sans</div>
+            <div class="font-family-sample" style="font-family: var(--md-sys-typescale-meta-font-family);">
+              The quick brown fox jumps over the lazy dog. 1234567890
+            </div>
+            <div class="typography-tokens">
+              Token: md-sys-typescale-meta-font-family<br>
+              Value: <span id="meta-font-value">adelle-sans</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Heading Typography</h2>
+        <div class="typography-grid">
+          <div class="typography-item">
+            <div class="typography-sample">
+              <div class="typography-label">Title Large</div>
+              <div class="typography-preview" style="font-size: var(--md-sys-typescale-title-large-size); font-family: var(--md-sys-typescale-title-large-font-family); font-weight: var(--md-sys-typescale-title-large-font-weight); letter-spacing: var(--md-sys-typescale-title-large-letter-spacing); line-height: var(--md-sys-typescale-title-large-line-height);">
+                Title Large Heading
+              </div>
+              <div class="typography-tokens">
+                Size: <span id="title-large-size">22px</span><br>
+                Line-height: <span id="title-large-line-height">1.4em</span><br>
+                Weight: <span id="title-large-weight">400</span><br>
+                Letter-spacing: <span id="title-large-spacing">0em</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Body Typography</h2>
+        <div class="typography-grid">
+          <div class="typography-item">
+            <div class="typography-sample">
+              <div class="typography-label">Body Large</div>
+              <div class="typography-preview" style="font-size: var(--md-sys-typescale-body-large-size); font-family: var(--md-sys-typescale-body-large-font-family); font-weight: var(--md-sys-typescale-body-large-font-weight); letter-spacing: var(--md-sys-typescale-body-large-letter-spacing); line-height: var(--md-sys-typescale-body-large-line-height);">
+                Body large text for main content. This demonstrates the body font family with appropriate line height for readability.
+              </div>
+              <div class="typography-tokens">
+                Size: <span id="body-large-size">16px</span><br>
+                Line-height: <span id="body-large-line-height">1.8em</span><br>
+                Weight: <span id="body-large-weight">300</span><br>
+                Letter-spacing: <span id="body-large-spacing">0em</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="typography-item">
+            <div class="typography-sample">
+              <div class="typography-label">Body Medium</div>
+              <div class="typography-preview" style="font-size: var(--md-sys-typescale-body-medium-size); font-family: var(--md-sys-typescale-body-medium-font-family); font-weight: var(--md-sys-typescale-body-medium-font-weight); letter-spacing: var(--md-sys-typescale-body-medium-letter-spacing); line-height: var(--md-sys-typescale-body-medium-line-height);">
+                Body medium text for secondary content. Slightly smaller than body large.
+              </div>
+              <div class="typography-tokens">
+                Size: <span id="body-medium-size">14px</span><br>
+                Line-height: <span id="body-medium-line-height">1.8em</span><br>
+                Weight: <span id="body-medium-weight">300</span><br>
+                Letter-spacing: <span id="body-medium-spacing">0em</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Label Typography</h2>
+        <div class="typography-grid">
+          <div class="typography-item">
+            <div class="typography-sample">
+              <div class="typography-label">Label Large</div>
+              <div class="typography-preview" style="font-size: var(--md-sys-typescale-label-large-size); font-family: var(--md-sys-typescale-label-large-font-family); font-weight: var(--md-sys-typescale-label-large-font-weight); letter-spacing: var(--md-sys-typescale-label-large-letter-spacing); line-height: var(--md-sys-typescale-label-large-line-height);">
+                Label Large Text
+              </div>
+              <div class="typography-tokens">
+                Size: <span id="label-large-size">14px</span><br>
+                Line-height: <span id="label-large-line-height">1em</span><br>
+                Weight: <span id="label-large-weight">400</span><br>
+                Letter-spacing: <span id="label-large-spacing">0.01em</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Usage Example</h2>
+        <div class="usage-example">
+          <p>Use CSS custom properties to apply typography tokens:</p>
+          <pre><code>/* Heading */
+.heading {
+  font-size: var(--md-sys-typescale-title-large-size);
+  font-family: var(--md-sys-typescale-title-large-font-family);
+  font-weight: var(--md-sys-typescale-title-large-font-weight);
+  letter-spacing: var(--md-sys-typescale-title-large-letter-spacing);
+  line-height: var(--md-sys-typescale-title-large-line-height);
+}
+
+/* Body Text */
+.body-text {
+  font-size: var(--md-sys-typescale-body-large-size);
+  font-family: var(--md-sys-typescale-body-large-font-family);
+  font-weight: var(--md-sys-typescale-body-large-font-weight);
+  letter-spacing: var(--md-sys-typescale-body-large-letter-spacing);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+}
+
+/* Labels */
+.label {
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-family: var(--md-sys-typescale-label-large-font-family);
+  font-weight: var(--md-sys-typescale-label-large-font-weight);
+  letter-spacing: var(--md-sys-typescale-label-large-letter-spacing);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+}</code></pre>
+          <p style="margin-top: 16px;">Customize typography by editing <code>colors-config.js</code>:</p>
+          <pre><code>const M3Colors = {
+  'md-sys-typescale-heading-font-family': '"Your Font", serif',
+  'md-sys-typescale-body-font-family': '"Your Body Font", sans-serif',
+  'md-sys-typescale-meta-font-family': '"Your Meta Font", sans-serif',
+  // ... edit sizes, weights, letter spacing, line heights
+};</code></pre>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    // Update displayed typography values from CSS custom properties
+    function updateTypographyValues() {
+      const root = getComputedStyle(document.documentElement);
+      const typographyMap = {
+        'heading-font-value': '--md-ref-typeface-heading',
+        'body-font-value': '--md-ref-typeface-body',
+        'meta-font-value': '--md-ref-typeface-meta',
+        'title-large-size': '--md-sys-typescale-title-large-size',
+        'title-large-line-height': '--md-sys-typescale-title-large-line-height',
+        'title-large-weight': '--md-sys-typescale-title-large-font-weight',
+        'title-large-spacing': '--md-sys-typescale-title-large-letter-spacing',
+        'body-large-size': '--md-sys-typescale-body-large-size',
+        'body-large-line-height': '--md-sys-typescale-body-large-line-height',
+        'body-large-weight': '--md-sys-typescale-body-large-font-weight',
+        'body-large-spacing': '--md-sys-typescale-body-large-letter-spacing',
+        'body-medium-size': '--md-sys-typescale-body-medium-size',
+        'body-medium-line-height': '--md-sys-typescale-body-medium-line-height',
+        'body-medium-weight': '--md-sys-typescale-body-medium-font-weight',
+        'body-medium-spacing': '--md-sys-typescale-body-medium-letter-spacing',
+        'label-large-size': '--md-sys-typescale-label-large-size',
+        'label-large-line-height': '--md-sys-typescale-label-large-line-height',
+        'label-large-weight': '--md-sys-typescale-label-large-font-weight',
+        'label-large-spacing': '--md-sys-typescale-label-large-letter-spacing',
+      };
+      
+      Object.entries(typographyMap).forEach(([id, prop]) => {
+        const element = document.getElementById(id);
+        if (element) {
+          const value = root.getPropertyValue(prop).trim();
+          // Extract font family names from CSS values
+          if (id.includes('font-value')) {
+            const match = value.match(/"([^"]+)"/);
+            element.textContent = match ? match[1] : value;
+          } else {
+            element.textContent = value || 'N/A';
+          }
+        }
+      });
+    }
+    
+    // Update values after colors are applied
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(updateTypographyValues, 100);
+      });
+    } else {
+      setTimeout(updateTypographyValues, 100);
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,41 @@
+---
+component: List
+tokensUsed: md.sys.color.surface, md.sys.color.on-surface, md.sys.color.on-surface-variant
+purpose: Demonstrate two-line list item with leading icon and trailing action
+states: default, hover, selected
+---
+
+<!-- Material Design 3 List Example -->
+<ul class="m3-list" role="list">
+  <li class="m3-list-item" role="listitem" tabindex="0" aria-selected="false">
+    <span class="m3-list-item__leading" aria-hidden="true">📄</span>
+    <div class="m3-list-item__content">
+      <div class="m3-list-item__primary">Primary text</div>
+      <div class="m3-list-item__secondary">Secondary text</div>
+    </div>
+    <button class="m3-list-item__trailing" aria-label="More options">⋯</button>
+  </li>
+</ul>
+
+<style>
+  /* Token usage: md.sys.color.surface, md.sys.color.on-surface */
+  .m3-list { background: var(--md-sys-color-surface); list-style: none; padding: 8px 0; margin: 0; }
+  .m3-list-item {
+    display: flex;
+    align-items: center;
+    height: 64px;
+    padding: 0 16px;
+    gap: 16px;
+    cursor: pointer;
+  }
+  .m3-list-item:hover { background: rgba(var(--md-sys-color-on-surface-rgb), 0.08); }
+  .m3-list-item:focus-visible { outline: 2px solid var(--md-sys-color-primary); }
+  .m3-list-item[aria-selected="true"] { background: var(--md-sys-color-secondary-container); }
+  .m3-list-item__leading { font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+  .m3-list-item__content { flex: 1; }
+  .m3-list-item__primary { color: var(--md-sys-color-on-surface); }
+  .m3-list-item__secondary { color: var(--md-sys-color-on-surface-variant); font-size: 14px; }
+  .m3-list-item__trailing { background: none; border: none; cursor: pointer; padding: 8px; }
+</style>
+
+

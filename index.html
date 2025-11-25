@@ -1,109 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weaver-Yuwono</title>
+    <title>Drawings & Renderings</title>
+    <!-- Design System Color Configuration (must load before stylesheets) -->
+    <script src="design-system/preview/colors-config.js"></script>
+    <!-- Design System Tokens -->
+    <link rel="stylesheet" href="design-system/tokens/material3.web.css">
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Component Styles -->
+    <link rel="stylesheet" href="components/project-card/project-card.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;400&family=Noto+Serif:wght@400;600;800&family=Noto+Serif:ital,wght@1,300;1,600;1,800&display=swap" rel="stylesheet">
+    <!-- Component Scripts -->
+    <script src="components/project-card/project-card.js" defer></script>
 </head>
-
 <body>
-    <video class="background-video" autoplay muted loop>
-        <source src="bloom_loop.mp4" type="video/mp4">
-    </video>
-
-    <div class="backdrop-blur"></div>
-    <div class="gradient-overlay-animated"></div>
-    <div class="gradient-overlay"></div>
-    <div class="gradient-overlay-blue"></div>
-    <div class="gradient-overlay-left"></div>
-    <div class="gradient-overlay-right"></div>
-
-    <div class="container">
-        <header class="header">
-            <img src="Fat-Logo.svg" alt="Weaver-Yuwono Logo" class="logo">
-            <h1 class="site-title">Weaver-Yuwono</h1>
-        </header>
-
-        <main class="main">
-            <div class="avatars-container">
-                <a href="https://www.linkedin.com/in/stantonyuwono/" class="avatar-link" target="_blank" rel="noopener noreferrer">
-                    <div class="avatar">
-                        <img src="Stanton's Headshot.jpg" alt="Stanton" class="avatar-image">
-                        <h2 class="avatar-title">Stanton</h2>
-                        <p class="avatar-subtitle">Mercer</p>
-                    </div>
-                </a>
-
-                <a href="https://www.linkedin.com/in/mattweaveryuwono/" class="avatar-link" target="_blank" rel="noopener noreferrer">
-                    <div class="avatar">
-                        <img src="McK Headshot Cropped.jpg" alt="Matt" class="avatar-image">
-                        <h2 class="avatar-title">Matt</h2>
-                        <p class="avatar-subtitle">McKinsey & Company</p>
-                    </div>
-                </a>
-            </div>
-        </main>
+    <div class="page-container">
+        <section class="hero-section">
+            <header class="header">
+                <img src="assets/images/wy-logo.svg" alt="WY Logo" class="logo">
+            </header>
+            <main class="main-content">
+                <div class="project-grid">
+                    <!-- Project cards are rendered dynamically by project-card.js -->
+                </div>
+            </main>
+        </section>
     </div>
-
-    <script>
-        // Gradually slow down video playback from 1.0x to 0.5x over 10 seconds
-        // increase blur from 2px to 10px, and fade in gradient overlay to 80% opacity
-        const video = document.querySelector('.background-video');
-        const blurOverlay = document.querySelector('.backdrop-blur');
-        const gradientOverlay = document.querySelector('.gradient-overlay-animated');
-        const avatarTiles = document.querySelectorAll('.avatar');
-        const transitionDuration = 10000; // 10 seconds in milliseconds
-        const avatarTransitionDuration = 20000; // 20 seconds for avatar gradients
-        const targetSpeed = 0.5;
-        const startSpeed = 1.0;
-        const startBlur = 2;
-        const targetBlur = 10;
-        const startOpacity = 0;
-        const targetOpacity = 0.8;
-        const avatarTargetOpacity = 1.0;
-        const startTime = Date.now();
-
-        function adjustPlaybackBlurAndGradient() {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / transitionDuration, 1);
-            const avatarProgress = Math.min(elapsed / avatarTransitionDuration, 1);
-
-            // Ease-in-out for smoother transition
-            const easeProgress = progress < 0.5
-                ? 2 * progress * progress
-                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-            const avatarEaseProgress = avatarProgress < 0.5
-                ? 2 * avatarProgress * avatarProgress
-                : 1 - Math.pow(-2 * avatarProgress + 2, 2) / 2;
-
-            video.playbackRate = startSpeed - (startSpeed - targetSpeed) * easeProgress;
-            const currentBlur = startBlur + (targetBlur - startBlur) * easeProgress;
-            blurOverlay.style.backdropFilter = `blur(${currentBlur}px)`;
-
-            const currentOpacity = startOpacity + (targetOpacity - startOpacity) * easeProgress;
-            gradientOverlay.style.opacity = currentOpacity;
-
-            // Animate avatar tile gradient overlays
-            const avatarOpacity = startOpacity + (avatarTargetOpacity - startOpacity) * avatarEaseProgress;
-            avatarTiles.forEach(tile => {
-                tile.style.setProperty('--avatar-gradient-opacity', avatarOpacity);
-            });
-
-            if (progress < 1 || avatarProgress < 1) {
-                requestAnimationFrame(adjustPlaybackBlurAndGradient);
-            }
-        }
-
-        video.addEventListener('loadeddata', () => {
-            adjustPlaybackBlurAndGradient();
-        });
-    </script>
 </body>
-
 </html>
+

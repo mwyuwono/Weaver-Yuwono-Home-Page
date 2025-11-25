@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sheets - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <style>
+    .sheet {
+      background: var(--md-sys-color-surface-container);
+      border-radius: 28px 28px 0 0;
+      padding: 24px;
+      box-shadow: var(--md-sys-elevation-level1);
+      max-width: 640px;
+      min-height: 200px;
+    }
+    .sheet-handle {
+      width: 32px;
+      height: 4px;
+      background: var(--md-sys-color-on-surface-variant);
+      border-radius: 2px;
+      margin: 0 auto 12px;
+      opacity: 0.4;
+    }
+    .sheet-title {
+      margin: 0 0 16px 0;
+      font-size: var(--md-sys-typescale-title-large-size);
+      font-family: var(--md-sys-typescale-title-large-font-family);
+      font-weight: var(--md-sys-typescale-title-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-title-large-letter-spacing);
+      line-height: var(--md-sys-typescale-title-large-line-height);
+    }
+    .sheet-content {
+      margin-bottom: 16px;
+      font-family: var(--md-sys-typescale-body-large-font-family);
+      font-weight: var(--md-sys-typescale-body-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-body-large-letter-spacing);
+      line-height: var(--md-sys-typescale-body-large-line-height);
+    }
+    .sheet-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      padding-top: 16px;
+    }
+    .sheet-button {
+      min-height: 40px;
+      padding: 10px 24px;
+      border: none;
+      background: transparent;
+      color: var(--md-sys-color-primary);
+      cursor: pointer;
+      border-radius: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Sheets (Bottom)</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>Bottom Sheet</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Standard Sheet</h4>
+            <div class="sheet">
+              <div class="sheet-handle"></div>
+              <h3 class="sheet-title">Sheet Title</h3>
+              <div class="sheet-content">
+                <p>Bottom sheet content goes here. This demonstrates the standard bottom sheet structure.</p>
+              </div>
+              <div class="sheet-actions">
+                <button class="sheet-button">Action</button>
+              </div>
+            </div>
+            <div class="token-reference">md.sys.color.surface-container, md.sys.shape.corner.extra-large (top)</div>
+          </div>
+          <div class="variant-item">
+            <h4>With Actions</h4>
+            <div class="sheet">
+              <div class="sheet-handle"></div>
+              <h3 class="sheet-title">Confirm Action</h3>
+              <div class="sheet-content">
+                <p>Are you sure you want to proceed?</p>
+              </div>
+              <div class="sheet-actions">
+                <button class="sheet-button">Cancel</button>
+                <button class="sheet-button">Confirm</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

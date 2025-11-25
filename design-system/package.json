@@ -1,0 +1,26 @@
+{
+  "name": "m3-guidelines",
+  "version": "1.0.0",
+  "description": "Material Design 3 web-only reference repository optimized for LLM ingestion",
+  "type": "module",
+  "scripts": {
+    "build": "tsx tokens/build.ts",
+    "verify": "npm run build && git diff --exit-code tokens/material3.web.json tokens/material3.web.md || (echo 'Token files have changed. Please commit the changes.' && exit 1)",
+    "customize": "echo 'Edit tokens/custom.json to customize token values, then run npm run build'"
+  },
+  "keywords": [
+    "material-design",
+    "material-design-3",
+    "design-tokens",
+    "web-components"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
+
+

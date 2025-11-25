@@ -1,0 +1,6 @@
+[submodule "vendor/material-tokens"]
+	path = vendor/material-tokens
+	url = https://github.com/material-foundation/material-tokens.git
+[submodule "vendor/brandon-grotesque"]
+	path = vendor/brandon-grotesque
+	url = https://github.com/Westley-Tan/brandon-grotesque.git

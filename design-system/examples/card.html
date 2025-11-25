@@ -1,0 +1,40 @@
+---
+component: Card
+tokensUsed: md.sys.color.surface-container, md.sys.color.on-surface, md.sys.elevation.level1, md.sys.shape.corner.medium
+purpose: Demonstrate card structure with header, content, and actions
+states: default, hover
+---
+
+<!-- Material Design 3 Card Example -->
+<article class="m3-card" role="article" aria-labelledby="card-title">
+  <div class="m3-card__header">
+    <h2 id="card-title" class="m3-card__title">Card Title</h2>
+    <p class="m3-card__subtitle">Subtitle text</p>
+  </div>
+  <div class="m3-card__content">
+    <p>Card content goes here. This demonstrates the structure.</p>
+  </div>
+  <div class="m3-card__actions">
+    <button>Action 1</button>
+    <button>Action 2</button>
+  </div>
+</article>
+
+<style>
+  /* Token usage: md.sys.color.surface-container, md.sys.elevation.level1, md.sys.shape.corner.medium */
+  .m3-card {
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--md-sys-shape-corner-medium);
+    padding: 16px;
+    box-shadow: var(--md-sys-elevation-level1);
+    max-width: 400px;
+  }
+  
+  .m3-card:hover { box-shadow: var(--md-sys-elevation-level2); }
+  .m3-card__header { margin-bottom: 16px; }
+  .m3-card__content { margin-bottom: 16px; }
+  .m3-card__actions { display: flex; gap: 8px; justify-content: flex-end; }
+</style>
+
+

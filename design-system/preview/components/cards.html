@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cards - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <!-- Google Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    /* Card Base Styles */
+    .card {
+      background-color: var(--md-sys-color-surface-container);
+      border-radius: var(--md-sys-shape-corner-medium);
+      padding: 16px;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    
+    /* Card Variants */
+    .card-elevated {
+      background-color: var(--md-sys-color-surface-container);
+      box-shadow: var(--md-sys-elevation-level1);
+    }
+    .card-elevated:hover {
+      box-shadow: var(--md-sys-elevation-level2);
+    }
+    
+    .card-filled {
+      background-color: var(--md-sys-color-surface-container-highest);
+      box-shadow: none;
+    }
+    
+    .card-outlined {
+      background-color: var(--md-sys-color-surface);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      box-shadow: none;
+    }
+    
+    /* Card Structure */
+    .card-header {
+      margin-bottom: 16px;
+    }
+    .card-title {
+      margin: 0 0 4px 0;
+      font-size: var(--md-sys-typescale-title-large-size);
+      font-family: var(--md-sys-typescale-title-large-font-family);
+      font-weight: var(--md-sys-typescale-title-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-title-large-letter-spacing);
+      line-height: var(--md-sys-typescale-title-large-line-height);
+      color: var(--md-sys-color-on-surface);
+    }
+    .card-subtitle {
+      margin: 0;
+      font-size: var(--md-sys-typescale-body-medium-size);
+      font-family: var(--md-sys-typescale-body-medium-font-family);
+      font-weight: var(--md-sys-typescale-body-medium-font-weight);
+      letter-spacing: var(--md-sys-typescale-body-medium-letter-spacing);
+      line-height: var(--md-sys-typescale-body-medium-line-height);
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .card-media {
+      width: 100%;
+      margin: -16px -16px 16px -16px;
+      border-radius: var(--md-sys-shape-corner-medium) var(--md-sys-shape-corner-medium) 0 0;
+      overflow: hidden;
+      background-color: var(--md-sys-color-surface-container-highest);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .card-content {
+      margin-bottom: 16px;
+      font-size: var(--md-sys-typescale-body-large-size);
+      font-family: var(--md-sys-typescale-body-large-font-family);
+      font-weight: var(--md-sys-typescale-body-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-body-large-letter-spacing);
+      line-height: var(--md-sys-typescale-body-large-line-height);
+      color: var(--md-sys-color-on-surface);
+    }
+    .card-content:last-child {
+      margin-bottom: 0;
+    }
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: auto;
+      padding-top: 8px;
+    }
+    .card-actions button {
+      min-height: 40px;
+      padding: 10px 24px;
+      border: none;
+      background: transparent;
+      color: var(--md-sys-color-primary);
+      cursor: pointer;
+      border-radius: 20px;
+      font-size: var(--md-sys-typescale-label-large-size);
+      font-family: var(--md-sys-typescale-label-large-font-family);
+      font-weight: var(--md-sys-typescale-label-large-font-weight);
+      transition: background-color 0.2s;
+    }
+    .card-actions button:hover {
+      background-color: rgba(0, 0, 0, 0.08);
+    }
+    .card-actions button:focus-visible {
+      outline: 2px solid var(--md-sys-color-primary);
+      outline-offset: 2px;
+    }
+    
+    /* Clickable Card */
+    .card-clickable {
+      cursor: pointer;
+    }
+    .card-clickable:focus-visible {
+      outline: 2px solid var(--md-sys-color-primary);
+      outline-offset: 2px;
+    }
+    .card-clickable:active {
+      transform: scale(0.98);
+    }
+    
+    /* Card with Media */
+    .card:has(.card-media) {
+      padding-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Cards</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>Card Variants</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Elevated Card</h4>
+            <article class="card card-elevated">
+              <div class="card-header">
+                <h3 class="card-title">Elevated Card</h3>
+                <p class="card-subtitle">With shadow elevation</p>
+              </div>
+              <div class="card-content">
+                <p>Elevated cards have a shadow to create depth. Default elevation is level 1, increases to level 2 on hover.</p>
+              </div>
+              <div class="card-actions">
+                <button>Action</button>
+              </div>
+            </article>
+            <div class="token-reference">md.sys.color.surface-container, md.sys.elevation.level1</div>
+          </div>
+          
+          <div class="variant-item">
+            <h4>Filled Card</h4>
+            <article class="card card-filled">
+              <div class="card-header">
+                <h3 class="card-title">Filled Card</h3>
+                <p class="card-subtitle">With background color</p>
+              </div>
+              <div class="card-content">
+                <p>Filled cards use a subtle background color without a shadow. Best for dense layouts.</p>
+              </div>
+              <div class="card-actions">
+                <button>Action</button>
+              </div>
+            </article>
+            <div class="token-reference">md.sys.color.surface-container-highest</div>
+          </div>
+          
+          <div class="variant-item">
+            <h4>Outlined Card</h4>
+            <article class="card card-outlined">
+              <div class="card-header">
+                <h3 class="card-title">Outlined Card</h3>
+                <p class="card-subtitle">With border</p>
+              </div>
+              <div class="card-content">
+                <p>Outlined cards have a thin border without shadow or background color. Good for low-emphasis content.</p>
+              </div>
+              <div class="card-actions">
+                <button>Action</button>
+              </div>
+            </article>
+            <div class="token-reference">md.sys.color.outline-variant</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Card with Media</h2>
+        <div class="variant-grid">
+          <div class="variant-item" style="grid-column: 1 / -1;">
+            <h4>Card with Image</h4>
+            <article class="card card-elevated">
+              <div class="card-media">
+                <span style="font-family: 'Material Symbols Outlined'; font-size: 48px; opacity: 0.5;">image</span>
+              </div>
+              <div class="card-header">
+                <h3 class="card-title">Card with Media</h3>
+                <p class="card-subtitle">Media area</p>
+              </div>
+              <div class="card-content">
+                <p>Media appears at the top of the card, full-width with maintained aspect ratio.</p>
+              </div>
+              <div class="card-actions">
+                <button>Action 1</button>
+                <button>Action 2</button>
+              </div>
+            </article>
+            <div class="token-reference">Media: full-width, aspect ratio maintained</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Card Structure</h2>
+        <div class="variant-grid">
+          <div class="variant-item" style="grid-column: 1 / -1;">
+            <h4>Complete Structure</h4>
+            <article class="card card-elevated">
+              <div class="card-header">
+                <h3 class="card-title">Card Title</h3>
+                <p class="card-subtitle">Subtitle text</p>
+              </div>
+              <div class="card-content">
+                <p>Card content goes here. This demonstrates the standard card structure with header, content, and actions. Content uses body-large typography.</p>
+              </div>
+              <div class="card-actions">
+                <button>Action 1</button>
+                <button>Action 2</button>
+              </div>
+            </article>
+            <div class="token-reference">Structure: Header → Content → Actions (16px padding, 16px gaps)</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Card States</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Default</h4>
+            <article class="card card-elevated">
+              <div class="card-content">
+                <p>Default elevation (level 1)</p>
+              </div>
+            </article>
+          </div>
+          <div class="variant-item">
+            <h4>Hover</h4>
+            <article class="card card-elevated" style="box-shadow: var(--md-sys-elevation-level2);">
+              <div class="card-content">
+                <p>Elevated on hover (level 2)</p>
+              </div>
+            </article>
+            <span class="state-label">Simulated</span>
+          </div>
+          <div class="variant-item">
+            <h4>Clickable</h4>
+            <article class="card card-elevated card-clickable" tabindex="0" role="button" aria-label="Clickable card">
+              <div class="card-content">
+                <p>Entire card is clickable. Pressed state scales to 0.98.</p>
+              </div>
+            </article>
+            <span class="state-label">Interactive</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

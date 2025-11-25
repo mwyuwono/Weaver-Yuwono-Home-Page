@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Switches - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <style>
+    .switch {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      border-radius: 10px;
+      background-color: var(--md-sys-color-outline);
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .switch::before {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: var(--md-sys-color-on-surface-variant);
+      left: 2px;
+      top: 2px;
+      transition: transform 0.2s;
+    }
+    .switch-checked {
+      background-color: var(--md-sys-color-primary);
+    }
+    .switch-checked::before {
+      background-color: var(--md-sys-color-on-primary);
+      transform: translateX(16px);
+    }
+    .switch:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+    }
+    .switch-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Switches</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>States</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Unchecked</h4>
+            <label class="switch-label">
+              <button class="switch" role="switch" aria-checked="false"></button>
+              <span>Label</span>
+            </label>
+            <div class="token-reference">md.sys.color.outline</div>
+          </div>
+          <div class="variant-item">
+            <h4>Checked</h4>
+            <label class="switch-label">
+              <button class="switch switch-checked" role="switch" aria-checked="true"></button>
+              <span>Label</span>
+            </label>
+            <div class="token-reference">md.sys.color.primary, md.sys.color.on-primary</div>
+          </div>
+          <div class="variant-item">
+            <h4>Disabled (Unchecked)</h4>
+            <label class="switch-label">
+              <button class="switch" role="switch" aria-checked="false" disabled></button>
+              <span>Label</span>
+            </label>
+          </div>
+          <div class="variant-item">
+            <h4>Disabled (Checked)</h4>
+            <label class="switch-label">
+              <button class="switch switch-checked" role="switch" aria-checked="true" disabled></button>
+              <span>Label</span>
+            </label>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

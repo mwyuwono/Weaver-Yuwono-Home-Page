@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Bars - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <!-- Google Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    .app-bar {
+      background: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      padding: 8px 16px;
+      box-shadow: var(--md-sys-elevation-level2);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      height: 64px;
+      border-radius: 0;
+    }
+    .app-bar-icon {
+      width: 24px;
+      height: 24px;
+      padding: 12px;
+      border-radius: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Material Symbols Outlined';
+      font-size: 24px;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .app-bar-icon:hover {
+      background: rgba(28, 27, 31, 0.08);
+    }
+    .app-bar-title {
+      flex: 1;
+      font-size: var(--md-sys-typescale-title-large-size);
+      font-family: var(--md-sys-typescale-title-large-font-family);
+      font-weight: var(--md-sys-typescale-title-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-title-large-letter-spacing);
+      line-height: var(--md-sys-typescale-title-large-line-height);
+      margin: 0;
+    }
+    .app-bar-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .app-bar-action {
+      width: 24px;
+      height: 24px;
+      padding: 12px;
+      border-radius: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--md-sys-color-on-surface);
+      font-family: 'Material Symbols Outlined';
+      font-size: 24px;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .app-bar-action:hover {
+      background: rgba(28, 27, 31, 0.08);
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>App Bars (Top)</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>Top App Bar</h2>
+        <div class="variant-grid">
+          <div class="variant-item" style="grid-column: 1 / -1;">
+            <h4>Standard App Bar</h4>
+            <div class="app-bar">
+              <button class="app-bar-icon" aria-label="Menu">menu</button>
+              <h2 class="app-bar-title">Page Title</h2>
+              <div class="app-bar-actions">
+                <button class="app-bar-action" aria-label="Search">search</button>
+                <button class="app-bar-action" aria-label="More">more_vert</button>
+              </div>
+            </div>
+            <div class="token-reference">md.sys.color.surface, md.sys.elevation.level2, 64px height</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>Variants</h2>
+        <div class="variant-grid">
+          <div class="variant-item" style="grid-column: 1 / -1;">
+            <h4>With Navigation Icon</h4>
+            <div class="app-bar">
+              <button class="app-bar-icon" aria-label="Menu">menu</button>
+              <h2 class="app-bar-title">Title</h2>
+            </div>
+          </div>
+          <div class="variant-item" style="grid-column: 1 / -1;">
+            <h4>With Actions</h4>
+            <div class="app-bar">
+              <h2 class="app-bar-title">Title</h2>
+              <div class="app-bar-actions">
+                <button class="app-bar-action" aria-label="Favorite">favorite</button>
+                <button class="app-bar-action" aria-label="Share">share</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

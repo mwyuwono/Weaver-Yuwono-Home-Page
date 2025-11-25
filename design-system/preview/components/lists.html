@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lists - Material Design 3 Preview</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../colors-config.js"></script>
+  <style>
+    .list {
+      background: var(--md-sys-color-surface);
+      list-style: none;
+      padding: 8px 0;
+      margin: 0;
+      border-radius: 4px;
+    }
+    .list-item {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 16px;
+      cursor: pointer;
+    }
+    .list-item-single { height: 48px; }
+    .list-item-two { height: 64px; }
+    .list-item-three { height: 88px; }
+    .list-item:hover {
+      background: rgba(28, 27, 31, 0.08);
+    }
+    .list-item-selected {
+      background: var(--md-sys-color-secondary-container);
+    }
+    .list-leading {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .list-content {
+      flex: 1;
+    }
+    .list-primary {
+      color: var(--md-sys-color-on-surface);
+      font-size: var(--md-sys-typescale-body-large-size);
+      font-family: var(--md-sys-typescale-body-large-font-family);
+      font-weight: var(--md-sys-typescale-body-large-font-weight);
+      letter-spacing: var(--md-sys-typescale-body-large-letter-spacing);
+      line-height: var(--md-sys-typescale-body-large-line-height);
+    }
+    .list-secondary {
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: var(--md-sys-typescale-body-medium-size);
+      font-family: var(--md-sys-typescale-body-medium-font-family);
+      font-weight: var(--md-sys-typescale-body-medium-font-weight);
+      letter-spacing: var(--md-sys-typescale-body-medium-letter-spacing);
+      line-height: var(--md-sys-typescale-body-medium-line-height);
+      margin-top: 4px;
+    }
+    .list-tertiary {
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 12px;
+      font-family: var(--md-sys-typescale-meta-font-family);
+      font-weight: var(--md-sys-typescale-meta-font-weight);
+      letter-spacing: var(--md-sys-typescale-meta-letter-spacing);
+      line-height: var(--md-sys-typescale-meta-line-height);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <header class="preview-header">
+      <h1>Lists</h1>
+      <nav class="preview-nav">
+        <a href="../index.html">← Back to Components</a>
+        <a href="../colors.html">Colors</a>
+        <a href="../icons.html">Icons</a>
+        <a href="../typography.html">Typography</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="preview-section">
+        <h2>Variants</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Single-line</h4>
+            <ul class="list">
+              <li class="list-item list-item-single">
+                <span class="list-leading">📄</span>
+                <div class="list-content">
+                  <div class="list-primary">Single-line item</div>
+                </div>
+              </li>
+            </ul>
+            <div class="token-reference">48px height</div>
+          </div>
+          <div class="variant-item">
+            <h4>Two-line</h4>
+            <ul class="list">
+              <li class="list-item list-item-two">
+                <span class="list-leading">📄</span>
+                <div class="list-content">
+                  <div class="list-primary">Two-line item</div>
+                  <div class="list-secondary">Secondary text</div>
+                </div>
+              </li>
+            </ul>
+            <div class="token-reference">64px height</div>
+          </div>
+          <div class="variant-item">
+            <h4>Three-line</h4>
+            <ul class="list">
+              <li class="list-item list-item-three">
+                <span class="list-leading">📄</span>
+                <div class="list-content">
+                  <div class="list-primary">Three-line item</div>
+                  <div class="list-secondary">Secondary text</div>
+                  <div class="list-tertiary">Tertiary text</div>
+                </div>
+              </li>
+            </ul>
+            <div class="token-reference">88px height</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>States</h2>
+        <div class="variant-grid">
+          <div class="variant-item">
+            <h4>Default</h4>
+            <ul class="list">
+              <li class="list-item list-item-single">
+                <span class="list-leading">📄</span>
+                <div class="list-content">
+                  <div class="list-primary">Default item</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="variant-item">
+            <h4>Selected</h4>
+            <ul class="list">
+              <li class="list-item list-item-single list-item-selected">
+                <span class="list-leading">📄</span>
+                <div class="list-content">
+                  <div class="list-primary">Selected item</div>
+                </div>
+              </li>
+            </ul>
+            <div class="token-reference">md.sys.color.secondary-container</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
