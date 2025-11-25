@@ -1,12 +1,29 @@
-# Drawings & Renderings
+# Weaver-Yuwono Family Website
 
-A portfolio site showcasing architectural drawings and renderings.
+This repository contains two websites:
+
+1. **Main Landing Page** ([weaver-yuwono.com](https://weaver-yuwono.com))
+   - Animated landing page with video background and gradient effects
+   - Avatar tiles linking to LinkedIn profiles
+
+2. **Projects Portfolio** ([matt.weaver-yuwono.com](https://matt.weaver-yuwono.com))
+   - Portfolio site showcasing architectural drawings and renderings
+   - Material Design 3 design system
 
 ## Setup
 
-### Design System
+### Deployment
 
-This project uses the Material Design 3 design system. To set up:
+This project is deployed to Vercel with **auto-deployment enabled**. Every push to the `main` branch automatically triggers a deployment.
+
+To manually deploy:
+```bash
+vercel --prod
+```
+
+### Design System (Projects Portfolio Only)
+
+The projects portfolio uses the Material Design 3 design system. To set up:
 
 ```bash
 # Add design system as git submodule
@@ -22,18 +39,26 @@ Once the design system is installed, design tokens will be automatically loaded 
 
 ```
 /
-├── index.html              # Main page
-├── styles.css              # Global styles (layout, reset, utilities)
-├── components/             # Reusable UI components
-│   ├── project-card/       # Project card component
+├── index.html              # Main landing page (weaver-yuwono.com)
+├── styles.css              # Main landing page styles
+├── Fat-Logo.svg           # Logo for main page
+├── bloom_loop.mp4         # Background video
+├── Stanton's Headshot.jpg # Avatar images
+├── McK Headshot Cropped.jpg
+├── projects/              # Portfolio subdirectory (matt.weaver-yuwono.com)
+│   ├── index.html         # Portfolio page
+│   └── project-card.js    # Project card component (with relative paths)
+├── components/            # Shared components
+│   ├── project-card/      # Original project card component
 │   │   ├── project-card.css
 │   │   └── project-card.js
 │   └── README.md          # Component architecture guidelines
-├── design-system/         # Design system (git submodule)
+├── design-system/         # Material Design 3 design system (git submodule)
 ├── assets/
-│   ├── images/             # Image assets (logo, project images)
-│   └── pdfs/               # PDF files (project documents)
-└── README.md              # This file
+│   ├── images/            # Image assets (logo, project images)
+│   └── pdfs/              # PDF files (project documents)
+├── vercel.json            # Vercel configuration
+└── .vercel/               # Vercel project settings (gitignored)
 ```
 
 ## Assets
