@@ -6,7 +6,7 @@
 
 /* Project Card */
 .project-card {
-  background-color: var(--md-sys-color-surface-container); 
+  background-color: var(--md-sys-color-surface-container);
   color: var(--md-sys-color-on-surface-variant);
   text-align: center;
   cursor: pointer;
@@ -79,6 +79,7 @@
   border-radius: 0;
   display: flex;
   width: 100%;
+  max-width: 45svw;
 }
 
 /* Responsive Breakpoints */
@@ -124,4 +125,3 @@
     align-self: stretch;
   }
 }
-
