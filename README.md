@@ -1,14 +1,14 @@
 # Weaver-Yuwono Family Website
 
-This repository contains two websites:
+This repository contains the Weaver-Yuwono family website with two pages:
 
 1. **Main Landing Page** ([weaver-yuwono.com](https://weaver-yuwono.com))
    - Animated landing page with video background and gradient effects
    - Avatar tiles linking to LinkedIn profiles
 
-2. **Projects Portfolio** ([matt.weaver-yuwono.com](https://matt.weaver-yuwono.com))
-   - Portfolio site showcasing architectural drawings and renderings
-   - Material Design 3 design system
+2. **Projects Portfolio** ([weaver-yuwono.com/projects/](https://weaver-yuwono.com/projects/))
+   - Portfolio page showcasing architectural drawings and renderings
+   - Material Design 3 design system with modular component architecture
 
 ## Setup
 
@@ -39,17 +39,17 @@ Once the design system is installed, design tokens will be automatically loaded 
 
 ```
 /
-├── index.html              # Main landing page (weaver-yuwono.com)
-├── styles.css              # Main landing page styles
-├── Fat-Logo.svg           # Logo for main page
+├── index.html              # Main landing page
+├── styles.css              # Landing page styles (video, gradients, avatars)
+├── Fat-Logo.svg           # Main logo
 ├── bloom_loop.mp4         # Background video
 ├── Stanton's Headshot.jpg # Avatar images
 ├── McK Headshot Cropped.jpg
-├── projects/              # Portfolio subdirectory (matt.weaver-yuwono.com)
-│   ├── index.html         # Portfolio page
-│   └── project-card.js    # Project card component (with relative paths)
-├── components/            # Shared components
-│   ├── project-card/      # Original project card component
+├── projects/              # Portfolio page directory
+│   ├── index.html         # Portfolio page (design system + component CSS only)
+│   └── project-card.js    # Project card component with relative paths
+├── components/            # Modular components
+│   ├── project-card/      # Project card component
 │   │   ├── project-card.css
 │   │   └── project-card.js
 │   └── README.md          # Component architecture guidelines
@@ -57,7 +57,7 @@ Once the design system is installed, design tokens will be automatically loaded 
 ├── assets/
 │   ├── images/            # Image assets (logo, project images)
 │   └── pdfs/              # PDF files (project documents)
-├── vercel.json            # Vercel configuration
+├── vercel.json            # Vercel auto-deployment configuration
 └── .vercel/               # Vercel project settings (gitignored)
 ```
 

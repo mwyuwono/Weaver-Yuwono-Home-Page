@@ -4,20 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a dual-site repository for the Weaver-Yuwono family website:
+This repository contains the Weaver-Yuwono family website with two pages:
 
-1. **Main Landing Page** (`/index.html`): Animated landing page at [weaver-yuwono.com](https://weaver-yuwono.com) featuring:
+1. **Main Landing Page** (`/index.html`) at [weaver-yuwono.com](https://weaver-yuwono.com):
    - Dynamic video background with bloom effect
    - Animated gradient overlays
    - Avatar tiles linking to LinkedIn profiles (Stanton and Matt)
    - Custom fonts (Playfair Display, Inter)
 
-2. **Projects Portfolio** (`/projects/`): Portfolio page at [matt.weaver-yuwono.com](https://matt.weaver-yuwono.com) featuring:
+2. **Projects Portfolio** (`/projects/index.html`) at [weaver-yuwono.com/projects/](https://weaver-yuwono.com/projects/):
    - Material Design 3 design system
    - Project card grid for architectural drawings and renderings
-   - Modular component architecture
+   - Modular component architecture (project-card component)
 
-Both sites are deployed via Vercel with auto-deployment enabled and hosted in an iCloud-synced directory.
+Deployed via Vercel with auto-deployment enabled. Repository stored in iCloud Drive for sync across devices.
 
 ## Important Setup Notes
 
@@ -49,26 +49,11 @@ vercel --prod
 
 ### Domain Configuration
 
-The project is configured for two domains:
-- **weaver-yuwono.com** → serves `/index.html` (main landing page)
-- **matt.weaver-yuwono.com** → serves `/projects/index.html` (portfolio page)
+The project uses a single domain:
+- **weaver-yuwono.com** → main landing page
+- **weaver-yuwono.com/projects/** → portfolio page
 
-To configure domains in Vercel:
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard) → weaver-yuwono project → Settings → Domains
-2. Add both domains and configure DNS records as instructed
-3. For the subdomain (matt.weaver-yuwono.com), you may need to add a rewrite rule (see Deployment Notes below)
-
-### Deployment Notes
-
-If the projects subdomain isn't automatically routing to `/projects/`, you can add a `vercel.json` rewrite rule:
-
-```json
-{
-  "rewrites": [
-    { "source": "/projects/(.*)", "destination": "/projects/$1" }
-  ]
-}
-```
+No special Vercel configuration is needed - standard static file serving handles both pages.
 
 ## CSS Modification Policy
 
@@ -88,30 +73,31 @@ Only modify CSS when:
 
 ```
 /
-├── index.html              # Main landing page (weaver-yuwono.com)
-├── styles.css              # Main landing page styles
-├── Fat-Logo.svg           # Logo for main page
-├── bloom_loop.mp4         # Background video for main page
-├── Stanton's Headshot.jpg # Avatar image
-├── McK Headshot Cropped.jpg # Avatar image
-├── projects/              # Portfolio subdirectory (matt.weaver-yuwono.com)
-│   ├── index.html         # Portfolio page
-│   └── project-card.js    # Project card component (with relative paths)
-├── components/            # Shared components
-│   └── project-card/      # Original project card component
-├── design-system/         # Material Design 3 design system
+├── index.html              # Main landing page
+├── styles.css              # Landing page styles (video, gradients, avatars)
+├── Fat-Logo.svg           # Main logo
+├── bloom_loop.mp4         # Background video
+├── Stanton's Headshot.jpg # Avatar images
+├── McK Headshot Cropped.jpg
+├── projects/              # Portfolio page
+│   ├── index.html         # Portfolio page (uses design system + component CSS only)
+│   └── project-card.js    # Project card component with relative paths
+├── components/            # Modular components
+│   └── project-card/      # Project card component
+│       ├── project-card.css
+│       └── project-card.js
+├── design-system/         # Material Design 3 design system (git submodule)
 ├── assets/                # Shared assets
-│   ├── images/            # Images for projects
+│   ├── images/            # Project images and logos
 │   └── pdfs/              # Project PDFs
-├── vercel.json            # Vercel configuration
+├── vercel.json            # Vercel auto-deployment configuration
 └── .vercel/               # Vercel project settings (gitignored)
 ```
 
-### File Structure Considerations
+### File Structure Notes
 
-- **Main landing page** files are in the root directory
-- **Projects portfolio** files are in `/projects/` subdirectory with relative paths (`../`)
-- All asset paths in `/projects/` use parent directory references
-- Ensure all new files respect the iCloud-safe .gitignore configuration
-- Follow Vercel deployment best practices
-- `.vercel/` directory is gitignored and managed by Vercel CLI
+- **Main landing page**: Root directory with `styles.css` for animated backgrounds
+- **Projects portfolio**: `/projects/` directory with modular component architecture
+- **CSS separation**: Landing page uses `styles.css`, projects page uses only design system + component CSS
+- **Relative paths**: Files in `/projects/` reference parent assets with `../`
+- **iCloud safe**: .gitignore excludes `.icloud` and `.DS_Store*` files
