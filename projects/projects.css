@@ -16,7 +16,8 @@ body {
   min-height: 100%;
   font-family: Arial, sans-serif;
   font-size: var(--md-sys-typescale-body-medium, 14px);
-  line-height: 1.43; /* 20px / 14px */
+  line-height: 1.43;
+  /* 20px / 14px */
 }
 
 img {
@@ -74,7 +75,7 @@ a:hover {
   justify-content: center;
   align-self: stretch;
   align-items: center;
-  min-height: 90vh;
+  height: 100svh;
   padding: var(--md-sys-spacing-xxl, 48px);
   font-family: Palatino Linotype, Book Antiqua, Palatino, serif;
   display: flex;
