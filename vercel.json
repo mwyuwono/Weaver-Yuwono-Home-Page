@@ -7,17 +7,5 @@
   "github": {
     "silent": false,
     "autoAlias": true
-  },
-  "rewrites": [
-    {
-      "source": "/:path*",
-      "destination": "/matt/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "matt.weaver-yuwono.com"
-        }
-      ]
-    }
-  ]
+  }
 }
