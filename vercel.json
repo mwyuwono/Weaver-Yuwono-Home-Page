@@ -10,8 +10,8 @@
   },
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/projects-root.html",
+      "source": "/:path*",
+      "destination": "/matt/:path*",
       "has": [
         {
           "type": "host",
