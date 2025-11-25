@@ -59,6 +59,7 @@
 /* Project Card Subtitle */
 .project-card__subtitle {
   color: var(--md-sys-color-primary);
+  opacity: 0.4;
   text-transform: uppercase;
   justify-content: center;
   align-items: center;
@@ -106,6 +107,7 @@
     grid-row-gap: var(--md-sys-spacing-xs, 8px);
     padding-top: var(--md-sys-spacing-sm, 16px);
     padding-bottom: var(--md-sys-spacing-sm, 16px);
+    padding-left: var(--md-sys-spacing-xs, 12px);
   }
 
   .project-card {
