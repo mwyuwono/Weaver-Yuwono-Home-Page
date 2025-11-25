@@ -10,6 +10,16 @@
   },
   "rewrites": [
     {
+      "source": "/",
+      "destination": "/projects/index.html",
+      "has": [
+        {
+          "type": "host",
+          "value": "matt.weaver-yuwono.com"
+        }
+      ]
+    },
+    {
       "source": "/:path*",
       "destination": "/projects/:path*",
       "has": [
