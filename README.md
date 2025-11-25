@@ -41,35 +41,43 @@ Once the design system is installed, design tokens will be automatically loaded 
 /
 ├── index.html              # Main landing page
 ├── styles.css              # Landing page styles (video, gradients, avatars)
-├── Fat-Logo.svg           # Main logo
-├── bloom_loop.mp4         # Background video
-├── Stanton's Headshot.jpg # Avatar images
-├── McK Headshot Cropped.jpg
+├── landing-assets/         # Landing page assets
+│   ├── flow_loop.mp4      # Background video (active)
+│   ├── bloom_loop.mp4     # Alternative background video
+│   ├── logo.svg           # Main logo
+│   ├── stanton-headshot.jpg
+│   └── matt-headshot.jpg
 ├── projects/              # Portfolio page directory
-│   ├── index.html         # Portfolio page (design system + component CSS only)
-│   └── project-card.js    # Project card component with relative paths
-├── components/            # Modular components
+│   ├── index.html         # Portfolio page
+│   ├── projects.css       # Portfolio page layout styles
+│   └── assets/            # Projects-specific assets
+│       ├── images/        # Project images and logo
+│       └── pdfs/          # Project PDFs
+├── components/            # Modular components (shared)
 │   ├── project-card/      # Project card component
 │   │   ├── project-card.css
 │   │   └── project-card.js
 │   └── README.md          # Component architecture guidelines
 ├── design-system/         # Material Design 3 design system (git submodule)
-├── assets/
-│   ├── images/            # Image assets (logo, project images)
-│   └── pdfs/              # PDF files (project documents)
 ├── vercel.json            # Vercel auto-deployment configuration
 └── .vercel/               # Vercel project settings (gitignored)
 ```
 
 ## Assets
 
-All assets have been imported from Webflow and are stored locally:
+All assets are organized by page ownership:
 
-- **Logo**: `assets/images/wy-logo.svg`
-- **Project Images**: All responsive image variants in `assets/images/`
-- **PDFs**: Project documents in `assets/pdfs/`
+**Landing Page** (`landing-assets/`):
+- Videos: `flow_loop.mp4` (active), `bloom_loop.mp4` (alternative)
+- Logo: `logo.svg`
+- Headshots: `stanton-headshot.jpg`, `matt-headshot.jpg`
 
-The site no longer depends on Webflow CDN URLs - all assets are self-hosted.
+**Projects Portfolio** (`projects/assets/`):
+- Logo: `images/wy-logo.svg`
+- Project Images: All responsive image variants in `images/`
+- PDFs: Project documents in `pdfs/`
+
+All assets imported from Webflow are now self-hosted.
 
 ## Component Architecture
 

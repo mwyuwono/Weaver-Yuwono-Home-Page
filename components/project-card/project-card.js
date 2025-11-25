@@ -10,20 +10,20 @@
 const projects = [
   {
     title: 'Rome Renovation',
-    pdfUrl: 'assets/pdfs/rome-renovation.pdf',
+    pdfUrl: '../projects/assets/pdfs/rome-renovation.pdf',
     image: {
-      src: 'assets/images/rome-renovation.jpg',
-      srcset: 'assets/images/rome-renovation-500.jpg 500w, assets/images/rome-renovation-800.jpg 800w, assets/images/rome-renovation.jpg 999w',
+      src: '../projects/assets/images/rome-renovation.jpg',
+      srcset: '../projects/assets/images/rome-renovation-500.jpg 500w, ../projects/assets/images/rome-renovation-800.jpg 800w, ../projects/assets/images/rome-renovation.jpg 999w',
       sizes: '(max-width: 479px) 30vw, (max-width: 767px) 35vw, (max-width: 991px) 24vw, 20vw',
       alt: 'Rome Renovation'
     }
   },
   {
     title: 'Connecticut Cottage Design',
-    pdfUrl: 'assets/pdfs/connecticut-cottage.pdf',
+    pdfUrl: '../projects/assets/pdfs/connecticut-cottage.pdf',
     image: {
-      src: 'assets/images/103smain.jpeg',
-      srcset: 'assets/images/103smain.jpeg',
+      src: '../projects/assets/images/103smain.jpeg',
+      srcset: '../projects/assets/images/103smain.jpeg',
       sizes: '(max-width: 479px) 30vw, (max-width: 767px) 35vw, (max-width: 991px) 24vw, 20vw',
       alt: 'Connecticut Cottage Design'
     }

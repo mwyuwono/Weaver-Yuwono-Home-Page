@@ -75,29 +75,39 @@ Only modify CSS when:
 /
 ├── index.html              # Main landing page
 ├── styles.css              # Landing page styles (video, gradients, avatars)
-├── Fat-Logo.svg           # Main logo
-├── bloom_loop.mp4         # Background video
-├── Stanton's Headshot.jpg # Avatar images
-├── McK Headshot Cropped.jpg
+├── landing-assets/         # Landing page assets
+│   ├── flow_loop.mp4      # Background video (active)
+│   ├── bloom_loop.mp4     # Alternative background video
+│   ├── logo.svg           # Main logo
+│   ├── stanton-headshot.jpg
+│   └── matt-headshot.jpg
 ├── projects/              # Portfolio page
-│   ├── index.html         # Portfolio page (uses design system + component CSS only)
-│   └── project-card.js    # Project card component with relative paths
-├── components/            # Modular components
+│   ├── index.html         # Portfolio page
+│   ├── projects.css       # Portfolio page layout styles
+│   └── assets/            # Projects-specific assets
+│       ├── images/        # Project images and logo
+│       └── pdfs/          # Project PDFs
+├── components/            # Modular components (shared)
 │   └── project-card/      # Project card component
 │       ├── project-card.css
 │       └── project-card.js
 ├── design-system/         # Material Design 3 design system (git submodule)
-├── assets/                # Shared assets
-│   ├── images/            # Project images and logos
-│   └── pdfs/              # Project PDFs
 ├── vercel.json            # Vercel auto-deployment configuration
-└── .vercel/               # Vercel project settings (gitignored)
+├── .vercel/               # Vercel project settings (gitignored)
+├── CLAUDE.md              # Project instructions for Claude Code
+├── README.md              # Project documentation
+└── .gitignore             # Git ignore rules (iCloud-safe)
 ```
 
 ### File Structure Notes
 
-- **Main landing page**: Root directory with `styles.css` for animated backgrounds
-- **Projects portfolio**: `/projects/` directory with modular component architecture
-- **CSS separation**: Landing page uses `styles.css`, projects page uses only design system + component CSS
-- **Relative paths**: Files in `/projects/` reference parent assets with `../`
+- **Landing page**: Root directory with assets in `landing-assets/`
+- **Projects portfolio**: `/projects/` directory with self-contained `assets/` subdirectory
+- **Component architecture**: Shared components in `/components/` loaded by both pages
+- **CSS separation**:
+  - Landing: `styles.css` (video, gradients, avatars)
+  - Projects: `projects/projects.css` (layout, grid) + design system + component CSS
+- **Asset ownership**: Clear separation between landing and projects assets
+- **Video files**: Both `flow_loop.mp4` and `bloom_loop.mp4` kept for easy swapping
+- **File naming**: Consistent kebab-case for all new/renamed files
 - **iCloud safe**: .gitignore excludes `.icloud` and `.DS_Store*` files
