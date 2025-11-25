@@ -7,5 +7,7 @@
   "github": {
     "silent": false,
     "autoAlias": true
-  }
+  },
+  "trailingSlash": true,
+  "cleanUrls": true
 }
