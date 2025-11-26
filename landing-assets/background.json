@@ -1,0 +1,54 @@
+{
+    "baseGradient": {
+        "color1": "#3b7dba",
+        "color2": "#84a744",
+        "direction": "145deg"
+    },
+    "blob1": {
+        "innerColor": "rgba(187, 179, 99, 0.8)",
+        "outerColor": "rgba(3, 84, 19, 0.4)",
+        "opacity": 1,
+        "size": 700,
+        "positionX": 5,
+        "positionY": 10,
+        "blur": 80,
+        "animationSpeed": 16
+    },
+    "blob2": {
+        "innerColor": "rgba(122, 98, 112, 0.48)",
+        "outerColor": "rgba(122, 98, 112, 0.52)",
+        "opacity": 1,
+        "size": 650,
+        "positionX": 10,
+        "positionY": 5,
+        "blur": 80,
+        "animationSpeed": 14
+    },
+    "blob3": {
+        "innerColor": "rgba(230, 203, 173, 0.75)",
+        "outerColor": "rgba(251, 186, 111, 0.35)",
+        "opacity": 1,
+        "size": 600,
+        "positionX": 0,
+        "positionY": 0,
+        "blur": 80,
+        "animationSpeed": 12
+    },
+    "blob4": {
+        "innerColor": "rgba(234, 242, 130, 0.65)",
+        "outerColor": "rgba(22, 209, 234, 0.3)",
+        "opacity": 1,
+        "size": 620,
+        "positionX": 15,
+        "positionY": 15,
+        "blur": 80,
+        "animationSpeed": 15
+    },
+    "avatarGradient": {
+        "color1": "#1b2637",
+        "color2": "#2f344a",
+        "color3": "#4b3b47",
+        "color4": "#7a6270",
+        "direction": "145deg"
+    }
+}

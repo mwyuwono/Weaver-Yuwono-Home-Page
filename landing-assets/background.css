@@ -1,0 +1,120 @@
+/* Mesh gradient background container */
+.mesh-gradient-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: linear-gradient(145deg, #3b7dba 0%, #84a744 100%);
+    overflow: hidden;
+}
+
+/* Mesh gradient blobs */
+.mesh-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    /* Using blob1 blur as standard, or could be specific */
+    mix-blend-mode: normal;
+    will-change: transform;
+}
+
+.mesh-blob-1 {
+    width: 700px;
+    height: 700px;
+    bottom: 10%;
+    left: 5%;
+    background: radial-gradient(circle, rgba(187, 179, 99, 0.8) 0%, rgba(3, 84, 19, 0.4) 40%, transparent 70%);
+    animation: meshFloat1 16s ease-in-out infinite;
+    filter: blur(80px);
+}
+
+.mesh-blob-2 {
+    width: 650px;
+    height: 650px;
+    top: 5%;
+    right: 10%;
+    background: radial-gradient(circle, rgba(122, 98, 112, 0.48) 0%, rgba(122, 98, 112, 0.52) 40%, transparent 70%);
+    animation: meshFloat2 14s ease-in-out infinite;
+    filter: blur(80px);
+}
+
+.mesh-blob-3 {
+    width: 600px;
+    height: 600px;
+    top: 50%;
+    left: 50%;
+    margin-top: 0px;
+    margin-left: 0px;
+    background: radial-gradient(circle, rgba(230, 203, 173, 0.75) 0%, rgba(251, 186, 111, 0.35) 40%, transparent 70%);
+    animation: meshFloat3 12s ease-in-out infinite;
+    filter: blur(80px);
+}
+
+.mesh-blob-4 {
+    width: 620px;
+    height: 620px;
+    bottom: 15%;
+    right: 15%;
+    background: radial-gradient(circle, rgba(234, 242, 130, 0.65) 0%, rgba(22, 209, 234, 0.3) 40%, transparent 70%);
+    animation: meshFloat4 15s ease-in-out infinite;
+    filter: blur(80px);
+}
+
+/* Avatar card gradient variable */
+:root {
+    --gradient-3: linear-gradient(145deg, #1b2637 0%, #2f344a 35%, #4b3b47 70%, #7a6270 100%);
+}
+
+@keyframes meshFloat1 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+}
+
+@keyframes meshFloat2 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(-20px, 20px) rotate(180deg);
+    }
+}
+
+@keyframes meshFloat3 {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+@keyframes meshFloat4 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(-20px, -20px) scale(1.05);
+    }
+}
