@@ -1,1 +1,5 @@
 .vercel
+
+# MCP Configuration (contains OAuth tokens - never commit!)
+.mcp.json
+**/.mcp.json
