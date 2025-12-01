@@ -1,11 +1,11 @@
 /**
- * Project Card Component Styles
- * Aligned with Webflow Card component (Project variant)
- * Matches visual appearance exactly
+ * Profile Card Component Styles
+ * Variant of project-card for displaying person profiles
+ * Matches Webflow Card component (Profile variant)
  */
 
-/* Project Card - Main wrapper (Link element in Webflow) */
-.project-card {
+/* Profile Card - Main wrapper (not a link, just a container) */
+.profile-card {
   position: relative;
   display: flex;
   width: 25svw;
@@ -33,22 +33,10 @@
   line-height: 1.5em;
   font-weight: 400;
   text-align: center;
-  text-decoration: none;
-  cursor: pointer;
 }
 
-.project-card:hover {
-  border-top-color: #304634;
-  border-right-color: #304634;
-  border-bottom-color: #304634;
-  border-left-color: #304634;
-  background-color: hsla(0, 0.00%, 100.00%, 1.00);
-  outline-color: #304634;
-  color: #304634;
-}
-
-/* Project Card Image Wrapper (Flex Block 5) */
-.project-card__image-wrapper {
+/* Profile Card Image Wrapper */
+.profile-card__image-wrapper {
   display: flex;
   flex-direction: column;
   align-self: stretch;
@@ -56,15 +44,15 @@
   border-radius: 8px;
 }
 
-/* Project Card Image (card-image + full-bleed combo) */
-.project-card__image {
+/* Profile Card Image */
+.profile-card__image {
   width: 100%;
   border-radius: 8px;
   flex-grow: 1;
 }
 
-/* Project Card Content Wrapper (card-content-wrap + Project combo) */
-.project-card__content-wrap {
+/* Profile Card Content Wrapper */
+.profile-card__content-wrap {
   display: flex;
   flex-direction: column;
   padding-top: 24px;
@@ -87,8 +75,8 @@
   text-align: left;
 }
 
-/* Project Card Content */
-.project-card__content {
+/* Profile Card Content */
+.profile-card__content {
   display: flex;
   flex-direction: column;
   align-self: stretch;
@@ -99,16 +87,16 @@
   grid-row-gap: 1em;
 }
 
-/* Project Card Header */
-.project-card__header {
+/* Profile Card Header */
+.profile-card__header {
   display: flex;
   flex-direction: column;
   grid-column-gap: 0.3em;
   grid-row-gap: 0.3em;
 }
 
-/* Project Card Title (card-title + Small combo) */
-.project-card__title {
+/* Profile Card Title (Large variant) */
+.profile-card__title {
   font-family: Bodoni Moda, serif;
   color: hsla(68, 19.36%, 8.94%, 1.00);
   font-size: 1.8rem;
@@ -116,14 +104,14 @@
   font-weight: 500;
 }
 
-/* Project Card Subtitle */
-.project-card__subtitle {
+/* Profile Card Subtitle (Company) */
+.profile-card__subtitle {
   font-size: 1.25em;
   line-height: 1.3em;
 }
 
-/* Project Card Helper */
-.project-card__helper {
+/* Profile Card Links Container */
+.profile-card__links {
   display: flex;
   margin-top: auto;
   justify-content: start;
@@ -131,6 +119,13 @@
   flex-grow: 0;
   flex-shrink: 0;
   flex-basis: auto;
+  grid-column-gap: 1em;
+  grid-row-gap: 0.5em;
+  flex-wrap: wrap;
+}
+
+/* Profile Card Helper Link */
+.profile-card__link {
   font-family: Noto Sans, sans-serif;
   color: hsla(50, 6.64%, 61.44%, 1.00);
   font-size: 0.75rem;
@@ -138,13 +133,20 @@
   font-weight: 400;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
-/* Responsive Breakpoints - Matching Webflow exactly */
+.profile-card__link:hover {
+  color: #304634;
+  text-decoration: underline;
+}
+
+/* Responsive Breakpoints */
 
 /* Medium breakpoint (Tablet, max-width: 991px) */
 @media screen and (max-width: 991px) {
-  .project-card {
+  .profile-card {
     width: 33svw;
     align-self: stretch;
     flex-grow: 1;
@@ -152,17 +154,17 @@
     flex-basis: 0%;
   }
 
-  .project-card__image-wrapper {
+  .profile-card__image-wrapper {
     flex-grow: 1;
     flex-shrink: 1;
   }
 
-  .project-card__image {
+  .profile-card__image {
     position: relative;
     object-fit: cover;
   }
 
-  .project-card__content-wrap {
+  .profile-card__content-wrap {
     flex-grow: 1;
     flex-shrink: 1;
     flex-basis: 0%;
@@ -171,25 +173,25 @@
 
 /* Small breakpoint (Mobile Landscape, max-width: 767px) */
 @media screen and (max-width: 767px) {
-  .project-card {
+  .profile-card {
     width: auto;
     flex-direction: row;
     flex-wrap: nowrap;
   }
 
-  .project-card__image-wrapper {
+  .profile-card__image-wrapper {
     flex-grow: 0;
     flex-shrink: 0;
     flex-basis: auto;
   }
 
-  .project-card__image {
+  .profile-card__image {
     max-height: 200px;
     aspect-ratio: 1/1;
     object-fit: cover;
   }
 
-  .project-card__content-wrap {
+  .profile-card__content-wrap {
     padding-top: 1.5em;
     padding-right: 1.5em;
     padding-bottom: 1.5em;
@@ -201,18 +203,18 @@
     grid-row-gap: 0.75em;
   }
 
-  .project-card__title {
+  .profile-card__title {
     font-size: 1.5rem;
   }
 
-  .project-card__helper {
+  .profile-card__links {
     margin-top: 0px;
   }
 }
 
 /* Tiny breakpoint (Mobile Portrait, max-width: 478px) */
 @media screen and (max-width: 478px) {
-  .project-card {
+  .profile-card {
     min-width: 40vw;
     padding: 8px;
     flex-direction: row;
@@ -224,7 +226,7 @@
     background-color: hsla(0, 0.00%, 100.00%, 1.00);
   }
 
-  .project-card__content-wrap {
+  .profile-card__content-wrap {
     padding: 8px;
     justify-content: flex-start;
     align-items: flex-start;
@@ -232,13 +234,13 @@
     grid-row-gap: 8px;
   }
 
-  .project-card__title {
+  .profile-card__title {
     font-size: 20px;
     line-height: 1.5em;
     text-align: left;
   }
 
-  .project-card__helper {
+  .profile-card__links {
     padding-top: 2px;
     padding-right: 8px;
     padding-bottom: 2px;
@@ -246,13 +248,11 @@
     line-height: 1.3em;
   }
 
-  .project-card__image {
+  .profile-card__image {
     width: 120px;
   }
 
-  .project-card__content-wrap {
+  .profile-card__content-wrap {
     background-color: transparent;
   }
-
-
 }

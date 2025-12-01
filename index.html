@@ -1,85 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weaver-Yuwono</title>
+    <!-- Design System Color Configuration (must load before stylesheets) -->
+    <script src="design-system/preview/colors-config.js"></script>
+    <!-- Design System Tokens -->
+    <link rel="stylesheet" href="design-system/tokens/material3.web.css">
+    <!-- Page Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Component Styles -->
+    <link rel="stylesheet" href="components/profile-card/profile-card.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600&family=Noto+Sans:wght@100;400&family=Noto+Serif:wght@400;600;800&family=Noto+Serif:ital,wght@1,300;1,600;1,800&display=swap" rel="stylesheet">
+    <!-- Component Scripts -->
+    <script src="components/profile-card/profile-card.js" defer></script>
 </head>
-
-<body data-element="page-body">
-    <!-- Mesh gradient background -->
-    <div class="mesh-gradient-container" data-element="background-container">
-        <div class="mesh-blob mesh-blob-1" data-element="blob" data-blob-id="1" data-blob-position="bottom-left"></div>
-        <div class="mesh-blob mesh-blob-2" data-element="blob" data-blob-id="2" data-blob-position="top-right"></div>
-        <div class="mesh-blob mesh-blob-3" data-element="blob" data-blob-id="3" data-blob-position="center"></div>
-        <div class="mesh-blob mesh-blob-4" data-element="blob" data-blob-id="4" data-blob-position="bottom-right"></div>
-    </div>
-
-    <div class="container" data-element="main-container">
-        <header class="header" data-element="site-header">
-            <img src="landing-assets/logo.svg" alt="Weaver-Yuwono Logo" class="logo" data-element="site-logo">
-            <h1 class="site-title" data-element="site-title">Weaver-Yuwono</h1>
+<body>
+    <div class="page-container" data-element="main-container">
+        <header class="site-header" data-element="site-header">
+            <img src="landing-assets/logo.svg" alt="Weaver-Yuwono Logo" class="site-logo" data-element="site-logo">
+            <div class="site-title" data-element="site-title">Weaver - Yuwono</div>
         </header>
-
-        <main class="main" data-element="main-content">
-            <div class="avatars-container" data-element="profiles-container">
-                <a href="https://www.linkedin.com/in/stantonyuwono/" class="avatar-link" data-element="profile-link" data-profile-id="stanton" target="_blank" rel="noopener noreferrer">
-                    <div class="avatar" data-element="profile-card" data-profile-id="stanton">
-                        <img src="landing-assets/stanton-headshot.jpg" alt="Stanton" class="avatar-image" data-element="profile-image" data-profile-id="stanton">
-                        <h2 class="avatar-title" data-element="profile-name" data-profile-id="stanton">Stanton</h2>
-                        <p class="avatar-subtitle" data-element="profile-company" data-profile-id="stanton">Mercer</p>
-                    </div>
-                </a>
-
-                <a href="https://www.linkedin.com/in/mattweaveryuwono/" class="avatar-link" data-element="profile-link" data-profile-id="matt" target="_blank" rel="noopener noreferrer">
-                    <div class="avatar" data-element="profile-card" data-profile-id="matt">
-                        <img src="landing-assets/matt-headshot.jpg" alt="Matt" class="avatar-image" data-element="profile-image" data-profile-id="matt">
-                        <h2 class="avatar-title" data-element="profile-name" data-profile-id="matt">Matt</h2>
-                        <p class="avatar-subtitle" data-element="profile-company" data-profile-id="matt">McKinsey & Company</p>
-                    </div>
-                </a>
+        <main class="cards-container" data-element="cards-container">
+            <div class="profile-grid">
+                <!-- Profile cards are rendered dynamically by profile-card.js -->
             </div>
         </main>
     </div>
-
-    <script>
-        // Animate avatar gradient overlays on page load
-        const avatarTiles = document.querySelectorAll('.avatar');
-        const avatarTransitionDuration = 20000; // 20 seconds for avatar gradients
-        const startOpacity = 0;
-        const avatarTargetOpacity = 1.0;
-        const startTime = Date.now();
-
-        function animateAvatars() {
-            const elapsed = Date.now() - startTime;
-            const avatarProgress = Math.min(elapsed / avatarTransitionDuration, 1);
-
-            // Ease-in-out for smoother transition
-            const avatarEaseProgress = avatarProgress < 0.5
-                ? 2 * avatarProgress * avatarProgress
-                : 1 - Math.pow(-2 * avatarProgress + 2, 2) / 2;
-
-            // Animate avatar tile gradient overlays
-            const avatarOpacity = startOpacity + (avatarTargetOpacity - startOpacity) * avatarEaseProgress;
-            avatarTiles.forEach(tile => {
-                tile.style.setProperty('--avatar-gradient-opacity', avatarOpacity);
-            });
-
-            if (avatarProgress < 1) {
-                requestAnimationFrame(animateAvatars);
-            }
-        }
-
-        // Start animation when page loads
-        window.addEventListener('load', () => {
-            animateAvatars();
-        });
-    </script>
 </body>
-
 </html>
