@@ -118,8 +118,10 @@
 
 /* Project Card Subtitle */
 .project-card__subtitle {
-  font-size: 1.25em;
+  font-size: 1.25rem;
+  font-style: italic;
   line-height: 1.3em;
+  opacity: 0.6;
 }
 
 /* Project Card Helper */
