@@ -5,27 +5,29 @@
 
 /**
  * Project data structure
- * @type {Array<{title: string, pdfUrl: string, image: {src: string, srcset: string, sizes: string, alt: string}}>}
+ * @type {Array<{title: string, location: string, pdfUrl: string, image: {src: string, srcset: string, sizes: string, alt: string}}>}
  */
 const projects = [
   {
-    title: 'Rome Renovation',
+    title: 'Historic Renovation',
+    location: 'Rome, GA',
     pdfUrl: '../projects/assets/pdfs/rome-renovation.pdf',
     image: {
       src: '../projects/assets/images/rome-renovation.jpg',
       srcset: '../projects/assets/images/rome-renovation-500.jpg 500w, ../projects/assets/images/rome-renovation-800.jpg 800w, ../projects/assets/images/rome-renovation.jpg 999w',
       sizes: '(max-width: 479px) 30vw, (max-width: 767px) 35vw, (max-width: 991px) 24vw, 20vw',
-      alt: 'Rome Renovation'
+      alt: 'Historic Renovation'
     }
   },
   {
-    title: 'Connecticut Cottage Design',
+    title: 'Architectural Design',
+    location: 'Sharon, CT',
     pdfUrl: '../projects/assets/pdfs/connecticut-cottage.pdf',
     image: {
       src: '../projects/assets/images/103smain.jpeg',
       srcset: '../projects/assets/images/103smain.jpeg',
       sizes: '(max-width: 479px) 30vw, (max-width: 767px) 35vw, (max-width: 991px) 24vw, 20vw',
-      alt: 'Connecticut Cottage Design'
+      alt: 'Architectural Design'
     }
   }
 ];
@@ -40,24 +42,48 @@ function createProjectCard(project) {
   card.href = project.pdfUrl;
   card.target = '_blank';
   card.className = 'project-card';
-  
+  card.setAttribute('data-element', 'card');
+
   // Content wrapper
+  const contentWrap = document.createElement('div');
+  contentWrap.className = 'project-card__content-wrap';
+
+  // Content
   const content = document.createElement('div');
   content.className = 'project-card__content';
-  
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'project-card__header';
+
   // Title
   const title = document.createElement('div');
   title.className = 'project-card__title';
   title.textContent = project.title;
-  
-  // Subtitle
+  title.setAttribute('data-element', 'card-title');
+
+  // Subtitle (location or other metadata)
   const subtitle = document.createElement('div');
   subtitle.className = 'project-card__subtitle';
-  subtitle.textContent = 'PDF download';
-  
-  content.appendChild(title);
-  content.appendChild(subtitle);
-  
+  subtitle.textContent = project.location || '';
+  subtitle.setAttribute('data-element', 'card-subtitle');
+
+  // Helper text
+  const helper = document.createElement('div');
+  helper.className = 'project-card__helper';
+  helper.textContent = 'PDF download';
+  helper.setAttribute('data-element', 'card-helper');
+
+  header.appendChild(title);
+  header.appendChild(subtitle);
+  content.appendChild(header);
+  content.appendChild(helper);
+  contentWrap.appendChild(content);
+
+  // Image wrapper (Flex Block)
+  const imageWrapper = document.createElement('div');
+  imageWrapper.className = 'project-card__image-wrapper';
+
   // Image
   const image = document.createElement('img');
   image.src = project.image.src;
@@ -66,10 +92,13 @@ function createProjectCard(project) {
   image.alt = project.image.alt;
   image.className = 'project-card__image';
   image.loading = 'lazy';
-  
-  card.appendChild(content);
-  card.appendChild(image);
-  
+  image.setAttribute('data-element', 'card-image');
+
+  imageWrapper.appendChild(image);
+
+  card.appendChild(contentWrap);
+  card.appendChild(imageWrapper);
+
   return card;
 }
 

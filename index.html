@@ -11,36 +11,36 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
+<body data-element="page-body">
     <!-- Mesh gradient background -->
-    <div class="mesh-gradient-container">
-        <div class="mesh-blob mesh-blob-1"></div>
-        <div class="mesh-blob mesh-blob-2"></div>
-        <div class="mesh-blob mesh-blob-3"></div>
-        <div class="mesh-blob mesh-blob-4"></div>
+    <div class="mesh-gradient-container" data-element="background-container">
+        <div class="mesh-blob mesh-blob-1" data-element="blob" data-blob-id="1" data-blob-position="bottom-left"></div>
+        <div class="mesh-blob mesh-blob-2" data-element="blob" data-blob-id="2" data-blob-position="top-right"></div>
+        <div class="mesh-blob mesh-blob-3" data-element="blob" data-blob-id="3" data-blob-position="center"></div>
+        <div class="mesh-blob mesh-blob-4" data-element="blob" data-blob-id="4" data-blob-position="bottom-right"></div>
     </div>
 
-    <div class="container">
-        <header class="header">
-            <img src="landing-assets/logo.svg" alt="Weaver-Yuwono Logo" class="logo">
-            <h1 class="site-title">Weaver-Yuwono</h1>
+    <div class="container" data-element="main-container">
+        <header class="header" data-element="site-header">
+            <img src="landing-assets/logo.svg" alt="Weaver-Yuwono Logo" class="logo" data-element="site-logo">
+            <h1 class="site-title" data-element="site-title">Weaver-Yuwono</h1>
         </header>
 
-        <main class="main">
-            <div class="avatars-container">
-                <a href="https://www.linkedin.com/in/stantonyuwono/" class="avatar-link" target="_blank" rel="noopener noreferrer">
-                    <div class="avatar">
-                        <img src="landing-assets/stanton-headshot.jpg" alt="Stanton" class="avatar-image">
-                        <h2 class="avatar-title">Stanton</h2>
-                        <p class="avatar-subtitle">Mercer</p>
+        <main class="main" data-element="main-content">
+            <div class="avatars-container" data-element="profiles-container">
+                <a href="https://www.linkedin.com/in/stantonyuwono/" class="avatar-link" data-element="profile-link" data-profile-id="stanton" target="_blank" rel="noopener noreferrer">
+                    <div class="avatar" data-element="profile-card" data-profile-id="stanton">
+                        <img src="landing-assets/stanton-headshot.jpg" alt="Stanton" class="avatar-image" data-element="profile-image" data-profile-id="stanton">
+                        <h2 class="avatar-title" data-element="profile-name" data-profile-id="stanton">Stanton</h2>
+                        <p class="avatar-subtitle" data-element="profile-company" data-profile-id="stanton">Mercer</p>
                     </div>
                 </a>
 
-                <a href="https://www.linkedin.com/in/mattweaveryuwono/" class="avatar-link" target="_blank" rel="noopener noreferrer">
-                    <div class="avatar">
-                        <img src="landing-assets/matt-headshot.jpg" alt="Matt" class="avatar-image">
-                        <h2 class="avatar-title">Matt</h2>
-                        <p class="avatar-subtitle">McKinsey & Company</p>
+                <a href="https://www.linkedin.com/in/mattweaveryuwono/" class="avatar-link" data-element="profile-link" data-profile-id="matt" target="_blank" rel="noopener noreferrer">
+                    <div class="avatar" data-element="profile-card" data-profile-id="matt">
+                        <img src="landing-assets/matt-headshot.jpg" alt="Matt" class="avatar-image" data-element="profile-image" data-profile-id="matt">
+                        <h2 class="avatar-title" data-element="profile-name" data-profile-id="matt">Matt</h2>
+                        <p class="avatar-subtitle" data-element="profile-company" data-profile-id="matt">McKinsey & Company</p>
                     </div>
                 </a>
             </div>

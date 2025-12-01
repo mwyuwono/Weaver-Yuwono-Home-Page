@@ -59,86 +59,156 @@ a:hover {
   --md-sys-typescale-title-large: 24px;
 }
 
-/* Page Container */
+/* Page Container - Matches Webflow main-page-container */
 .page-container {
-  width: 100%;
-  min-height: 100vh;
-}
-
-/* Hero Section */
-.hero-section {
-  grid-column-gap: var(--md-sys-spacing-lg, 32px);
-  grid-row-gap: var(--md-sys-spacing-lg, 32px);
-  background-color: var(--md-sys-color-surface-variant);
-  background-image: none;
-  flex-flow: column;
+  display: flex;
+  min-height: 100svh;
+  padding-top: 32px;
+  padding-right: 24px;
+  padding-bottom: 32px;
+  padding-left: 24px;
+  flex-direction: column;
   justify-content: center;
-  align-self: stretch;
+  flex-wrap: nowrap;
   align-items: center;
-  height: 100svh;
-  padding: var(--md-sys-spacing-xxl, 48px);
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0%;
+  grid-column-gap: 3em;
+  grid-row-gap: 3em;
+  background-image: linear-gradient(303deg, hsla(0, 0.00%, 0.00%, 0.00) 52%, hsla(49.999999999999915, 19.59%, 92.54%, 1.00)),
+    linear-gradient(180deg, #e4e2d8, hsla(49.999999999999915, 9.27%, 74.28%, 1.00));
   font-family: Palatino Linotype, Book Antiqua, Palatino, serif;
-  display: flex;
 }
 
-/* Header */
-.header {
-  grid-column-gap: var(--md-sys-spacing-xs, 8px);
-  grid-row-gap: var(--md-sys-spacing-xs, 8px);
-  flex-flow: column;
+/* Site Header - Matches Webflow Section Head Group */
+.site-header {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
+  flex-wrap: nowrap;
   align-items: center;
-  padding-top: var(--md-sys-spacing-xl, 40px);
-  padding-bottom: var(--md-sys-spacing-xl, 40px);
+  grid-column-gap: 1rem;
+  grid-row-gap: 1rem;
+}
+
+/* Site Logo - Matches Webflow wy logo */
+.site-logo {
+  height: 40px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: auto;
+}
+
+/* Site Title - Matches Webflow Text Block */
+.site-title {
+  font-family: Bodoni Moda, serif;
+  color: hsla(0, 1.35%, 15.13%, 1.00);
+  font-size: 0.85rem;
+  line-height: 1.4em;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Cards Container - Matches Webflow main */
+.cards-container {
   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: center;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: auto;
+  grid-column-gap: 1.5em;
+  grid-row-gap: 1.5em;
 }
 
-/* Logo */
-.logo {
-  flex: none;
-  height: 48px;
-  margin: 0;
-}
-
-/* Main Content */
-.main-content {
-  width: 100%;
-}
-
-/* Project Grid */
+/* Project Grid - Container for dynamically rendered cards */
 .project-grid {
-  grid-column-gap: var(--md-sys-spacing-md, 24px);
-  grid-row-gap: var(--md-sys-spacing-md, 24px);
-  flex-flow: wrap;
-  justify-content: center;
-  align-items: center;
   display: flex;
-  max-width: 768px;
-  margin-left: auto;
-  margin-right: auto;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: center;
+  grid-column-gap: 1.5em;
+  grid-row-gap: 1.5em;
 }
 
 /* Responsive Breakpoints */
+/* Component-level responsive styles are handled in component CSS files */
 
-/* Mobile Landscape and below (max-width: 767px) */
-@media screen and (max-width: 767px) {
-  .hero-section {
-    padding-left: var(--md-sys-spacing-md, 16px);
-    padding-right: var(--md-sys-spacing-md, 16px);
+/* Medium breakpoint (Tablet, max-width: 991px) */
+@media screen and (max-width: 991px) {
+  .site-header {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0%;
+  }
+
+  .cards-container {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: auto;
+    grid-column-gap: 0.75em;
+    grid-row-gap: 0.75em;
   }
 }
 
-/* Mobile Portrait (max-width: 479px) */
-@media screen and (max-width: 479px) {
-  .project-grid {
-    flex-flow: column;
+/* Small breakpoint (Mobile Landscape, max-width: 767px) */
+@media screen and (max-width: 767px) {
+  .site-logo {
+    height: 28px;
   }
 
-  .header {
-    grid-column-gap: var(--md-sys-spacing-sm, 16px);
-    grid-row-gap: var(--md-sys-spacing-sm, 16px);
-    text-align: center;
-    padding: var(--md-sys-spacing-md, 24px);
+  .page-container {
+    justify-content: flex-start;
+  }
+
+  .site-header {
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    flex-grow: 0;
+    align-self: stretch;
+  }
+
+  .project-grid {
+    width: 100%;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  .cards-container {
+    width: 100%;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+}
+
+/* Tiny breakpoint (Mobile Portrait, max-width: 478px) */
+@media screen and (max-width: 478px) {
+  .site-header {
+    grid-column-gap: 16px;
+    grid-row-gap: 16px;
     line-height: 1.3em;
+    text-align: center;
+    flex-grow: 0;
+    justify-content: start;
+  }
+
+  .page-container {
+    padding: 16px;
+    justify-content: flex-start;
+  }
+
+  .project-grid {
+    row-gap: 8px;
+  }
+
+  .cards-container {
+    flex-direction: column;
+    flex-wrap: nowrap;
   }
 }
