@@ -21,25 +21,17 @@
   flex-wrap: wrap;
 }
 
-/* Profile Card Link - Extends card__link with link-specific properties */
-.profile-card__link {
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
 
 
 
 /* Responsive Breakpoints - Profile-specific overrides */
 
 /* Small breakpoint (Mobile Landscape, max-width: 767px) */
-@media screen and (max-width: 767px) {
-  .profile-card__links {
-    margin-top: 0px;
-  }
-}
+@media screen and (max-width: 767px) {}
 
 /* Tiny breakpoint (Mobile Portrait, max-width: 478px) */
 @media screen and (max-width: 478px) {
+
   /* Override base card flex-direction for profile cards */
   .profile-card {
     flex-direction: row;
@@ -49,12 +41,8 @@
     padding-top: 2px;
     padding-right: 8px;
     padding-bottom: 2px;
-    padding-left: 8px;
     line-height: 1.3em;
   }
 
-  /* Profile card image sizing in tiny breakpoint */
-  .profile-card .card__image {
-    width: 120px;
-  }
+
 }
