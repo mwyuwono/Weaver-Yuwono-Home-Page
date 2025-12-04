@@ -41,30 +41,30 @@ function createProjectCard(project) {
   const card = document.createElement('a');
   card.href = project.pdfUrl;
   card.target = '_blank';
-  card.className = 'project-card';
+  card.className = 'card project-card';
   card.setAttribute('data-element', 'card');
 
   // Content wrapper
   const contentWrap = document.createElement('div');
-  contentWrap.className = 'project-card__content-wrap';
+  contentWrap.className = 'card__content-wrap';
 
   // Content
   const content = document.createElement('div');
-  content.className = 'project-card__content';
+  content.className = 'card__content';
 
   // Header
   const header = document.createElement('div');
-  header.className = 'project-card__header';
+  header.className = 'card__header';
 
   // Title
   const title = document.createElement('div');
-  title.className = 'project-card__title';
+  title.className = 'card__title';
   title.textContent = project.title;
   title.setAttribute('data-element', 'card-title');
 
   // Subtitle (location or other metadata)
   const subtitle = document.createElement('div');
-  subtitle.className = 'project-card__subtitle';
+  subtitle.className = 'card__subtitle';
   subtitle.textContent = project.location || '';
   subtitle.setAttribute('data-element', 'card-subtitle');
 
@@ -82,7 +82,7 @@ function createProjectCard(project) {
 
   // Image wrapper (Flex Block)
   const imageWrapper = document.createElement('div');
-  imageWrapper.className = 'project-card__image-wrapper';
+  imageWrapper.className = 'card__image-wrapper';
 
   // Image
   const image = document.createElement('img');
@@ -90,7 +90,7 @@ function createProjectCard(project) {
   image.srcset = project.image.srcset;
   image.sizes = project.image.sizes;
   image.alt = project.image.alt;
-  image.className = 'project-card__image';
+  image.className = 'card__image';
   image.loading = 'lazy';
   image.setAttribute('data-element', 'card-image');
 
