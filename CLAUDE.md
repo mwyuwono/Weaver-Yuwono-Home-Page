@@ -69,12 +69,119 @@ Only modify CSS when:
 2. User asks you to fix a bug or issue
 3. User gives clear permission to update styling
 
+## Component Architecture
+
+This project follows the **Component Composition Pattern** for building reusable UI components. This is the same pattern used by Bootstrap, Material Design, and other major CSS frameworks.
+
+### Pattern Overview
+
+Components use a **base + variant** approach:
+- **Base component** defines shared structure and styling
+- **Variants** extend the base with specific modifications
+- Elements use **dual class names** for composition
+
+### Component Structure
+
+```
+components/
+├── card-base/              # Base component (shared foundation)
+│   └── card-base.css       # Shared card structure & styles
+├── project-card/           # Variant component
+│   ├── project-card.css    # Project-specific overrides
+│   └── project-card.js     # Project card rendering
+└── profile-card/           # Variant component
+    ├── profile-card.css    # Profile-specific overrides
+    └── profile-card.js     # Profile card rendering
+```
+
+### How It Works
+
+**HTML with dual classes:**
+```html
+<div class="card project-card">
+  <div class="card__content-wrap">
+    <div class="card__title">Title</div>
+    <div class="card__link project-card__helper">Helper text</div>
+  </div>
+</div>
+```
+
+**CSS cascade:**
+```css
+/* card-base.css - shared foundation */
+.card { /* base structure */ }
+.card__title { /* shared element */ }
+.card__link { /* shared typography */ }
+
+/* project-card.css - variant overrides */
+.project-card:hover { /* variant behavior */ }
+.project-card__helper { /* variant-specific layout */ }
+```
+
+**Load order matters:**
+```html
+<!-- Base MUST load before variants -->
+<link rel="stylesheet" href="components/card-base/card-base.css">
+<link rel="stylesheet" href="components/project-card/project-card.css">
+```
+
+### Creating New Components
+
+**When to create a base component:**
+- Multiple variants share 80%+ of structure/styling
+- Variants differ in behavior, not fundamental structure
+- You want single source of truth for shared styles
+
+**Steps to create a base + variant:**
+
+1. **Create base component:**
+   ```
+   components/component-base/
+   └── component-base.css    # Shared structure, BEM elements
+   ```
+
+2. **Create variant components:**
+   ```
+   components/component-variant/
+   ├── component-variant.css  # Only differences from base
+   └── component-variant.js   # Variant logic
+   ```
+
+3. **Use dual class names in JavaScript:**
+   ```javascript
+   element.className = 'component component-variant';
+   element.className = 'component__element variant__element';
+   ```
+
+4. **Load CSS in correct order:**
+   ```html
+   <link rel="stylesheet" href="components/component-base/component-base.css">
+   <link rel="stylesheet" href="components/component-variant/component-variant.css">
+   ```
+
+### CSS Override Rules
+
+- **Specificity wins:** `.variant .base__element` (20) beats `.base__element` (10)
+- **Load order:** When equal specificity, last-loaded wins
+- **Variants only define differences:** Base styles inherited automatically
+- **No !important:** Never use - it prevents variant overrides
+
+### Benefits of This Pattern
+
+✅ **Single source of truth** - Base changes affect all variants
+✅ **Minimal duplication** - Variants only define differences
+✅ **Easy maintenance** - Update base once, affects all variants
+✅ **Scalable** - Easy to add new variants
+✅ **Industry standard** - Same as Bootstrap, Material, Foundation
+
+See `components/README.md` for detailed guidelines and examples.
+
 ## File Structure
 
 ```
 /
 ├── index.html              # Main landing page
-├── styles.css              # Landing page styles (video, gradients, avatars)
+├── styles.css              # Landing page styles (Material Design 3 background)
 ├── landing-assets/         # Landing page assets
 │   ├── flow_loop.mp4      # Background video (active)
 │   ├── bloom_loop.mp4     # Alternative background video
@@ -88,9 +195,15 @@ Only modify CSS when:
 │       ├── images/        # Project images and logo
 │       └── pdfs/          # Project PDFs
 ├── components/            # Modular components (shared)
-│   └── project-card/      # Project card component
-│       ├── project-card.css
-│       └── project-card.js
+│   ├── card-base/         # Base card component (foundation)
+│   │   └── card-base.css  # Shared card structure & styles
+│   ├── project-card/      # Project card variant
+│   │   ├── project-card.css
+│   │   └── project-card.js
+│   ├── profile-card/      # Profile card variant
+│   │   ├── profile-card.css
+│   │   └── profile-card.js
+│   └── README.md          # Component architecture guidelines
 ├── design-system/         # Material Design 3 design system (git submodule)
 ├── vercel.json            # Vercel auto-deployment configuration
 ├── .vercel/               # Vercel project settings (gitignored)
@@ -103,10 +216,13 @@ Only modify CSS when:
 
 - **Landing page**: Root directory with assets in `landing-assets/`
 - **Projects portfolio**: `/projects/` directory with self-contained `assets/` subdirectory
-- **Component architecture**: Shared components in `/components/` loaded by both pages
+- **Component architecture**: Component Composition Pattern (base + variants)
+  - Base components define shared structure (`card-base/`)
+  - Variant components extend base with specific modifications
+  - Both pages load appropriate base + variant combinations
 - **CSS separation**:
-  - Landing: `styles.css` (video, gradients, avatars)
-  - Projects: `projects/projects.css` (layout, grid) + design system + component CSS
+  - Landing: `styles.css` (Material Design 3 background) + card-base + profile-card
+  - Projects: `projects/projects.css` (layout, grid) + design system + card-base + project-card
 - **Asset ownership**: Clear separation between landing and projects assets
 - **Video files**: Both `flow_loop.mp4` and `bloom_loop.mp4` kept for easy swapping
 - **File naming**: Consistent kebab-case for all new/renamed files

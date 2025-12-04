@@ -1,0 +1,261 @@
+/**
+ * Card Base Component Styles
+ * Shared styles for all card variants (project-card, profile-card, etc.)
+ * Variants should extend these base styles with specific modifications
+ */
+
+/* Card - Base wrapper for all card variants */
+.card {
+  position: relative;
+  display: flex;
+  width: 25svw;
+  padding-top: 8px;
+  padding-right: 8px;
+  padding-bottom: 8px;
+  padding-left: 8px;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  align-items: center;
+  align-self: stretch;
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-basis: auto;
+  grid-column-gap: 8px;
+  grid-row-gap: 8px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  background-color: #f8f7f3;
+  color: #1a1b12;
+  font-size: 16px;
+  line-height: 1.5em;
+  font-weight: 400;
+  text-align: center;
+}
+
+/* Card Image Wrapper */
+.card__image-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+/* Card Image */
+.card__image {
+  width: 100%;
+  border-radius: 8px;
+  flex-grow: 1;
+}
+
+/* Card Content Wrapper */
+.card__content-wrap {
+  display: flex;
+  flex-direction: column;
+  padding-top: 24px;
+  padding-right: 24px;
+  padding-bottom: 24px;
+  padding-left: 24px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-self: stretch;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0%;
+  grid-column-gap: 8px;
+  grid-row-gap: 8px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  background-color: #ebece6;
+  text-align: left;
+}
+
+/* Card Content */
+.card__content {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0%;
+  grid-column-gap: 1em;
+  grid-row-gap: 1em;
+}
+
+/* Card Links Container - shared across all variants */
+.card__links {
+  display: flex;
+  margin-top: auto;
+  justify-content: start;
+  align-items: center;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: auto;
+  column-gap: 1em;
+  row-gap: 0.5em;
+  flex-wrap: wrap;
+}
+
+/* Card Link - Shared typography for helper text and action links */
+.card__link {
+  font-family: Noto Sans, sans-serif;
+  color: hsla(50, 6.64%, 61.44%, 1.00);
+  font-size: 0.75rem;
+  line-height: 1.2em;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.card__link:hover {
+  color: var(--md-sys-color-on-surface-variant);
+  text-decoration: underline;
+}
+
+/* Card Header */
+.card__header {
+  display: flex;
+  flex-direction: column;
+  grid-column-gap: 0.3em;
+  grid-row-gap: 0.3em;
+}
+
+/* Card Title */
+.card__title {
+  font-family: Bodoni Moda, serif;
+  color: hsla(68, 19.36%, 8.94%, 1.00);
+  font-size: 1.8rem;
+  line-height: 1.2em;
+  font-weight: 500;
+}
+
+/* Card Subtitle (base only - variants can override) */
+.card__subtitle {
+  font-size: 1.25em;
+  line-height: 1.3em;
+}
+
+/* Responsive Breakpoints */
+
+/* Medium breakpoint (Tablet, max-width: 991px) */
+@media screen and (max-width: 991px) {
+  .card {
+    width: 33svw;
+    align-self: stretch;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0%;
+  }
+
+  .card__image-wrapper {
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+
+  .card__image {
+    position: relative;
+    object-fit: cover;
+  }
+
+  .card__content-wrap {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0%;
+  }
+}
+
+/* Small breakpoint (Mobile Landscape, max-width: 767px) */
+@media screen and (max-width: 767px) {
+  .card {
+    width: auto;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .card__image-wrapper {
+    flex-basis: auto;
+  }
+
+  .card__image {
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    max-height: 40svh;
+  }
+
+  .card__content-wrap {
+    padding-top: 1.5em;
+    padding-right: 1.5em;
+    padding-bottom: 1.5em;
+    padding-left: 1.5em;
+    justify-content: center;
+    align-items: flex-start;
+    order: 9999;
+    grid-column-gap: 0.75em;
+    grid-row-gap: 0.75em;
+    min-width: 40svw;
+  }
+
+  .card__title {
+    font-size: 1.5rem;
+  }
+
+  .card__links {
+    margin-top: 0px;
+  }
+}
+
+/* Tiny breakpoint (Mobile Portrait, max-width: 478px) */
+@media screen and (max-width: 478px) {
+  .card {
+    min-width: 40vw;
+    padding: 8px;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    align-items: center;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    background-color: hsla(0, 0.00%, 100.00%, 1.00);
+  }
+
+  .card__content-wrap {
+    padding: 8px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    grid-column-gap: 16px;
+    grid-row-gap: 8px;
+    background-color: transparent;
+  }
+
+  .card__title {
+    font-size: 20px;
+    line-height: 1.5em;
+    text-align: left;
+  }
+
+  .card__image {
+    max-height: none;
+  }
+
+  .card__image-wrapper {
+    aspect-ratio: 1/1;
+  }
+
+  .card__links {
+    margin-top: 0px;
+    padding-top: 2px;
+    padding-right: 8px;
+    padding-bottom: 2px;
+  }
+
+  .card__link {
+    line-height: 1.3em;
+  }
+}

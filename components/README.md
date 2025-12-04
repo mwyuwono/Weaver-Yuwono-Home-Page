@@ -1,128 +1,510 @@
-# Component Architecture
+# Component Architecture Guide
 
-This directory contains all reusable UI components following a modular, component-based architecture.
+This document describes the **Component Composition Pattern** used in this project and provides guidelines for creating and maintaining components.
 
-## Component Structure
+## Table of Contents
 
-Each component should be self-contained in its own directory:
+- [Overview](#overview)
+- [Pattern Explanation](#pattern-explanation)
+- [Creating New Components](#creating-new-components)
+- [CSS Specificity and Override Rules](#css-specificity-and-override-rules)
+- [Examples](#examples)
+- [Best Practices](#best-practices)
+- [Common Pitfalls](#common-pitfalls)
+
+---
+
+## Overview
+
+This project uses the **Component Composition Pattern**, the same architectural approach used by:
+- Bootstrap
+- Material Design / Material-UI
+- Foundation
+- Ant Design
+- Chakra UI
+
+### Why This Pattern?
+
+✅ **Single source of truth** - Base changes affect all variants automatically
+✅ **Minimal duplication** - Variants only define differences (~95% code reduction)
+✅ **Easy maintenance** - Clear separation of shared vs. variant-specific styles
+✅ **Scalable** - Add new variants without modifying the base
+✅ **Industry standard** - Familiar to developers from major frameworks
+
+---
+
+## Pattern Explanation
+
+### Base + Variant Composition
+
+Components are organized hierarchically:
 
 ```
 components/
-└── component-name/
-    ├── component-name.css      # Component-specific styles
-    ├── component-name.js        # Component logic and rendering
-    └── component-name.data.js  # Component data (optional, if large/complex)
+├── component-base/           # Shared foundation
+│   └── component-base.css
+├── component-variant-1/      # Specific implementation
+│   ├── component-variant-1.css
+│   └── component-variant-1.js
+└── component-variant-2/      # Another implementation
+    ├── component-variant-2.css
+    └── component-variant-2.js
 ```
 
-## Naming Conventions
+### Key Concepts
 
-- **Component folder**: `kebab-case` (e.g., `project-card`, `navigation-menu`)
-- **CSS file**: `component-name.css`
-- **JavaScript file**: `component-name.js`
-- **CSS classes**: BEM methodology
-  - Block: `.component-name`
-  - Element: `.component-name__element`
-  - Modifier: `.component-name--modifier`
+1. **Base Component** = Foundation
+   - Defines shared structure, layout, and styling
+   - Uses generic BEM naming (`.component`, `.component__element`)
+   - Contains all responsive breakpoints for shared elements
+   - Never includes variant-specific logic
 
-## Component Requirements
+2. **Variant Component** = Specialization
+   - Extends base with specific modifications
+   - Uses descriptive naming (`.component-variant`)
+   - Only defines differences from base
+   - Can add variant-specific elements
 
-### 1. Self-Contained
-- All component-specific styles in `component-name.css`
-- All component logic in `component-name.js`
-- Component should work independently
+3. **Dual Class Names** = Composition
+   - Elements use both classes: `class="base variant"`
+   - Inherits base styles + applies variant overrides
+   - Enables CSS cascade and specificity to work naturally
 
-### 2. Single Responsibility
-- One component = one purpose
-- Each component solves a specific UI problem
-- Avoid mixing concerns
+---
 
-### 3. Reusable
-- Components should be portable
-- No hard dependencies on specific page structure
-- Use semantic class names (not page-specific)
+## Creating New Components
 
-### 4. Documented
-- Include JSDoc comments in JavaScript
-- Document CSS classes and their purpose
-- Provide usage examples
+### Decision Tree: When to Use Base + Variant?
 
-### 5. Tested
-- Verify component works in isolation
-- Test responsive breakpoints
-- Ensure accessibility
+**✅ Use Base + Variant when:**
+- Multiple variants share 80%+ of structure/styling
+- Variants differ in behavior, not fundamental structure
+- You want a single source of truth for shared styles
+- You plan to add more variants in the future
 
-## Creating a New Component
+**❌ Use Standalone Component when:**
+- Component is truly unique (no variants needed)
+- Variants share <50% of code
+- Fundamental structure differs between variants
 
-### Step 1: Create Component Directory
+### Step-by-Step: Creating Base + Variant
+
+#### Step 1: Create Base Component
+
 ```bash
-mkdir -p components/my-component
+mkdir components/button-base
+touch components/button-base/button-base.css
 ```
 
-### Step 2: Create Component Files
-- `components/my-component/my-component.css` - Component styles
-- `components/my-component/my-component.js` - Component logic
+**button-base.css:**
+```css
+/**
+ * Button Base Component
+ * Shared foundation for all button variants
+ */
 
-### Step 3: Add Component to HTML
+/* Base button wrapper */
+.button {
+  display: inline-flex;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+/* Base button text */
+.button__text {
+  flex-grow: 1;
+}
+
+/* Base button icon (optional) */
+.button__icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive breakpoints for shared elements */
+@media screen and (max-width: 767px) {
+  .button {
+    padding: 10px 20px;
+    font-size: 0.875rem;
+  }
+}
+```
+
+#### Step 2: Create Variant Components
+
+```bash
+mkdir components/button-primary
+touch components/button-primary/button-primary.css
+touch components/button-primary/button-primary.js
+```
+
+**button-primary.css:**
+```css
+/**
+ * Button Primary Variant
+ * Extends button-base.css with primary button styling
+ * Requires: button-base.css to be loaded first
+ */
+
+/* Primary button - extends base */
+.button-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.button-primary:hover {
+  background-color: #0056b3;
+}
+
+.button-primary:active {
+  background-color: #004085;
+}
+
+/* Primary button disabled state */
+.button-primary:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+```
+
+**button-primary.js:**
+```javascript
+/**
+ * Button Primary Component
+ * Renders primary action buttons
+ */
+
+function createPrimaryButton(config) {
+  const button = document.createElement('button');
+  button.className = 'button button-primary';  // Dual classes!
+  button.type = config.type || 'button';
+
+  const text = document.createElement('span');
+  text.className = 'button__text';
+  text.textContent = config.text;
+
+  button.appendChild(text);
+
+  if (config.onClick) {
+    button.addEventListener('click', config.onClick);
+  }
+
+  return button;
+}
+```
+
+#### Step 3: Load CSS in Correct Order
+
+**In HTML:**
 ```html
-<!-- Component Styles -->
-<link rel="stylesheet" href="components/my-component/my-component.css">
-<!-- Component Scripts -->
-<script src="components/my-component/my-component.js" defer></script>
+<head>
+  <!-- Base MUST load before variants -->
+  <link rel="stylesheet" href="components/button-base/button-base.css">
+  <link rel="stylesheet" href="components/button-primary/button-primary.css">
+  <link rel="stylesheet" href="components/button-secondary/button-secondary.css">
+</head>
 ```
 
-### Step 4: Use Component
-Add the component's HTML structure or let JavaScript render it.
+#### Step 4: Use Component
 
-## Component CSS Guidelines
+```javascript
+// Create button using component
+const saveButton = createPrimaryButton({
+  text: 'Save Changes',
+  onClick: () => console.log('Saved!')
+});
 
-- **Scope**: Only include styles for the component itself
-- **No global styles**: Don't modify global elements unless necessary
-- **Use CSS variables**: Leverage design tokens from design system
-- **Responsive**: Include all breakpoints within component CSS
-- **BEM naming**: Follow Block__Element--Modifier pattern
+document.body.appendChild(saveButton);
+```
 
-## Component JavaScript Guidelines
+**Rendered HTML:**
+```html
+<button class="button button-primary" type="button">
+  <span class="button__text">Save Changes</span>
+</button>
+```
 
-- **Encapsulation**: Keep component logic isolated
-- **Initialization**: Component should initialize itself
-- **DOM ready**: Handle DOMContentLoaded appropriately
-- **Error handling**: Include error handling for missing elements
-- **Documentation**: Use JSDoc for functions and data structures
+---
 
-## Example: Project Card Component
+## CSS Specificity and Override Rules
 
-See `components/project-card/` for a complete example:
+### How CSS Cascade Works
 
-- **project-card.css**: All project card styles including responsive breakpoints
-- **project-card.js**: Component logic, data, and rendering functions
+CSS applies styles based on two rules:
+1. **Specificity** (higher specificity wins)
+2. **Load order** (when specificity is equal, last-loaded wins)
+
+### Specificity Values
+
+| Selector | Specificity | Example |
+|----------|-------------|---------|
+| Element | 1 | `div` |
+| Class | 10 | `.button` |
+| Two classes | 20 | `.button-primary .button__text` |
+| ID | 100 | `#button` (avoid!) |
+
+### Override Patterns
+
+#### Pattern 1: Equal Specificity (Load Order Wins)
+```css
+/* button-base.css (loads first) */
+.button {
+  background-color: #f0f0f0;  /* Default */
+}
+
+/* button-primary.css (loads second) */
+.button-primary {
+  background-color: #007bff;  /* ✅ Overrides default */
+}
+```
+Both have specificity 10, but variant loads later, so it wins.
+
+#### Pattern 2: Higher Specificity (Always Wins)
+```css
+/* button-base.css */
+.button__text {
+  font-size: 1rem;  /* Base size */
+}
+
+/* button-primary.css */
+.button-primary .button__text {
+  font-size: 1.125rem;  /* ✅ Overrides (specificity 20 > 10) */
+}
+```
+Higher specificity always wins, regardless of load order.
+
+#### Pattern 3: Additive Properties
+```css
+/* button-base.css */
+.button {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* button-large.css */
+.button-large {
+  padding: 16px 32px;  /* ✅ Overrides padding only */
+  font-size: 1.25rem;  /* ✅ Overrides font-size only */
+  /* border-radius inherited from base ✅ */
+}
+```
+Variants only override specific properties, others inherited.
+
+### Critical Rules
+
+✅ **DO** use class selectors (`.button`)
+✅ **DO** load base before variants
+✅ **DO** use higher specificity for overrides (`.variant .base__element`)
+❌ **DON'T** use `!important` (prevents variant overrides)
+❌ **DON'T** use IDs for styling (`#button`)
+❌ **DON'T** inline styles (can't be overridden)
+
+---
+
+## Examples
+
+### Example 1: Card Components (Current Implementation)
+
+```
+components/
+├── card-base/
+│   └── card-base.css       # Shared structure & styles
+├── project-card/
+│   ├── project-card.css    # Project-specific overrides
+│   └── project-card.js
+└── profile-card/
+    ├── profile-card.css    # Profile-specific overrides
+    └── profile-card.js
+```
+
+**Shared base elements:**
+- `.card` - Card wrapper
+- `.card__image-wrapper` - Image container
+- `.card__image` - Image element
+- `.card__content-wrap` - Content container
+- `.card__links` - Links container (shared layout)
+- `.card__title` - Title typography
+- `.card__link` - Link/helper typography
+
+**Project card specifics:**
+- `.project-card:hover` - Hover state
+- Subtitle has italic + opacity
+
+**Profile card specifics:**
+- Tiny breakpoint keeps `.profile-card` in row layout
+
+---
 
 ## Best Practices
 
-1. **Keep components small**: One component = one UI element
-2. **Avoid nesting**: Don't create components within components unnecessarily
-3. **Use design tokens**: Reference CSS variables from design system
-4. **Maintain consistency**: Follow established patterns
-5. **Update documentation**: Keep README and component docs current
+### 1. Base Component Guidelines
 
-## File Organization
+✅ **DO:**
+- Use generic, reusable naming (`.component`, not `.component-blue`)
+- Include all shared structure and layout
+- Define responsive breakpoints for shared elements
+- Document which properties variants can override
 
-- **Global styles**: `styles.css` (layout, reset, global utilities)
-- **Component styles**: `components/[component-name]/[component-name].css`
-- **Component scripts**: `components/[component-name]/[component-name].js`
-- **Assets**: `assets/` (images, fonts, etc.)
+❌ **DON'T:**
+- Include variant-specific logic
+- Use overly specific selectors
+- Add `!important` declarations
+- Include non-shared elements
 
-## Migration Checklist
+### 2. Variant Component Guidelines
 
-When refactoring existing code into components:
+✅ **DO:**
+- Only define differences from base
+- Use descriptive variant names (`.button-primary`, `.card-project`)
+- Document what makes this variant unique
+- Use higher specificity for overrides (`.variant .base__element`)
 
-- [ ] Extract component-specific CSS to component folder
-- [ ] Move component JavaScript to component folder
-- [ ] Update HTML to load component CSS and JS
-- [ ] Remove component styles from global stylesheet
-- [ ] Verify component works independently
-- [ ] Update documentation
+❌ **DON'T:**
+- Duplicate base styles
+- Create variants for tiny differences (use modifiers instead)
+- Override with `!important`
+- Forget to load base CSS first
+
+### 3. JavaScript Guidelines
+
+✅ **DO:**
+- Use dual class names: `className = 'base variant'`
+- Use base class names for shared elements: `className = 'base__element'`
+- Can add variant-specific classes to elements
+
+❌ **DON'T:**
+- Only use variant class (base styles won't apply)
+- Inline styles (can't be overridden by variants)
+- Hard-code styles in JavaScript
+
+### 4. HTML Load Order
+
+✅ **DO:**
+```html
+<!-- Correct order -->
+<link rel="stylesheet" href="components/component-base/component-base.css">
+<link rel="stylesheet" href="components/component-variant/component-variant.css">
+```
+
+❌ **DON'T:**
+```html
+<!-- Wrong order - variant loads before base -->
+<link rel="stylesheet" href="components/component-variant/component-variant.css">
+<link rel="stylesheet" href="components/component-base/component-base.css">
+```
+
+---
+
+## Common Pitfalls
+
+### Pitfall 1: Forgetting Dual Classes
+```javascript
+// ❌ Wrong - only variant class
+element.className = 'button-primary';
+
+// ✅ Correct - base + variant
+element.className = 'button button-primary';
+```
+
+### Pitfall 2: Using !important
+```css
+/* ❌ Wrong - prevents variant overrides */
+.button {
+  padding: 12px !important;
+}
+
+/* ✅ Correct - allows variants to override */
+.button {
+  padding: 12px;
+}
+```
+
+### Pitfall 3: Wrong Load Order
+```html
+<!-- ❌ Wrong - variant loads first -->
+<link rel="stylesheet" href="components/button-primary/button-primary.css">
+<link rel="stylesheet" href="components/button-base/button-base.css">
+
+<!-- ✅ Correct - base loads first -->
+<link rel="stylesheet" href="components/button-base/button-base.css">
+<link rel="stylesheet" href="components/button-primary/button-primary.css">
+```
+
+### Pitfall 4: Duplicating Base Styles
+```css
+/* ❌ Wrong - duplicating base styles in variant */
+.button-primary {
+  display: inline-flex;  /* Already in base */
+  padding: 12px 24px;    /* Already in base */
+  background-color: blue; /* Only this is needed */
+}
+
+/* ✅ Correct - only differences */
+.button-primary {
+  background-color: blue;
+}
+```
+
+### Pitfall 5: Too Many Variants
+```
+❌ Wrong:
+components/
+├── button-blue/
+├── button-red/
+├── button-green/
+├── button-large-blue/
+├── button-small-red/
+└── ... 20+ variants
+
+✅ Better:
+components/
+├── button-base/
+├── button-primary/
+├── button-secondary/
+└── Use modifiers: class="button button-primary button--large"
+```
+
+---
+
+## Quick Reference
+
+### Creating a New Base Component
+
+1. Create directory: `components/component-base/`
+2. Create CSS: `component-base.css`
+3. Define shared structure with generic names (`.component`, `.component__element`)
+4. Include responsive breakpoints for shared elements
+
+### Creating a New Variant
+
+1. Create directory: `components/component-variant/`
+2. Create CSS: `component-variant.css` (only differences)
+3. Create JS: `component-variant.js` (variant logic)
+4. Use dual classes in JS: `className = 'component component-variant'`
+
+### Using Components
+
+1. Load base CSS first, then variant CSS
+2. Create elements with dual classes
+3. Base elements inherit from base, variants can override
+
+---
 
 ## Questions?
 
-Refer to existing components (e.g., `project-card`) as examples, or consult the main `README.md` for project-wide conventions.
+If you have questions about the component architecture:
+1. Check existing card components for reference implementation
+2. Review this document's examples
+3. Consult CLAUDE.md for project-specific conventions
 
+Remember: When in doubt, follow Bootstrap/Material Design patterns - they use the same approach!

@@ -81,27 +81,66 @@ All assets imported from Webflow are now self-hosted.
 
 ## Component Architecture
 
-This project follows a **modular component-based architecture**. Each component is self-contained with its own CSS and JavaScript files.
+This project follows the **Component Composition Pattern** for building reusable UI components. This is the same architectural pattern used by Bootstrap, Material Design, Foundation, and other major CSS frameworks.
+
+### Pattern: Base + Variant Composition
+
+Components use a hierarchical approach where:
+- **Base components** define shared structure and styling (foundation)
+- **Variant components** extend the base with specific modifications
+- **Dual class names** enable CSS composition and inheritance
 
 ### Component Structure
 
-All components live in the `components/` directory:
-
 ```
 components/
-└── component-name/
-    ├── component-name.css  # Component-specific styles
-    └── component-name.js   # Component logic and rendering
+├── card-base/              # Base component (shared foundation)
+│   └── card-base.css       # Shared card structure & styles
+├── project-card/           # Variant component
+│   ├── project-card.css    # Project-specific overrides
+│   └── project-card.js     # Project card rendering
+└── profile-card/           # Variant component
+    ├── profile-card.css    # Profile-specific overrides
+    └── profile-card.js     # Profile card rendering
 ```
 
-### Component Guidelines
+### How It Works
 
-- **Self-contained**: Each component includes its own CSS and JS
-- **Single responsibility**: One component = one UI element
-- **Reusable**: Components are portable and independent
-- **Documented**: Components include usage examples
+**Elements use dual classes:**
+```html
+<div class="card project-card">
+  <div class="card__title">Title</div>
+  <div class="card__link project-card__helper">Helper</div>
+</div>
+```
 
-See `components/README.md` for detailed component architecture guidelines and best practices.
+**CSS inherits from base and extends with variants:**
+```css
+/* Base defines foundation */
+.card { /* shared structure */ }
+.card__link { /* shared typography */ }
+
+/* Variant extends/overrides */
+.project-card:hover { /* variant behavior */ }
+.project-card__helper { /* variant layout */ }
+```
+
+**Load order is critical:**
+```html
+<!-- Base MUST load before variants -->
+<link rel="stylesheet" href="components/card-base/card-base.css">
+<link rel="stylesheet" href="components/project-card/project-card.css">
+```
+
+### Benefits
+
+✅ **Single source of truth** - Update base once, affects all variants
+✅ **Minimal duplication** - Variants only define differences (~95% reduction)
+✅ **Easy maintenance** - Clear separation of shared vs. variant styles
+✅ **Scalable** - Add new variants without modifying base
+✅ **Industry standard** - Same pattern as Bootstrap, Material, Foundation
+
+See `components/README.md` for detailed guidelines, examples, and best practices.
 
 ### Components
 
