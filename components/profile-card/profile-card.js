@@ -69,13 +69,13 @@ function createProfileCard(profile) {
 
   // Links container
   const linksContainer = document.createElement('div');
-  linksContainer.className = 'profile-card__links';
+  linksContainer.className = 'card__links';
 
   // Projects link (if applicable)
   if (profile.projectsUrl) {
     const projectsLink = document.createElement('a');
     projectsLink.href = profile.projectsUrl;
-    projectsLink.className = 'card__link profile-card__link';
+    projectsLink.className = 'card__link';
     projectsLink.textContent = 'Projects';
     projectsLink.setAttribute('data-element', 'card-link');
     linksContainer.appendChild(projectsLink);
@@ -86,7 +86,7 @@ function createProfileCard(profile) {
   linkedInLink.href = profile.linkedInUrl;
   linkedInLink.target = '_blank';
   linkedInLink.rel = 'noopener noreferrer';
-  linkedInLink.className = 'card__link profile-card__link';
+  linkedInLink.className = 'card__link';
   linkedInLink.textContent = 'Linked-In';
   linkedInLink.setAttribute('data-element', 'card-link');
   linksContainer.appendChild(linkedInLink);

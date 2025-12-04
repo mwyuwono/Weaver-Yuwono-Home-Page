@@ -87,6 +87,20 @@
   grid-row-gap: 1em;
 }
 
+/* Card Links Container - shared across all variants */
+.card__links {
+  display: flex;
+  margin-top: auto;
+  justify-content: start;
+  align-items: center;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: auto;
+  column-gap: 1em;
+  row-gap: 0.5em;
+  flex-wrap: wrap;
+}
+
 /* Card Link - Shared typography for helper text and action links */
 .card__link {
   font-family: Noto Sans, sans-serif;
@@ -191,6 +205,10 @@
   .card__title {
     font-size: 1.5rem;
   }
+
+  .card__links {
+    margin-top: 0px;
+  }
 }
 
 /* Tiny breakpoint (Mobile Portrait, max-width: 478px) */
@@ -228,5 +246,16 @@
 
   .card__image-wrapper {
     aspect-ratio: 1/1;
+  }
+
+  .card__links {
+    margin-top: 0px;
+    padding-top: 2px;
+    padding-right: 8px;
+    padding-bottom: 2px;
+  }
+
+  .card__link {
+    line-height: 1.3em;
   }
 }

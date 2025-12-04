@@ -332,18 +332,16 @@ components/
 - `.card__image-wrapper` - Image container
 - `.card__image` - Image element
 - `.card__content-wrap` - Content container
+- `.card__links` - Links container (shared layout)
 - `.card__title` - Title typography
 - `.card__link` - Link/helper typography
 
 **Project card specifics:**
 - `.project-card:hover` - Hover state
-- `.project-card__helper` - Helper text layout
 - Subtitle has italic + opacity
 
 **Profile card specifics:**
-- `.profile-card__links` - Links container
-- `.profile-card__link` - Individual links
-- Different tiny breakpoint behavior
+- Tiny breakpoint keeps `.profile-card` in row layout
 
 ---
 

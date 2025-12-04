@@ -27,32 +27,3 @@
   opacity: 0.6;
 }
 
-/* Project Card Helper - Layout for helper text (typography from card__link) */
-.project-card__helper {
-  display: flex;
-  margin-top: auto;
-  justify-content: start;
-  align-items: center;
-  flex-grow: 0;
-  flex-shrink: 0;
-  flex-basis: auto;
-}
-
-/* Responsive Breakpoints - Project-specific overrides */
-
-/* Small breakpoint (Mobile Landscape, max-width: 767px) */
-@media screen and (max-width: 767px) {
-  .project-card__helper {
-    margin-top: 0px;
-  }
-}
-
-/* Tiny breakpoint (Mobile Portrait, max-width: 478px) */
-@media screen and (max-width: 478px) {
-  .project-card__helper {
-    padding-top: 2px;
-    padding-right: 8px;
-    padding-bottom: 2px;
-    line-height: 1.3em;
-  }
-}

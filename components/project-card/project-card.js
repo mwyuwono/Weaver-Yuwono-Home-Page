@@ -69,15 +69,19 @@ function createProjectCard(project) {
   subtitle.setAttribute('data-element', 'card-subtitle');
 
   // Helper text
-  const helper = document.createElement('div');
-  helper.className = 'card__link project-card__helper';
+  const linksContainer = document.createElement('div');
+  linksContainer.className = 'card__links';
+
+  const helper = document.createElement('span');
+  helper.className = 'card__link';
   helper.textContent = 'PDF download';
-  helper.setAttribute('data-element', 'card-helper');
+  helper.setAttribute('data-element', 'card-link');
+  linksContainer.appendChild(helper);
 
   header.appendChild(title);
   header.appendChild(subtitle);
   content.appendChild(header);
-  content.appendChild(helper);
+  content.appendChild(linksContainer);
   contentWrap.appendChild(content);
 
   // Image wrapper (Flex Block)
@@ -129,4 +133,3 @@ if (document.readyState === 'loading') {
   const projectGrid = document.querySelector('.project-grid');
   renderProjectCards(projectGrid);
 }
-
