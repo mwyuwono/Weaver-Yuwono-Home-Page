@@ -21,23 +21,13 @@
   flex-wrap: wrap;
 }
 
-/* Profile Card Link - Individual clickable links */
+/* Profile Card Link - Extends card__link with link-specific properties */
 .profile-card__link {
-  font-family: Noto Sans, sans-serif;
-  color: hsla(50, 6.64%, 61.44%, 1.00);
-  font-size: 0.75rem;
-  line-height: 1.2em;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-.profile-card__link:hover {
-  color: #304634;
-  text-decoration: underline;
-}
+
 
 /* Responsive Breakpoints - Profile-specific overrides */
 

@@ -87,6 +87,22 @@
   grid-row-gap: 1em;
 }
 
+/* Card Link - Shared typography for helper text and action links */
+.card__link {
+  font-family: Noto Sans, sans-serif;
+  color: hsla(50, 6.64%, 61.44%, 1.00);
+  font-size: 0.75rem;
+  line-height: 1.2em;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.card__link:hover {
+  color: var(--md-sys-color-on-surface-variant);
+  text-decoration: underline;
+}
+
 /* Card Header */
 .card__header {
   display: flex;

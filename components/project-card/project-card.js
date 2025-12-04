@@ -70,7 +70,7 @@ function createProjectCard(project) {
 
   // Helper text
   const helper = document.createElement('div');
-  helper.className = 'project-card__helper';
+  helper.className = 'card__link project-card__helper';
   helper.textContent = 'PDF download';
   helper.setAttribute('data-element', 'card-helper');
 
