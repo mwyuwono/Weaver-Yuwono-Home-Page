@@ -26,7 +26,8 @@ Deployed via Vercel with auto-deployment enabled. Repository stored in iCloud Dr
 - **GitHub Repository**: https://github.com/mwyuwono/Weaver-Yuwono-Home-Page
 - **Technology Stack**:
   - Main site: Vanilla HTML/CSS/JavaScript with Google Fonts (Playfair Display, Inter)
-  - Projects site: HTML/CSS/JavaScript with Material Design 3 design system (Noto Sans, Noto Serif)
+  - Projects site: HTML/CSS/JavaScript with m3-design-v2 design system (via CDN)
+  - Design System: m3-design-v2 imported from jsDelivr CDN (`@main` branch)
 
 ## Development Workflow
 
@@ -54,6 +55,41 @@ The project uses a single domain:
 - **weaver-yuwono.com/projects/** → portfolio page
 
 No special Vercel configuration is needed - standard static file serving handles both pages.
+
+## Design System Integration
+
+This project uses the **m3-design-v2** design system via CDN imports:
+
+- **Tokens**: Imported from `https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/tokens.css`
+- **Main Styles**: Imported from `https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/main.css`
+- **Integration Method**: CDN (jsDelivr) - same as prompt-library project
+
+### Token Mapping
+
+Local token names are mapped to design system tokens for backward compatibility:
+- `--md-sys-spacing-xs` → `var(--spacing-xs)` (4px)
+- `--md-sys-spacing-sm` → `var(--spacing-sm)` (8px)
+- `--md-sys-spacing-md` → `var(--spacing-md)` (16px)
+- `--md-sys-spacing-lg` → `var(--spacing-lg)` (24px)
+- `--md-sys-spacing-xl` → `var(--spacing-xl)` (32px)
+- `--md-sys-spacing-xxl` → `var(--spacing-2xl)` (48px)
+
+### After Design System Changes
+
+When m3-design-v2 is updated, purge the CDN cache:
+```bash
+for f in src/styles/tokens.css src/styles/main.css dist/web-components.js; do
+  for v in @main "" @latest; do
+    curl -s "https://purge.jsdelivr.net/gh/mwyuwono/m3-design-v2${v}/${f}"
+  done
+done
+```
+
+Then hard refresh the browser (Cmd+Shift+R) to see changes.
+
+### Legacy Design System
+
+The local `design-system/` directory is legacy and no longer used. The project now relies entirely on m3-design-v2 via CDN.
 
 ## CSS Modification Policy
 
@@ -204,7 +240,7 @@ See `components/README.md` for detailed guidelines and examples.
 │   │   ├── profile-card.css
 │   │   └── profile-card.js
 │   └── README.md          # Component architecture guidelines
-├── design-system/         # Material Design 3 design system (git submodule)
+├── design-system/         # Legacy design system (no longer used - replaced by m3-design-v2)
 ├── vercel.json            # Vercel auto-deployment configuration
 ├── .vercel/               # Vercel project settings (gitignored)
 ├── CLAUDE.md              # Project instructions for Claude Code
@@ -222,7 +258,7 @@ See `components/README.md` for detailed guidelines and examples.
   - Both pages load appropriate base + variant combinations
 - **CSS separation**:
   - Landing: `styles.css` (Material Design 3 background) + card-base + profile-card
-  - Projects: `projects/projects.css` (layout, grid) + design system + card-base + project-card
+  - Projects: `projects/projects.css` (layout, grid) + m3-design-v2 (CDN) + card-base + project-card
 - **Asset ownership**: Clear separation between landing and projects assets
 - **Video files**: Both `flow_loop.mp4` and `bloom_loop.mp4` kept for easy swapping
 - **File naming**: Consistent kebab-case for all new/renamed files

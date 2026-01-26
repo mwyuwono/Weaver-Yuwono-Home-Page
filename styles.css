@@ -37,19 +37,19 @@ a:hover {
 }
 
 /* CSS Variables */
-/* Design system color tokens are loaded from design-system/preview/colors-config.js */
-/* Palette tokens are loaded from design-system/tokens/material3.web.css */
-/* Spacing and typography tokens defined here */
+/* Design system tokens (colors, spacing, motion, state) are loaded from m3-design-v2 via CDN */
+/* Map local token names to design system tokens for backward compatibility */
 :root {
-  /* Spacing tokens */
-  --md-sys-spacing-xs: 4px;
-  --md-sys-spacing-sm: 8px;
-  --md-sys-spacing-md: 16px;
-  --md-sys-spacing-lg: 24px;
-  --md-sys-spacing-xl: 32px;
-  --md-sys-spacing-xxl: 48px;
+  /* Spacing tokens - mapped from design system */
+  --md-sys-spacing-xs: var(--spacing-xs);      /* 4px */
+  --md-sys-spacing-sm: var(--spacing-sm);      /* 8px */
+  --md-sys-spacing-md: var(--spacing-md);      /* 16px */
+  --md-sys-spacing-lg: var(--spacing-lg);      /* 24px */
+  --md-sys-spacing-xl: var(--spacing-xl);      /* 32px */
+  --md-sys-spacing-xxl: var(--spacing-2xl);    /* 48px */
 
-  /* Typography tokens */
+  /* Typography tokens - kept for backward compatibility */
+  /* Note: Design system provides more comprehensive typography tokens */
   --md-sys-typescale-body-medium: 14px;
   --md-sys-typescale-body-large: 16px;
   --md-sys-typescale-title-medium: 20px;
