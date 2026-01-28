@@ -91,6 +91,32 @@ Then hard refresh the browser (Cmd+Shift+R) to see changes.
 
 The local `design-system/` directory is legacy and no longer used. The project now relies entirely on m3-design-v2 via CDN.
 
+### React Components vs Web Components Architecture
+
+**CRITICAL:** This project uses vanilla HTML/JavaScript with design system tokens. When making UI changes:
+
+**This project uses:**
+- **Design System Tokens** (CSS variables) - Loaded via CDN from `m3-design-v2`
+- **Vanilla HTML/JS** - No React, no Web Components (currently)
+
+**When to update design system vs project:**
+- **Update Design System (`m3-design-v2`) when:** Changes to shared tokens (colors, spacing, typography) that should affect all projects
+- **Update Project when:** Project-specific styling or components
+
+**How to identify which to edit:**
+1. Check if change affects design tokens (colors, spacing, typography scale)
+2. If yes, edit the design system (`m3-design-v2/src/styles/tokens.css` or `main.css`)
+3. If no, it's project-specific (edit local CSS files)
+
+**Example:**
+- Changing primary color → Edit `m3-design-v2/src/styles/tokens.css`
+- Changing project card layout → Edit `projects/projects.css` (project-specific)
+
+**Verification Checklist:**
+- [ ] Determine if change is token-related (shared) or project-specific
+- [ ] If token-related, verify it should propagate to all projects
+- [ ] After design system changes, purge CDN cache and hard refresh
+
 ## CSS Modification Policy
 
 **IMPORTANT**: The user has custom-tweaked the CSS styling. Do NOT modify CSS files without explicit user instruction or permission. This includes:
