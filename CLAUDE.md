@@ -58,11 +58,58 @@ No special Vercel configuration is needed - standard static file serving handles
 
 ## Design System Integration
 
-This project uses the **m3-design-v2** design system via CDN imports:
+This project uses the **m3-design-v2** design system via CDN imports.
 
-- **Tokens**: Imported from `https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/tokens.css`
-- **Main Styles**: Imported from `https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/main.css`
-- **Integration Method**: CDN (jsDelivr) - same as prompt-library project
+**Authoritative Documentation:** For complete design system details, see [m3-design-v2/DESIGN-SYSTEM.md](https://github.com/mwyuwono/m3-design-v2/blob/main/DESIGN-SYSTEM.md)
+
+### CDN Import Details
+
+**CSS tokens** (in `projects/projects.css`):
+```css
+/* Using @main with cache-busting parameter - update ?v= after design system changes */
+@import url('https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/tokens.css?v=20260130');
+@import url('https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/main.css?v=20260130');
+```
+
+### Import Pinning Policy (3-Tier Hierarchy)
+
+**Preferred import strategies (in order of preference):**
+
+| Priority | Method | Use Case |
+|----------|--------|----------|
+| **Primary** | Semantic version tags (`@v1.2.3`) | Production stability, immutable |
+| **Secondary** | `@main` with cache-busting (`?v=YYYYMMDD`) | Development iteration |
+| **Emergency** | Commit hash (`@abc1234`) | CDN staleness fallback only |
+
+**Default: Use `@main` with cache-busting parameters.**
+
+**NEVER pin to a commit hash without:**
+- A comment explaining the specific issue
+- A TODO with target date to revert (24-48 hours max)
+
+### Browser Cache Management
+
+**Safari-Specific Caching:**
+Safari aggressively caches CSS/JS even with proper `Cache-Control` headers. Always use cache-busting:
+
+- Add `?v=YYYYMMDD` to CDN imports
+- Update version parameter after design system changes
+- Hard refresh (Cmd+Shift+R) after updates
+
+### After Design System Changes
+
+**Complete Workflow Checklist:**
+1. Purge jsDelivr CDN cache:
+```bash
+for f in src/styles/tokens.css src/styles/main.css dist/web-components.js; do
+  for v in @main "" @latest; do
+    curl -s "https://purge.jsdelivr.net/gh/mwyuwono/m3-design-v2${v}/${f}"
+  done
+done
+```
+2. Update `?v=` parameters in CSS imports
+3. Commit version changes
+4. Hard refresh browser (Cmd+Shift+R)
 
 ### Token Mapping
 
@@ -73,19 +120,6 @@ Local token names are mapped to design system tokens for backward compatibility:
 - `--md-sys-spacing-lg` → `var(--spacing-lg)` (24px)
 - `--md-sys-spacing-xl` → `var(--spacing-xl)` (32px)
 - `--md-sys-spacing-xxl` → `var(--spacing-2xl)` (48px)
-
-### After Design System Changes
-
-When m3-design-v2 is updated, purge the CDN cache:
-```bash
-for f in src/styles/tokens.css src/styles/main.css dist/web-components.js; do
-  for v in @main "" @latest; do
-    curl -s "https://purge.jsdelivr.net/gh/mwyuwono/m3-design-v2${v}/${f}"
-  done
-done
-```
-
-Then hard refresh the browser (Cmd+Shift+R) to see changes.
 
 ### Legacy Design System
 
