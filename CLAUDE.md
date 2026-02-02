@@ -33,6 +33,8 @@ Deployed via Vercel with auto-deployment enabled. Repository stored in iCloud Dr
 
 This is a static website with no build process. **Auto-deployment is enabled** - any push to the `main` branch automatically triggers a Vercel deployment.
 
+**CRITICAL CDN Cache Management:** After pushing changes to m3-design-v2, always wait 2-3 minutes before purging jsDelivr CDN (purges are throttled to max 10/hour per file), and if throttled, temporarily pin consuming projects to the commit hash (e.g., `@abc1234`) with a TODO to revert to `@main` within 24 hours, rather than repeatedly purging which will fail.
+
 ### Standard Workflow
 
 1. Make changes to HTML/CSS/JS files
