@@ -56,6 +56,14 @@ The project uses a single domain:
 
 No special Vercel configuration is needed - standard static file serving handles both pages.
 
+## Default Change Locus (Important)
+
+**Unless the user explicitly asks otherwise, all component and styling changes must be made in the shared design system repo (`m3-design-v2`) so updates propagate to all consuming projects.**
+
+- Do **not** implement per-page or per-app overrides in consuming projects unless explicitly requested.
+- If a local override is unavoidable, call it out and confirm before proceeding.
+- If a request mentions a UI or component change, first verify whether the component is sourced from the design system and update it there.
+
 ## Design System Integration
 
 This project uses the **m3-design-v2** design system via CDN imports.
