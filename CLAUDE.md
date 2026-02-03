@@ -117,9 +117,18 @@ for f in src/styles/tokens.css src/styles/main.css dist/web-components.js; do
   done
 done
 ```
-2. Update `?v=` parameters in CSS imports
+2. **Update cache-busting parameters** (CRITICAL for browser reload):
+```bash
+# Check current parameters
+grep -r "?v=" projects/projects.css
+
+# Update to current date (e.g., ?v=20260203)
+# Edit: projects/projects.css lines with @import url(...)
+```
 3. Commit version changes
 4. Hard refresh browser (Cmd+Shift+R)
+
+**Why This Matters:** Browsers cache CSS/JS files aggressively. Without updating `?v=` parameters, users will see old styles even after CDN purge and git push. Always update cache-busting parameters when design system changes affect this project.
 
 ### Token Mapping
 
