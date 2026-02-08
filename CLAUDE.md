@@ -6,6 +6,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository contains the Weaver-Yuwono family website with two pages:
 
+## Communication Preferences
+
+**Be concise.** Short status updates over verbose summaries. No markdown documentation files unless explicitly requested.
+
+### Documentation Hygiene
+
+**Clean up temporary documentation at the end of exercises.**
+
+- Delete plans, tests, and other temporary `.md` files when work is complete
+- When marking a plan "done" or completing a test, remove the documentation created along the way
+- Don't create detailed summaries upon completion unless they provide information not already in the code or elsewhere
+- Resist the urge to document what the code already shows clearly
+
+## Pages
+
 1. **Main Landing Page** (`/index.html`) at [weaver-yuwono.com](https://weaver-yuwono.com):
    - Dynamic video background with bloom effect
    - Animated gradient overlays
@@ -97,6 +112,41 @@ This project uses the **m3-design-v2** design system via CDN imports.
 - A comment explaining the specific issue
 - A TODO with target date to revert (24-48 hours max)
 
+### CRITICAL: Audit Local Overrides Before Design System Changes
+
+**ALWAYS verify `projects/projects.css` has no conflicting token overrides before making design system changes.**
+
+Token precedence chain (highest to lowest):
+1. This project's CSS files (`projects/projects.css`)
+2. Design system `m3-design-v2/src/styles/tokens.css`
+3. Component defaults in design system components
+
+**Audit for problematic overrides:**
+
+```bash
+# Check for component-specific token overrides
+grep -n "wy-filter-chip\|wy-controls\|wy-modal\|wy-button\|--md-sys-color" projects/projects.css
+
+# If found, verify they are:
+# ✅ ALLOWED: Layout configuration, app-specific spacing
+# ❌ FORBIDDEN: Color/border/shadow overrides that duplicate design system
+```
+
+**Red flags (remove these):**
+- Hardcoded colors instead of tokens (e.g., `#E8F5E9`)
+- Comments like "Override for..." or "Workaround for..."
+- Duplicate tokens that already exist in design system
+
+**When local overrides ARE appropriate:**
+- App-specific layout adjustments
+- Custom spacing for this project only
+- Tokens genuinely unique to this project
+
+**When local overrides are FORBIDDEN:**
+- Colors, borders, shadows (use design system tokens)
+- Component appearance (update design system)
+- Fixes for design system bugs (fix at source, not locally)
+
 ### Browser Cache Management
 
 **Safari-Specific Caching:**
@@ -105,8 +155,11 @@ Safari aggressively caches CSS/JS even with proper `Cache-Control` headers. Alwa
 - Add `?v=YYYYMMDD` to CDN imports
 - Update version parameter after design system changes
 - Hard refresh (Cmd+Shift+R) after updates
+- **CRITICAL:** Update cache-busting EVERY TIME design system tokens change
 
 ### After Design System Changes
+
+**ALWAYS follow this complete workflow checklist - skipping cache-busting will cause stale styles:**
 
 **Complete Workflow Checklist:**
 1. Purge jsDelivr CDN cache:
