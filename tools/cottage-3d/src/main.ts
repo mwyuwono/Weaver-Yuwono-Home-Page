@@ -5,6 +5,7 @@
 import './style.css';
 import * as THREE from 'three';
 import { loadHouseData } from './data';
+import { loadBakedLines } from './data/lines';
 import { House } from './model/House';
 import { createRenderer } from './scene/createRenderer';
 import { Pipeline } from './render/Pipeline';
@@ -37,13 +38,13 @@ async function start(root: HTMLElement): Promise<void> {
     return;
   }
 
-  const data = await loadHouseData();
+  const [data, baked] = await Promise.all([loadHouseData(), loadBakedLines()]);
   const qa = new URLSearchParams(location.search).get('qa');
   const qaFace = (['front', 'rear', 'left', 'right'].includes(qa ?? '') ? qa : null) as QaFace | null;
   const renderer = createRenderer(root, qaFace !== null);
   const scene = new THREE.Scene();
   const camera = createCamera();
-  const house = new House(data);
+  const house = new House(data, { baked });
   let explode: ExplodeController | null = null;
   const controls = createControls(camera, renderer.domElement, (x, z) => (explode?.groundActive === false ? -Infinity : (house.grade.y(x / IN, z / IN) * IN) + GROUND_CLEARANCE_FT));
   scene.add(house.root);

@@ -32,6 +32,9 @@ export interface Candidate {
   tier: LineTierName;
 }
 
+/** Candidate/triangle collection switch: off when baked line data is used (see render/bakedLines), so builders skip the extraction cost. */
+export const lineExtraction = { enabled: true };
+
 export interface LineData {
   candidates: Candidate[];
   /** Every triangle of the group (flat xyz × 3 per triangle), including pieces that draw no lines. */

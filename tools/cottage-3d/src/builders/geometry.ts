@@ -7,7 +7,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import type { Vec2 } from '../data/schema';
 import { WashMaterial } from '../render/wash';
 import { tierForInk, type LineTierName } from '../render/lines';
-import { extractCandidates, type LineData } from '../render/edgeClassify';
+import { extractCandidates, lineExtraction, type LineData } from '../render/edgeClassify';
 import { IN } from '../units';
 
 /**
@@ -180,6 +180,7 @@ export class GeometryBatch {
       mesh.castShadow = !(mat instanceof WashMaterial) || mat.castsShadow;
       mesh.receiveShadow = true;
       group.add(mesh);
+      if (!lineExtraction.enabled) continue;
       const ink = mat instanceof WashMaterial ? mat.spec.ink : 0.5;
       for (const e of list) {
         const pos = e.geo.getAttribute('position').array as ArrayLike<number>;

@@ -260,12 +260,12 @@ export function dedupeTierSegments(seg: TierSegments): void {
 }
 
 /** Build one fat-line object for a tier (null when the tier has no segments). */
-export function buildTierLines(seg: TierSegments, tier: LineTierName): LineSegments2 | null {
+export function buildTierLines(seg: { positions: ArrayLike<number>; sizes: ArrayLike<number>; joins: ArrayLike<number> }, tier: LineTierName): LineSegments2 | null {
   if (seg.positions.length === 0) return null;
   const geo = new LineSegmentsGeometry();
-  geo.setPositions(new Float32Array(seg.positions));
-  geo.setAttribute('instanceFeature', new THREE.InstancedBufferAttribute(new Float32Array(seg.sizes), 1));
-  geo.setAttribute('instanceJoin', new THREE.InstancedBufferAttribute(new Float32Array(seg.joins), 1));
+  geo.setPositions(Float32Array.from(seg.positions));
+  geo.setAttribute('instanceFeature', new THREE.InstancedBufferAttribute(Float32Array.from(seg.sizes), 1));
+  geo.setAttribute('instanceJoin', new THREE.InstancedBufferAttribute(Float32Array.from(seg.joins), 1));
   const lines = new LineSegments2(geo, new CottageLineMaterial(tier));
   lines.renderOrder = 10;
   return lines;

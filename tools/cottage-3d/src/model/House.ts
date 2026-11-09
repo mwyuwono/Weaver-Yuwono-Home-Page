@@ -9,7 +9,8 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import type { HouseData, Level, LevelId } from '../data/schema';
 import { materials as m } from '../materials';
 import { buildTierLines, dedupeTierSegments, type LineTierName, type TierSegments } from '../render/lines';
-import { classifyEdge, PlaneIndex, type LineData } from '../render/edgeClassify';
+import { classifyEdge, lineExtraction, PlaneIndex, type LineData } from '../render/edgeClassify';
+import type { BakedTier, LineSets } from '../render/bakedLines';
 import { IN } from '../units';
 import { WashMaterial } from '../render/wash';
 import { planToScene } from '../units';
@@ -72,11 +73,12 @@ function flatten(name: string, parts: (THREE.Object3D | null)[]): THREE.Group {
 /**
  * Turn every group's candidate edges into drawing lines (see render/edgeClassify): joints covered flush by the same
  * group are dropped, joints covered only by another group become join lines (shown once floors separate).
+ * Returns the merged segments per group and tier; this is the work that is baked at build time.
  */
-function addLinework(groups: THREE.Group[]): number {
+function classifyLinework(groups: THREE.Group[]): LineSets {
   const own = groups.map((g) => (g.userData.lineData as LineData | undefined) ?? { candidates: [], tris: [] });
   const indices = own.map((ld) => new PlaneIndex([ld.tris]));
-  let total = 0;
+  const sets: LineSets = {};
   groups.forEach((group, gi) => {
     const tiers: Record<LineTierName, TierSegments> = {
       primary: { positions: [], sizes: [], joins: [] },
@@ -94,18 +96,37 @@ function addLinework(groups: THREE.Group[]): number {
         seg.joins.push(state === 1 ? 1 : 0);
       }
     }
-    (Object.keys(tiers) as LineTierName[]).forEach((tier) => {
+    sets[group.name] = {};
+    for (const tier of Object.keys(tiers) as LineTierName[]) {
       dedupeTierSegments(tiers[tier]);
-      const lines = buildTierLines(tiers[tier], tier);
-      if (!lines) return;
+      if (tiers[tier].sizes.length > 0) sets[group.name][tier] = tiers[tier];
+    }
+    delete group.userData.lineData;
+  });
+  return sets;
+}
+
+/** Add a fat-line object per tier to each group; returns the segment total. */
+function attachLinework(groups: THREE.Group[], sets: LineSets): number {
+  let total = 0;
+  for (const group of groups) {
+    for (const [tier, seg] of Object.entries(sets[group.name] ?? {}) as [LineTierName, BakedTier][]) {
+      const lines = buildTierLines(seg, tier);
+      if (!lines) continue;
       lines.castShadow = false;
       lines.receiveShadow = false;
       group.add(lines);
-      total += tiers[tier].sizes.length;
-    });
-    delete group.userData.lineData;
-  });
+      total += seg.sizes.length;
+    }
+  }
   return total;
+}
+
+export interface HouseOptions {
+  /** Line sets baked at build time. When given, edge extraction and classification are skipped entirely. */
+  baked?: LineSets;
+  /** Receives the freshly classified line sets (runtime classification only); used by the build-time bake. */
+  onLineSets?: (sets: LineSets) => void;
 }
 
 export class House {
@@ -122,7 +143,8 @@ export class House {
   /** Total vector-linework segments across every level group. */
   readonly lineSegments: number;
 
-  constructor(data: HouseData) {
+  constructor(data: HouseData, options: HouseOptions = {}) {
+    lineExtraction.enabled = !options.baked; // baked lines: builders skip edge extraction
     const byId = new Map<LevelId, Level>(data.levels.map((l) => [l.id, l]));
     const first = byId.get('first');
     const second = byId.get('second');
@@ -159,7 +181,11 @@ export class House {
     ]));
 
     const siteStructures = flatten('site-structures', [buildSite(data, m)]);
-    this.lineSegments = addLinework([...this.levels.values(), siteStructures]);
+    const lineGroups = [...this.levels.values(), siteStructures];
+    const sets = options.baked ?? classifyLinework(lineGroups);
+    if (!options.baked) options.onLineSets?.(sets);
+    lineExtraction.enabled = true;
+    this.lineSegments = attachLinework(lineGroups, sets);
     for (const [key, group] of this.levels) {
       this.root.add(group);
       this.bounds.set(key, new THREE.Box3().setFromObject(group));
