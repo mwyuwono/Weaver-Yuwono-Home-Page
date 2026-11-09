@@ -10,14 +10,17 @@
 import * as THREE from 'three';
 import type { HouseData, Vec2 } from '../data/schema';
 import type { Materials } from '../materials';
+import type { WashMaterial } from '../render/wash';
 import { IN } from '../units';
 import { pointInPolygon } from './geometry';
 
 /** Fade the ground out between these radii (scene feet) from the house centre. */
-const FADE_START_FT = 60, FADE_END_FT = 100;
+const FADE_START_FT = 26, FADE_END_FT = 72;
 const SKIRT_DEPTH = 900;
 /** Distance (inches) beyond the end of a retaining wall over which the bank eases out. */
 const BANK_EASE = 140;
+/** Half-width (inches) over which the terrace and the walk-out grade blend into each other beyond the rear end of the stepX retaining wall. */
+const SEAM_EASE = 60;
 /** Length (inches) of the ramp that replaces a retaining-wall step beyond the end of the wall. */
 const BANK_RAMP = 110;
 
@@ -47,11 +50,15 @@ export class Grade {
   /** Right profile with its retaining-wall step smoothed out; the bank eases into it beyond the end of the wall. */
   private readonly eased: Vec2[] | null;
   private readonly wallEndX: number;
+  /** Rear end (z) of the retaining wall that stands on x = stepX; beyond it nothing holds the two grades apart. */
+  private readonly seamRearZ: number;
 
   constructor(private readonly data: HouseData) {
     const r = rampedProfile(data.site.terrain.right);
     this.eased = r?.ramp ?? null;
     const wall = data.site.retainingWalls.find((w) => w.outline.some((q) => Math.abs(q[1] - (r?.stepZ ?? 0)) < 15));
+    const seamWall = data.site.retainingWalls.find((w) => w.outline.every((q) => Math.abs(q[0] - data.site.terrain.stepX) < 15));
+    this.seamRearZ = seamWall ? Math.min(...seamWall.outline.map((q) => q[1])) : -Infinity;
     this.wallEndX = wall ? Math.max(...wall.outline.map((q) => q[0])) : data.roof.main.xMax;
   }
 
@@ -69,6 +76,10 @@ export class Grade {
       const t = Math.min(1, Math.max(0, (x - r.xMin) / (r.xMax - r.xMin)));
       return profileY(left, z) * (1 - t) + rightY() * t;
     }
+    if (z < this.seamRearZ) { // past the wall the two grades meet smoothly instead of leaving a crack along x = stepX
+      const k = Math.min(1, Math.max(0, (x - (stepX - SEAM_EASE)) / (2 * SEAM_EASE)));
+      return profileY(left, z) * (1 - k * k * (3 - 2 * k)) + rightY() * (k * k * (3 - 2 * k));
+    }
     return xr < stepX ? profileY(left, z) : rightY();
   }
 }
@@ -85,21 +96,13 @@ function refine(values: number[], maxStep: number): number[] {
   return out;
 }
 
-/** Ground material: the lawn material with an alpha fade towards the edge (object-space xz, so no camera dependence). */
-function terrainMaterial(base: Materials, centre: THREE.Vector3): THREE.MeshStandardMaterial {
+/**
+ * Ground material: the lawn wash with a fade to bare paper towards the edge (world xz, so no camera dependence).
+ * The ground stays OPAQUE — the fade is done in pigment — so nothing below grade can ever show through it.
+ */
+function terrainMaterial(base: Materials, centre: THREE.Vector3): WashMaterial {
   const mat = base.ground.clone();
-  mat.transparent = true;
-  mat.userData.keepTransparent = true; // ExplodeController must not switch this off when it fades the site
-  const uniforms = { uCentre: { value: new THREE.Vector2(centre.x, centre.z) }, uFade: { value: new THREE.Vector2(FADE_START_FT, FADE_END_FT) } };
-  mat.onBeforeCompile = (shader) => {
-    Object.assign(shader.uniforms, uniforms);
-    shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nvarying vec2 vFadeXZ;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvFadeXZ = position.xz;');
-    shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nvarying vec2 vFadeXZ;\nuniform vec2 uCentre;\nuniform vec2 uFade;')
-      .replace('#include <map_fragment>', '#include <map_fragment>\ndiffuseColor.a *= 1.0 - smoothstep(uFade.x, uFade.y, distance(vFadeXZ, uCentre));');
-  };
+  mat.fade = [centre.x, centre.z, FADE_START_FT, FADE_END_FT];
   return mat;
 }
 
@@ -110,17 +113,13 @@ export function buildTerrain(data: HouseData, m: Materials, centre: THREE.Vector
   const all = footprint.flat();
   const xsAll = all.map((p) => p[0]), zsAll = all.map((p) => p[1]);
   const mg = data.site.margin, t = data.site.terrain;
-  const xs = refine([Math.min(...xsAll) - mg, Math.max(...xsAll) + mg, ...xsAll, t.stepX, ...data.site.retainingWalls.flatMap((w) => w.outline.map((q) => q[0]))], 100);
+  const xs = refine([Math.min(...xsAll) - mg, Math.max(...xsAll) + mg, ...xsAll, t.stepX, t.stepX - SEAM_EASE, t.stepX + SEAM_EASE, ...data.site.retainingWalls.flatMap((w) => w.outline.map((q) => q[0]))], 100);
   const zs = refine([Math.min(...zsAll) - mg, Math.max(...zsAll) + mg, ...zsAll, ...t.left.map((p) => p[0]), ...t.right.map((p) => p[0])].filter((z) => Math.abs(z) < 2000), 100);
 
-  const pos: number[] = [], nor: number[] = [], uv: number[] = [];
+  const pos: number[] = [];
   const vertex = (x: number, z: number, xr: number) => {
     const y = grade.y(x, z, xr);
-    const dx = (grade.y(x + 1, z, xr) - grade.y(x - 1, z, xr)) / 2, dz = (grade.y(x, z + 1, xr) - grade.y(x, z - 1, xr)) / 2;
-    const l = Math.hypot(dx, 1, dz);
     pos.push(x * IN, y * IN, z * IN);
-    nor.push(-dx / l, 1 / l, -dz / l);
-    uv.push(x, z);
   };
   const edge: [number, number, number][] = []; // border vertices for the skirt (x, z, y inches)
   for (let i = 0; i < xs.length - 1; i++) {
@@ -142,12 +141,11 @@ export function buildTerrain(data: HouseData, m: Materials, centre: THREE.Vector
     const [a, c] = [edge[k], edge[k + 1]];
     const lo = (p: [number, number, number]): number[] => [p[0] * IN, (p[2] - SKIRT_DEPTH) * IN, p[1] * IN];
     const hi = (p: [number, number, number]): number[] => [p[0] * IN, p[2] * IN, p[1] * IN];
-    for (const v of [hi(a), lo(a), hi(c), hi(c), lo(a), lo(c)]) { pos.push(...v); nor.push(0, 1, 0); uv.push(v[0] / IN, v[2] / IN); }
+    for (const v of [hi(a), lo(a), hi(c), hi(c), lo(a), lo(c)]) pos.push(...v);
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
-  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  geo.computeVertexNormals(); // non-indexed: one flat normal per triangle (per-vertex finite differences smeared across the grade steps)
   const mat = terrainMaterial(m, centre);
   mat.side = THREE.DoubleSide; // skirt winding differs by border side
   const mesh = new THREE.Mesh(geo, mat);

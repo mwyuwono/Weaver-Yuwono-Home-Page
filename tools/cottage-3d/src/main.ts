@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { loadHouseData } from './data';
 import { House } from './model/House';
 import { createRenderer } from './scene/createRenderer';
+import { Pipeline } from './render/Pipeline';
 import { createCamera, createControls } from './scene/createCamera';
 import { addLights } from './scene/lights';
 import { RenderLoop } from './scene/RenderLoop';
@@ -39,14 +40,14 @@ async function start(root: HTMLElement): Promise<void> {
   const data = await loadHouseData();
   const qa = new URLSearchParams(location.search).get('qa');
   const qaFace = (['front', 'rear', 'left', 'right'].includes(qa ?? '') ? qa : null) as QaFace | null;
-  const renderer = createRenderer(root);
+  const renderer = createRenderer(root, qaFace !== null);
   const scene = new THREE.Scene();
   const camera = createCamera();
   const house = new House(data);
   let explode: ExplodeController | null = null;
   const controls = createControls(camera, renderer.domElement, (x, z) => (explode?.groundActive === false ? -Infinity : (house.grade.y(x / IN, z / IN) * IN) + GROUND_CLEARANCE_FT));
   scene.add(house.root);
-  addLights(scene, renderer, house.center);
+  addLights(scene, house.center);
 
   if (qaFace) {
     // Dev-only straight-on elevation for qa/overlay.mjs; no UI, no animation.
@@ -61,13 +62,14 @@ async function start(root: HTMLElement): Promise<void> {
   }
 
   const tweens = new TweenSet();
-  const loop = new RenderLoop(renderer, scene, camera, controls, tweens);
+  const pipeline = new Pipeline(renderer);
+  const loop = new RenderLoop(pipeline, scene, camera, controls, tweens);
   explode = new ExplodeController(house, camera, controls, tweens);
   const ex = explode;
 
   const resize = () => {
     const { clientWidth: w, clientHeight: h } = root;
-    renderer.setSize(w, h, false);
+    pipeline.setSize(w, h);
     camera.aspect = w / Math.max(h, 1);
     camera.updateProjectionMatrix();
     loop.invalidate();
@@ -85,7 +87,7 @@ async function start(root: HTMLElement): Promise<void> {
   ex.onState = (s) => ui.setState(s);
 
   loop.onFirstFrame = () => {
-    console.info(`[cottage-3d] draw calls (first frame): ${renderer.info.render.calls}, triangles: ${renderer.info.render.triangles}`);
+    console.info(`[cottage-3d] draw calls (first frame, both passes): ${pipeline.stats.calls}, triangles: ${pipeline.stats.triangles}`);
     root.setAttribute('aria-busy', 'false');
     loading?.classList.add('done');
   };

@@ -1,11 +1,12 @@
-/** Lighting: one shadow-casting sun, a sky/ground hemisphere fill and a faint procedural environment for glass and metal. */
+/**
+ * Lighting: a single shadow-casting sun. It is not used for realistic lighting — the wash shader reads its direction
+ * for the soft tonal bands and its shadow map for the delicate ground shadow. No ambient, hemisphere or environment light.
+ */
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { sunDirection } from '../render/wash';
 
-export function addLights(scene: THREE.Scene, renderer: THREE.WebGLRenderer, target: THREE.Vector3): void {
-  scene.add(new THREE.HemisphereLight(0xdfeaf7, 0x8d8f7c, 1.15));
-
-  const sun = new THREE.DirectionalLight(0xfff1de, 2.6);
+export function addLights(scene: THREE.Scene, target: THREE.Vector3): void {
+  const sun = new THREE.DirectionalLight(0xffffff, Math.PI); // PI: WashMaterial reads N.L * shadow straight from the Lambert term
   sun.position.copy(target).add(new THREE.Vector3(-45, 70, 60)); // front-left, high: lights the hero view
   sun.target.position.copy(target);
   sun.castShadow = true;
@@ -15,15 +16,10 @@ export function addLights(scene: THREE.Scene, renderer: THREE.WebGLRenderer, tar
   cam.right = cam.top = 55;
   cam.near = 10;
   cam.far = 220;
-  sun.shadow.bias = -0.0004;
-  sun.shadow.normalBias = 0.04;
-  sun.shadow.radius = 3;
+  sun.shadow.bias = -0.0008;
+  sun.shadow.normalBias = 0.09; // generous: acne on the walls would read as stray hatch marks
+  sun.shadow.radius = 5;
+  sun.shadow.blurSamples = 16;
   scene.add(sun, sun.target);
-
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const env = new RoomEnvironment();
-  scene.environment = pmrem.fromScene(env, 0.04).texture;
-  scene.environmentIntensity = 0.35;
-  env.dispose();
-  pmrem.dispose();
+  sunDirection.value.copy(sun.position).sub(target).normalize();
 }

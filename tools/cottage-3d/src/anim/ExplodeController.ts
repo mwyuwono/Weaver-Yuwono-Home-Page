@@ -138,9 +138,8 @@ export class ExplodeController {
     for (const m of node.materials) {
       m.opacity = opacity;
       m.depthWrite = !transparent;
-      const wantTransparent = transparent || m.userData.keepTransparent === true; // the terrain's edge fade needs blending always
-      if (m.transparent !== wantTransparent) {
-        m.transparent = wantTransparent;
+      if (m.transparent !== transparent) {
+        m.transparent = transparent;
         m.needsUpdate = true; // transparency changes the compiled program's alpha output
       }
     }

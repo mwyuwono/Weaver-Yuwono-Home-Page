@@ -7,6 +7,7 @@
 import * as THREE from 'three';
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { TweenSet } from '../anim/tween';
+import type { Pipeline } from '../render/Pipeline';
 
 export class RenderLoop {
   private raf = 0;
@@ -17,7 +18,7 @@ export class RenderLoop {
   onFirstFrame: (() => void) | null = null;
 
   constructor(
-    private readonly renderer: THREE.WebGLRenderer,
+    private readonly pipeline: Pipeline,
     private readonly scene: THREE.Scene,
     private readonly camera: THREE.PerspectiveCamera,
     private readonly controls: OrbitControls,
@@ -30,7 +31,7 @@ export class RenderLoop {
     new IntersectionObserver((entries) => {
       this.onScreen = entries.some((e) => e.isIntersecting);
       this.invalidate();
-    }).observe(renderer.domElement);
+    }).observe(pipeline.domElement);
   }
 
   /** Request a redraw (and wake the loop if it is asleep). */
@@ -46,7 +47,7 @@ export class RenderLoop {
     const moved = this.controls.update();
     if (tweening || moved || this.dirty) {
       this.dirty = false;
-      this.renderer.render(this.scene, this.camera);
+      this.pipeline.render(this.scene, this.camera);
       if (++this.frames === 1) this.onFirstFrame?.();
       // controls.update() may already have re-armed the loop through its 'change' event
       if (!this.raf) this.raf = requestAnimationFrame((t) => this.frame(t));

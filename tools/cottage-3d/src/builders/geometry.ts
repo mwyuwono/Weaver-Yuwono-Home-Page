@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { Vec2 } from '../data/schema';
+import { WashMaterial } from '../render/wash';
 import { IN } from '../units';
 
 const unitBox = new THREE.BoxGeometry(1, 1, 1);
@@ -75,23 +76,6 @@ export function splitExtrudeGroups(geo: THREE.ExtrudeGeometry): { caps: THREE.Bu
   return { caps: slice(caps.start, caps.count), sides: slice(sides.start, sides.count) };
 }
 
-/** Rebuild UVs from world position (inches): project along the face's dominant normal axis. */
-function applyWorldUV(geo: THREE.BufferGeometry): void {
-  const pos = geo.getAttribute('position');
-  const nor = geo.getAttribute('normal');
-  const uv = new Float32Array(pos.count * 2);
-  for (let i = 0; i < pos.count; i++) {
-    const ax = Math.abs(nor.getX(i)), ay = Math.abs(nor.getY(i)), az = Math.abs(nor.getZ(i));
-    let u: number, v: number;
-    if (ax >= ay && ax >= az) { u = pos.getZ(i); v = pos.getY(i); }
-    else if (az >= ay) { u = pos.getX(i); v = pos.getY(i); }
-    else { u = pos.getX(i); v = pos.getZ(i); }
-    uv[i * 2] = u;
-    uv[i * 2 + 1] = v;
-  }
-  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-}
-
 const _m = new THREE.Matrix4();
 const _q = new THREE.Quaternion();
 const _e = new THREE.Euler();
@@ -110,7 +94,6 @@ export class GeometryBatch {
     if (matrix) g.applyMatrix4(matrix);
     for (const name of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(name)) g.deleteAttribute(name);
     g.clearGroups();
-    if (material.userData.worldUV) applyWorldUV(g);
     const list = this.buckets.get(material) ?? [];
     list.push(g);
     this.buckets.set(material, list);
@@ -141,7 +124,7 @@ export class GeometryBatch {
       if (!geo) continue;
       geo.scale(IN, IN, IN);
       const mesh = new THREE.Mesh(geo, mat);
-      mesh.castShadow = !(mat instanceof THREE.MeshPhysicalMaterial);
+      mesh.castShadow = !(mat instanceof WashMaterial) || mat.castsShadow;
       mesh.receiveShadow = true;
       group.add(mesh);
     }

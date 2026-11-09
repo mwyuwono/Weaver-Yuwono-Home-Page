@@ -2,13 +2,13 @@
  * House — assembles all builders into one THREE.Group per level plus the
  * static site. Each level group is then flattened: every mesh in it is merged
  * per material and given its OWN clone of each material, so the explode
- * controller can fade one level without touching the others (textures are
- * shared between clones; only the cheap material objects are duplicated).
+ * controller can fade one level without touching the others (only the cheap material objects are duplicated).
  */
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { HouseData, Level, LevelId } from '../data/schema';
 import { materials as m } from '../materials';
+import { WashMaterial } from '../render/wash';
 import { planToScene } from '../units';
 import { buildChimneySlice } from '../builders/ChimneyBuilder';
 import { buildDoors } from '../builders/DoorBuilder';
@@ -43,7 +43,7 @@ function flatten(name: string, parts: (THREE.Object3D | null)[]): THREE.Group {
     geos.forEach((g) => g.dispose());
     if (!merged) continue;
     const mesh = new THREE.Mesh(merged, mat.clone());
-    mesh.castShadow = !(mat instanceof THREE.MeshPhysicalMaterial);
+    mesh.castShadow = !(mat instanceof WashMaterial) || mat.castsShadow;
     mesh.receiveShadow = true;
     group.add(mesh);
   }
