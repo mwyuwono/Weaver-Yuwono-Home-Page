@@ -6,7 +6,7 @@
  * without infill you would see straight through the gap's top and bottom.
  */
 import * as THREE from 'three';
-import type { Level, Opening, Vec2 } from '../data/schema';
+import type { Level, Opening, Vec2, Wall } from '../data/schema';
 import type { Materials } from '../materials';
 import { GeometryBatch, extrudeVertical, pointInPolygon, withoutDownFaces } from './geometry';
 import { openingFrame } from './openingFrame';
@@ -17,16 +17,43 @@ export function wallMaterial(level: Level, exterior: boolean, m: Materials): THR
   return level.id === 'basement' ? m.concrete : m.siding;
 }
 
-/** Height of the wall that flanks an opening (walls may override the level height, e.g. under the wing roof). */
-function flankingWallHeight(level: Level, op: Opening): number {
+/** The wall pieces on either side of an opening (walls may override the level height, e.g. under the wing roof). */
+function flankingWalls(level: Level, op: Opening): Wall[] {
   const d: Vec2 = [Math.cos(op.angle), -Math.sin(op.angle)];
   const reach = op.width / 2 + 1;
+  const out: Wall[] = [];
   for (const side of [1, -1]) {
     const p: Vec2 = [op.center[0] + d[0] * reach * side, op.center[1] + d[1] * reach * side];
     const wall = level.walls.find((w) => pointInPolygon(p, w.outline));
-    if (wall) return wall.height ?? level.ceilingHeight;
+    if (wall) out.push(wall);
   }
-  return level.ceilingHeight;
+  return out;
+}
+
+const flankingWall = (level: Level, op: Opening): Wall | undefined => flankingWalls(level, op)[0];
+
+/** Height of the walls that flank an opening: the LOWER of the two sides, so the header infill never stands proud of either. */
+function flankingWallHeight(level: Level, op: Opening): number {
+  const walls = flankingWalls(level, op);
+  return walls.length ? Math.min(...walls.map((w) => w.height ?? level.ceilingHeight)) : level.ceilingHeight;
+}
+
+/**
+ * Where the flanking wall's two faces lie across the opening, as local z of the opening frame (so the sill and header infill
+ * can sit EXACTLY on the wall faces). The schema gives the opening a nominal centreline and depth, which are a few hundredths
+ * of an inch off the wall polygon's faces; infill that is not exactly coplanar with the wall leaves a hairline step at each
+ * jamb, which draws as a stray vertical line running through the whole storey above and below the window.
+ */
+function wallFaces(level: Level, op: Opening, frame: THREE.Matrix4): [number, number] {
+  const wall = flankingWall(level, op);
+  if (!wall) return [-op.depth / 2, op.depth / 2];
+  const inv = frame.clone().invert();
+  // Only the vertices at the opening's jambs: they are the corners of the wall's own end faces (partition tabs elsewhere on
+  // the outline must not widen the strip).
+  const zs = wall.outline.map(([x, z]) => new THREE.Vector3(x, 0, z).applyMatrix4(inv)).filter((v) => Math.abs(Math.abs(v.x) - op.width / 2) < 0.5).map((v) => v.z);
+  if (zs.length < 2) return [-op.depth / 2, op.depth / 2];
+  const lo = Math.min(...zs), hi = Math.max(...zs);
+  return Math.abs(hi - lo - op.depth) < 0.5 ? [lo, hi] : [-op.depth / 2, op.depth / 2]; // only trust a piece about as thick as the opening
 }
 
 /**
@@ -90,9 +117,11 @@ export function buildWalls(level: Level, m: Materials, ceiling?: (z0: number, z1
     // Boxes are authored in the opening's local frame, then placed with `frame`.
     // Infill strips sit flush with the wall faces, so their box edges are not
     // drawing lines (the reveal edges come from the wall extrusion itself).
+    const [zLo, zHi] = wallFaces(level, op, frame);
     const strip = (y0: number, y1: number) => {
       if (y1 - y0 < 0.01) return;
-      const local = new GeometryBatch().box(mat, [op.width, y1 - y0, op.depth], [0, (y0 + y1) / 2, 0], [0, 0, 0], { lines: 'none' });
+      // 0.1" wider than the opening so the strip overlaps both jambs (jamb faces are skewed by ~0.01") instead of leaving a hairline between strip and wall.
+      const local = new GeometryBatch().box(mat, [op.width + 0.1, y1 - y0, zHi - zLo], [0, (y0 + y1) / 2, (zLo + zHi) / 2], [0, 0, 0], { lines: 'none' });
       batch.addBatch(local, frame);
     };
     strip(op.exterior ? -SKIRT(level) : 0, op.sill); // sill infill

@@ -111,15 +111,32 @@ export function buildEntablature(data: HouseData, m: Materials): THREE.Group {
   return b.toGroup('entablature');
 }
 
-/** Wing cornice stack around the wing walls (left, far, right), under the hip roof. Lives with the first floor. */
+/** Depth (inches) of the beam body behind the wing cornice stack where there is no wall (over the porch). */
+const BEAM_DEPTH = 6;
+
+/**
+ * Wing cornice stack (architrave / fascia boards) round the wing's eave: down the left side, across the far side and down the
+ * right side, under the hip roof. The roof's eave rectangle overhangs the wing walls by the stack's outermost projection
+ * (5.3"), so on the far and right sides the stack is a relief on the wall; on the LEFT the hip roof also covers the rear porch,
+ * so the stack runs on past the wing wall out to the porch corner as a free-standing beam (solid core, closed soffit) that the
+ * porch post carries. Lives with the first floor.
+ */
 export function buildWingCornice(data: HouseData, m: Materials): THREE.Group | null {
   const w = data.roof.wing;
   if (!w) return null;
-  const path: Vec2[] = [[w.xMin, w.zNear], [w.xMin, w.zFar], [w.xMax, w.zFar], [w.xMax, w.zNear]];
+  const bands = data.trim.wingCornice.bands;
+  const lip = 0.15; // the stack's outer face stands this far outside the roof edge so the slab edge is never coincident with it
+  const xb = w.hip.x0 + Math.max(...bands.map((bd) => bd[2])) - lip; // beam line (back of the stack) on the porch side
+  const path: Vec2[] = [[xb, w.zNear], [xb, w.zFar], [w.xMax, w.zFar], [w.xMax, w.zNear]];
   // The sweep wants the elevation order (right wall toward the rear, far wall toward −x, left wall toward the front).
-  const geo = sweepProfile([...path].reverse(), steppedProfile(data.trim.wingCornice.bands));
+  const geo = sweepProfile([...path].reverse(), steppedProfile(bands));
   const b = new GeometryBatch().add(geo, m.trim);
   geo.dispose();
+  // Beam core behind the stack over the porch: along the left side and across the far side up to the wing wall.
+  const y0 = bands[0][0], y1 = bands[bands.length - 1][1], h = y1 - y0, yc = (y0 + y1) / 2;
+  b.box(m.trim, [BEAM_DEPTH, h, w.zNear - w.zFar], [xb + BEAM_DEPTH / 2, yc, (w.zNear + w.zFar) / 2]);
+  const x0 = xb + BEAM_DEPTH, x1 = w.xMin;
+  if (x1 - x0 > 0.01) b.box(m.trim, [x1 - x0, h, BEAM_DEPTH], [(x0 + x1) / 2, yc, w.zFar + BEAM_DEPTH / 2]);
   return b.toGroup('wing-cornice');
 }
 

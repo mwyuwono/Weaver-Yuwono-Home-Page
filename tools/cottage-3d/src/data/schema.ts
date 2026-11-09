@@ -194,9 +194,12 @@ export interface Trim {
 }
 
 export interface Chimney {
+  /** The shaft. */
   outline: Vec2[];
   baseY: number;
   topY: number;
+  /** Wider base: runs from baseY up to `topY` at full width, then chamfers to the shaft outline by `taperY`. */
+  breast?: { outline: Vec2[]; topY: number; taperY: number };
 }
 
 export interface Site {
@@ -214,7 +217,7 @@ export interface Site {
   porch: {
     deck: { x0: number; x1: number; z0: number; z1: number; topY: number; bottomY: number };
     stair: { x0: number; x1: number; z0: number; z1: number; risers: number; bottomY: number };
-    post: { x: number; z: number; width: number; shaftY0: number; shaftY1: number; capY1: number; capWidth: number };
+    post: { x: number; z: number; width: number; shaftY0: number; shaftY1: number; capY1: number; capWidth: number; /** Capital bands [y0, y1, width], bottom → top; the top reaches the beam underside. */ capital: [number, number, number][] };
     rail: { balusterY0: number; balusterY1: number; topY: number; post: number };
     lattice: { y0: number; y1: number };
   } | null;

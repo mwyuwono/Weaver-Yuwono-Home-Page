@@ -701,7 +701,9 @@ TRIM = dict(
                      cornice=dict(y0=167.2, y1=171.2, proud=5.6), bandReturn=19.4, corniceReturn=27.3),
     dormerCornice=dict(bands=[[217.6, 222.5, 0.8], [222.5, 223.6, 4.2]], cornerBoard=dict(width=6.0, y0=184.8, y1=217.6, proud=1.0)),
     wingCornice=dict(bands=[[110.1, 115.0, 1.9], [115.0, 119.4, 5.3]]),
-    casing=dict(side=5.0, outer=6.15, headHeight=5.1, headAboveOpening=2.8, proud=1.0, sillHeight=2.7, sillWider=2.5,
+    # outer / sillWider are per-SIDE distances beyond the rough opening: drawn casing 44.4" (= RO 38.25 + 2 x 3.075), drawn sill
+    # 46.9" (= RO + 2 x 4.325, i.e. 1.25" past the casing each side), sill 2.75" deep.
+    casing=dict(side=5.0, outer=3.075, headHeight=5.1, headAboveOpening=2.8, proud=1.0, sillHeight=2.75, sillWider=4.325,
                 sillProud=2.5, dripProud=1.8),
     doorSurround=dict(pilasterX=[21.5, 31.1], pilasterY=[3.3, 79.6], baseY=[-5.8, 0.8], capitalTopY=88.2, headY=[88.2, 97.2],
                       corniceY=[98.5, 102.4], corniceHalfWidth=[36.8, 39.0], proud=2.0),
@@ -1206,9 +1208,13 @@ def build(dxf_path, out_path):
                 baseY=-52.0, topY=r2(ch_top))
     # make CCW in x/z (shoelace sign check)
     chim['outline'] = ccw(chim['outline'])
+    # Wider base (left elevation A-ELEV verticals at +-27" about the shaft axis from grade up to the second subfloor Y=117.3,
+    # then a chamfer to the +-18" shaft at Y=126.3): the breast runs DOWN TO GRADE at full width, it does not step in at Y=0.
+    chim['breast'] = dict(outline=ccw([[-24.0, r2(cz - 27.0)], [0.0, r2(cz - 27.0)], [0.0, r2(cz + 27.0)], [-24.0, r2(cz + 27.0)]]),
+                          topY=117.25, taperY=126.3)
     note('Chimney: shaft %.0f" (z) x 24" (x, outside the left wall face), centred z=%.1f; top Y=%.1f. Base set to -52 (buried, '
-         'ground at the chimney is ~-48; the brick runs down to grade). The first-floor breast is wider (48" z, plan) and '
-         'tapers to the 36" shaft near the second-floor subfloor; that lower part is the first-floor fireplace fixture.'
+         'ground at the chimney is ~-48; the brick runs down to grade). chimney.breast: the base is 54" (z) wide from grade up to the '
+         'second subfloor (Y=117.25), then chamfers to the 36" shaft by Y=126.3 (left elevation).'
          % (cw, cz, ch_top))
 
     # ---------- site ----------
@@ -1238,12 +1244,14 @@ def build(dxf_path, out_path):
     porch = dict(
         deck=dict(x0=57.4, x1=113.3, z0=-404.0, z1=-313.0, topY=0.1, bottomY=-9.2),
         stair=dict(x0=-1.7, x1=57.4, z0=-377.5, z1=-315.2, risers=7, bottomY=-48.2),
-        post=dict(x=64.6, z=-397.5, width=9.5, shaftY0=6.6, shaftY1=102.8, capY1=107.1, capWidth=12.5),
+        post=dict(x=64.6, z=-397.5, width=9.5, shaftY0=6.6, shaftY1=102.8, capY1=110.1, capWidth=13.3,
+                  # capital read from the rear elevation (8.33 px/in crop): astragal, neck, echinus, step, abacus up to the beam underside
+                  capital=[[102.8, 103.8, 10.6], [103.8, 105.4, 9.5], [105.4, 105.9, 10.2], [105.9, 107.1, 11.0], [107.1, 110.1, 13.3]]),
         rail=dict(balusterY0=4.6, balusterY1=33.3, topY=35.7, post=3.5),
         lattice=dict(y0=-36.6, y1=-11.1))
     note('Rear porch (outside back door F): deck platform x %.1f..%.1f / z %.1f..%.1f, top Y=%.1f; 7-riser stair running -x to the '
-         'terrace (Y=%.1f); one 9.5" post with capital at (%.1f, %.1f) carrying the wing hip roof corner; baluster rails and a lattice '
-         'skirt under the deck. All measured on the rear/left elevations.' % (57.4, 113.3, -404.0, -313.0, 0.1, -48.2, 64.6, -397.5))
+         'terrace (Y=%.1f); one 9.5" post at (%.1f, %.1f) with a full capital up to the beam underside (Y=110.1) carrying the wing hip roof corner; rails run post-to-post (butting the column faces); baluster rails and a lattice '
+         'skirt under the deck, built down to grade at render time. All measured on the rear/left elevations.' % (57.4, 113.3, -404.0, -313.0, 0.1, -48.2, 64.6, -397.5))
     fence = dict(posts=[[405.7, -336.5], [405.7, -401.0], [351.0, -401.0]], postWidth=8.0, shaftY0=-77.8, capY0=-12.8, capY1=-9.3,
                  rails=[[-16.8, -13.8], [-39.8, -36.8], [-74.7, -70.7]], curbY=[-85.0, -77.8])
     note('Fenced storage (basement level, x 350..408 behind the wing): three 8" posts with caps, three rails per side and a low '
@@ -1270,6 +1278,22 @@ def build(dxf_path, out_path):
     meta = dict(units='in', source='cottage.dxf (AutoCAD 2018, inches)',
                 generated=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
                 notes=NOTES)
+    # Snap the OUTER faces of the exterior walls onto the main block rectangle: the plan poche is 0.03-0.05" off it on some levels
+    # (first-floor right wall 407.95, rear -314.97, second-floor left wall 0.03), which leaves a hairline step in the siding plane
+    # at every storey joint (drawn as a stray line at each floor level on the gable walls).
+    snapped = 0
+    for lv in final_levels:
+        for w in lv['walls']:
+            if not w['exterior']:
+                continue
+            for pt in w['outline']:
+                for k, targets in ((0, (0.0, W)), (1, (0.0, -D))):
+                    for t in targets:
+                        if 0.001 < abs(pt[k] - t) <= 0.06:
+                            pt[k] = t
+                            snapped += 1
+    note('Exterior wall outer faces within 0.06" of the main block rectangle (x 0 / %.2f, z 0 / %.2f) were snapped onto it (%d vertices) so the '
+         'siding plane is continuous from storey to storey.' % (W, -D, snapped))
     house = dict(meta=meta, levels=final_levels, roof=roof, trim=TRIM, chimney=chim, site=site)
     with open(out_path, 'w') as f:
         json.dump(house, f, indent=2)

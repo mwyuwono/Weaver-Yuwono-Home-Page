@@ -2,7 +2,7 @@
   "meta": {
     "units": "in",
     "source": "cottage.dxf (AutoCAD 2018, inches)",
-    "generated": "2026-11-09T01:48:53Z",
+    "generated": "2026-11-09T17:25:50Z",
     "notes": [
       "Datum: elevation T-WALL line y=-2662.59; subfloor = T-WALL + 9 1/4\" => Y=0 at DXF y=-2653.34. Basement floor Y=-117.25 (9' below T-WALL; the drawn slab line is at -117.12), second floor Y=117.25 (9' + 9 1/4\").",
       "Main block outer rectangle per plan (DXF in): basement 408.00 x 315.01; first 408.00 x 315.00; second 408.00 x 315.00. Size residual vs first floor: basement dW=0.00 dD=0.01, first dW=0.00 dD=0.00, second dW=0.00 dD=0.00",
@@ -16,16 +16,17 @@
       "Rear shed dormer (rear/side elevations): the dormer is INSET from both gable ends - cheek-wall outer faces at x=37.2 and 370.8 (37.2\" in from the gable walls), roof edges at x=31.1 / 376.9. Its roof (3.85/12) leaves the main rear slope at z=-175.7 (top Y=275.0) and ends at an eave tip z=-322.5, Y=227.9; its wall rises to Y=217.6 (C windows end at 202.7). Outside the cheeks the main roof (7.71/12) runs on to the normal rear eave and the rear wall stops at the frieze top like the front.",
       "Rear wing roof is a HIP (plan \"Roof Below\"): eave rectangle x 52.8..355.2 (61.0\" past the wing left wall, over the porch), far eave z=-409.2 (fascia +2.6\"), eave top Y=120.5, apex x=204.0 on the main rear wall z=-315.0, Y=141.7; wing wall tops Y=110.1.",
       "seamSpacing 31.25 = ANSI31 hatch scale 250 x 0.125 used to draw the roof seams on the front elevation (drawn spacing; real standing seam would be tighter).",
-      "Chimney: shaft 36\" (z) x 24\" (x, outside the left wall face), centred z=-157.5; top Y=321.7. Base set to -52 (buried, ground at the chimney is ~-48; the brick runs down to grade). The first-floor breast is wider (48\" z, plan) and tapers to the 36\" shaft near the second-floor subfloor; that lower part is the first-floor fireplace fixture.",
+      "Chimney: shaft 36\" (z) x 24\" (x, outside the left wall face), centred z=-157.5; top Y=321.7. Base set to -52 (buried, ground at the chimney is ~-48; the brick runs down to grade). chimney.breast: the base is 54\" (z) wide from grade up to the second subfloor (Y=117.25), then chamfers to the 36\" shaft by Y=126.3 (left elevation).",
       "Retaining walls: (1) right-side wall from S-FNDN (80x13.7\", top Y=-30.5 / base -85.1 taken from the side elevation, brick-clad); (2) 12\" wall at the basement walk-out stair, 140\" long behind the rear wing (S-FNDN, height assumed = same top); (3,4) brick step cheeks beside the front stoop (top = grade + 17.7\" from the front elevation).",
       "Front steps: between the brick cheeks, 71\" wide x 58\" deep, 3 risers from grade Y=-23.5 to the stoop (door threshold Y=0, top set -1.5).",
-      "Rear porch (outside back door F): deck platform x 57.4..113.3 / z -404.0..-313.0, top Y=0.1; 7-riser stair running -x to the terrace (Y=-48.2); one 9.5\" post with capital at (64.6, -397.5) carrying the wing hip roof corner; baluster rails and a lattice skirt under the deck. All measured on the rear/left elevations.",
+      "Rear porch (outside back door F): deck platform x 57.4..113.3 / z -404.0..-313.0, top Y=0.1; 7-riser stair running -x to the terrace (Y=-48.2); one 9.5\" post at (64.6, -397.5) with a full capital up to the beam underside (Y=110.1) carrying the wing hip roof corner; rails run post-to-post (butting the column faces); baluster rails and a lattice skirt under the deck, built down to grade at render time. All measured on the rear/left elevations.",
       "Fenced storage (basement level, x 350..408 behind the wing): three 8\" posts with caps, three rails per side and a low curb, from the rear elevation.",
       "Terrain: grade profiles read from the V-layer grade splines of the left and right elevations ([z, Y] pairs). Left profile = x<=0 side and the rear-left terrace (stops at the retaining wall x=113.8), right profile = x>=408.0 side and the rear walk-out. In between (z>-D) grade is interpolated across x.",
       "Not extracted (no schema slot / ambiguous): stair guard rails, pantry shelves, shower doors, upper cabinets, cased interior openings without a door block (the open-plan first floor has none), the basement Bilco door (text label only, no door block or wall gap in the DXF), the stair S-turn.",
       "Stairwell holes are NOT cut from level.floor; each flight arrives at the floor of the level above, where the app cuts the opening from the stair outline.",
       "Second floor: front wall and gable walls stop at the frieze top (Y=167.23; the app adds the gable siding above them up to the roof); the rear dormer wall stops at its cornice (Y=217.58); interior partitions are stepped in 6\" z-bands under the front slope and full height behind the ridge.",
-      "Level.floor is the exterior outline only (basement/first include the rear wing)."
+      "Level.floor is the exterior outline only (basement/first include the rear wing).",
+      "Exterior wall outer faces within 0.06\" of the main block rectangle (x 0 / 408.00, z 0 / -315.00) were snapped onto it (42 vertices) so the siding plane is continuous from storey to storey."
     ]
   },
   "levels": [
@@ -124,11 +125,11 @@
             ],
             [
               0.0,
-              -315.01
+              -315.0
             ],
             [
               113.79,
-              -315.01
+              -315.0
             ]
           ],
           "exterior": true
@@ -179,7 +180,7 @@
           "outline": [
             [
               408.0,
-              -315.01
+              -315.0
             ],
             [
               408.0,
@@ -215,7 +216,7 @@
             ],
             [
               349.87,
-              -315.01
+              -315.0
             ]
           ],
           "exterior": true
@@ -1197,11 +1198,11 @@
             ],
             [
               0.0,
-              -314.97
+              -315.0
             ],
             [
               63.17,
-              -314.97
+              -315.0
             ],
             [
               63.17,
@@ -1222,11 +1223,11 @@
             ],
             [
               101.42,
-              -314.97
+              -315.0
             ],
             [
               113.76,
-              -314.97
+              -315.0
             ],
             [
               113.76,
@@ -1358,7 +1359,7 @@
         {
           "outline": [
             [
-              407.95,
+              408.0,
               0.0
             ],
             [
@@ -1378,7 +1379,7 @@
               -30.72
             ],
             [
-              407.95,
+              408.0,
               -30.71
             ]
           ],
@@ -1448,11 +1449,11 @@
               -138.35
             ],
             [
-              407.95,
+              408.0,
               -138.34
             ],
             [
-              407.95,
+              408.0,
               -68.96
             ],
             [
@@ -1485,11 +1486,11 @@
               -245.97
             ],
             [
-              407.95,
+              408.0,
               -245.96
             ],
             [
-              407.95,
+              408.0,
               -176.59
             ],
             [
@@ -1531,14 +1532,14 @@
             ],
             [
               349.82,
-              -314.97
+              -315.0
             ],
             [
-              407.95,
-              -314.97
+              408.0,
+              -315.0
             ],
             [
-              407.95,
+              408.0,
               -284.21
             ],
             [
@@ -3101,11 +3102,11 @@
               0.0
             ],
             [
-              0.03,
+              0.0,
               0.0
             ],
             [
-              0.03,
+              0.0,
               -6.4
             ],
             [
@@ -3119,11 +3120,11 @@
         {
           "outline": [
             [
-              0.03,
+              0.0,
               -6.4
             ],
             [
-              0.03,
+              0.0,
               -72.8
             ],
             [
@@ -3149,11 +3150,11 @@
               -111.04
             ],
             [
-              0.03,
+              0.0,
               -111.05
             ],
             [
-              0.03,
+              0.0,
               -203.9
             ],
             [
@@ -3180,11 +3181,11 @@
           "outline": [
             [
               37.16,
-              -314.97
+              -315.0
             ],
             [
               64.44,
-              -314.97
+              -315.0
             ],
             [
               64.44,
@@ -3213,16 +3214,16 @@
               -308.6
             ],
             [
-              0.03,
+              0.0,
               -308.6
             ],
             [
-              0.03,
-              -314.97
+              0.0,
+              -315.0
             ],
             [
               37.16,
-              -314.97
+              -315.0
             ]
           ],
           "exterior": true,
@@ -3239,11 +3240,11 @@
               -242.14
             ],
             [
-              0.03,
+              0.0,
               -242.15
             ],
             [
-              0.03,
+              0.0,
               -308.6
             ]
           ],
@@ -3262,11 +3263,11 @@
             ],
             [
               183.0,
-              -314.97
+              -315.0
             ],
             [
               225.06,
-              -314.97
+              -315.0
             ],
             [
               225.06,
@@ -3300,11 +3301,11 @@
             ],
             [
               102.69,
-              -314.97
+              -315.0
             ],
             [
               144.75,
-              -314.97
+              -315.0
             ]
           ],
           "exterior": true,
@@ -3450,11 +3451,11 @@
             ],
             [
               343.61,
-              -314.97
+              -315.0
             ],
             [
               370.84,
-              -314.97
+              -315.0
             ]
           ],
           "exterior": true,
@@ -3472,11 +3473,11 @@
             ],
             [
               370.84,
-              -314.97
+              -315.0
             ],
             [
               408.0,
-              -314.97
+              -315.0
             ],
             [
               408.0,
@@ -3540,11 +3541,11 @@
             ],
             [
               263.31,
-              -314.97
+              -315.0
             ],
             [
               305.36,
-              -314.97
+              -315.0
             ]
           ],
           "exterior": true,
@@ -5295,12 +5296,12 @@
     },
     "casing": {
       "side": 5.0,
-      "outer": 6.15,
+      "outer": 3.075,
       "headHeight": 5.1,
       "headAboveOpening": 2.8,
       "proud": 1.0,
-      "sillHeight": 2.7,
-      "sillWider": 2.5,
+      "sillHeight": 2.75,
+      "sillWider": 4.325,
       "sillProud": 2.5,
       "dripProud": 1.8
     },
@@ -5353,7 +5354,29 @@
       ]
     ],
     "baseY": -52.0,
-    "topY": 321.73
+    "topY": 321.73,
+    "breast": {
+      "outline": [
+        [
+          -24.0,
+          -184.52
+        ],
+        [
+          0.0,
+          -184.52
+        ],
+        [
+          0.0,
+          -130.52
+        ],
+        [
+          -24.0,
+          -130.52
+        ]
+      ],
+      "topY": 117.25,
+      "taperY": 126.3
+    }
   },
   "site": {
     "margin": 1200.0,
@@ -5624,8 +5647,35 @@
         "width": 9.5,
         "shaftY0": 6.6,
         "shaftY1": 102.8,
-        "capY1": 107.1,
-        "capWidth": 12.5
+        "capY1": 110.1,
+        "capWidth": 13.3,
+        "capital": [
+          [
+            102.8,
+            103.8,
+            10.6
+          ],
+          [
+            103.8,
+            105.4,
+            9.5
+          ],
+          [
+            105.4,
+            105.9,
+            10.2
+          ],
+          [
+            105.9,
+            107.1,
+            11.0
+          ],
+          [
+            107.1,
+            110.1,
+            13.3
+          ]
+        ]
       },
       "rail": {
         "balusterY0": 4.6,

@@ -13,7 +13,7 @@
 import * as THREE from 'three';
 import type { HouseData, Opening, Vec2 } from '../data/schema';
 import type { Materials } from '../materials';
-import { GeometryBatch, extrudeAlongX, slopedBox, solidFromTriangles, splitExtrudeGroups } from './geometry';
+import { GeometryBatch, extrudeAlongX, solidFromTriangles, splitExtrudeGroups } from './geometry';
 import { dormerProfile, roofProfile, truncatedProfile, type RoofProfile } from './roofProfile';
 
 /** Exterior wall thickness (all levels above the foundation). */
@@ -33,6 +33,7 @@ type End = 'full' | 'rear' | 'none';
 
 function addSlab(b: GeometryBatch, m: Materials, prof: RoofProfile, x0: number, x1: number, rake: [boolean, boolean], ends: [End, End] = ['full', 'full'], cut = 0): void {
   const { path, thickness: t } = prof;
+  const [rake0, rake1] = rake;
   const outline = (pts: Vec2[]): Vec2[] => [...pts, ...[...pts].reverse().map(([z, y]): Vec2 => [z, y - t])];
   const slab = extrudeAlongX(outline(path), x0, x1);
   // An end face shared with the next slab would sit exactly on the neighbour's end face and flicker where it meets the roof surface, so
@@ -54,21 +55,31 @@ function addSlab(b: GeometryBatch, m: Materials, prof: RoofProfile, x0: number, 
     }
     slab.dispose();
   }
-  for (let i = 0; i < path.length - 1; i++) {
-    // Rake frieze board: hangs RAKE_DROP below the slab underside (measured on the side elevations), the slab edge shows above it.
-    const cos = Math.abs(path[i + 1][0] - path[i][0]) / Math.hypot(path[i + 1][0] - path[i][0], path[i + 1][1] - path[i][1]);
-    const thick = RAKE_DROP * cos, offset = -(t * cos + thick / 2);
-    if (rake[0]) slopedBox(b, m.trim, x0 - 0.75, 1.5, path[i], path[i + 1], thick, offset);
-    if (rake[1]) slopedBox(b, m.trim, x1 + 0.75, 1.5, path[i], path[i + 1], thick, offset);
+  // Rake board: hangs RAKE_DROP below the slab underside (measured on the side elevations), the slab edge shows above it. It is
+  // one plumb-cut polygon along the whole slope (a tilted box would end in a pointed corner that hangs below the eave line).
+  const under: Vec2[] = path.map(([z, y]) => [z, y - t]);
+  const board: Vec2[] = [...under, ...[...under].reverse().map(([z, y]): Vec2 => [z, y - RAKE_DROP])];
+  for (const [on, xa] of [[rake0, x0 - 1.5], [rake1, x1]] as const) {
+    if (!on) continue;
+    const geo = extrudeAlongX(board, xa, xa + 1.5);
+    b.add(geo, m.trim);
+    geo.dispose();
   }
 }
 
-/** Cornice wedge under an eave (wall top → soffit) and the fascia board from `fasciaY0` up to the slab edge top, over x0..x1. */
-function addEave(b: GeometryBatch, m: Materials, prof: RoofProfile, wallZ: number, dir: 1 | -1, wallTop: number, fasciaY0: number, x0: number, x1: number): void {
+/**
+ * Eave construction over x0..x1: the soffit and the fascia.
+ *  - The closed soffit is a flat board at the TOP of the crown moulding (`soffitY`, = cornice.y1), running from the wall plane
+ *    out to the eave tip, with the wall thickness above the frieze filled solid up to the roof underside.
+ *  - The fascia hangs from the slab's top edge down to the slab's lowest underside point (so no raw slab edge shows below it),
+ *    projecting a little below the soffit like a real drip fascia.
+ */
+function addEave(b: GeometryBatch, m: Materials, prof: RoofProfile, wallZ: number, dir: 1 | -1, wallTop: number, soffitY: number, x0: number, x1: number): void {
   const tip = dir === 1 ? prof.path[0] : prof.path[prof.path.length - 1];
   const inner = wallZ - dir * WALL_T;
-  const edgeTop = Math.max(prof.under(tip[0]), wallTop + 0.5);
-  b.add(extrudeAlongX([[inner, wallTop], [tip[0], wallTop], [tip[0], edgeTop], [inner, prof.under(inner)]], x0, x1), m.trim);
+  const edgeTop = Math.max(prof.under(tip[0]), soffitY + 0.5);
+  b.add(extrudeAlongX([[inner, wallTop], [wallZ, wallTop], [wallZ, soffitY], [tip[0], soffitY], [tip[0], edgeTop], [inner, prof.under(inner)]], x0, x1), m.trim);
+  const fasciaY0 = Math.min(soffitY, prof.under(tip[0]));
   b.box(m.trim, [x1 - x0, tip[1] - fasciaY0, 1.5], [(x0 + x1) / 2, (tip[1] + fasciaY0) / 2, tip[0] + dir * 0.75]);
 }
 
@@ -110,9 +121,9 @@ export function buildMainRoof(data: HouseData, m: Materials): THREE.Group {
   }
   b.box(m.roof, [x1 - x0, 3, 3], [xc, r.ridgeY - 2.1, (r.zFront + r.zRear) / 2], [Math.PI / 4, 0, 0]); // ridge cap (top at ridgeY)
 
-  const fasciaY0 = data.trim.entablature.cornice.y1;
-  addEave(b, m, prof, r.zFront, 1, wallTop, fasciaY0, x0, x1);
-  for (const [xa, xb] of d ? [[x0, d.xMin], [d.xMax, x1]] : [[x0, x1]]) addEave(b, m, prof, r.zRear, -1, wallTop, fasciaY0, xa, xb);
+  const soffitY = data.trim.entablature.cornice.y1; // soffit board sits on top of the crown moulding
+  addEave(b, m, prof, r.zFront, 1, wallTop, soffitY, x0, x1);
+  for (const [xa, xb] of d ? [[x0, d.xMin], [d.xMax, x1]] : [[x0, x1]]) addEave(b, m, prof, r.zRear, -1, wallTop, soffitY, xa, xb);
   addDormer(b, data, m, prof);
   return b.toGroup('roof-main');
 }
