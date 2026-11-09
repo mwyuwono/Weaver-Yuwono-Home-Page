@@ -62,7 +62,6 @@ function addEntablature(b: GeometryBatch, data: HouseData, m: Materials, face: '
   const r = data.roof.main;
   const front = face === 'front';
   const z = front ? r.zFront : r.zRear, dir = front ? 1 : -1;
-  const wins = windowsOnFace(data, z);
   const profile = steppedProfile(en.bands);
   const sweep = (path: Vec2[], prof: Vec2[], mat: THREE.Material) => {
     const geo = sweepProfile(front ? path : [...path].reverse(), prof);
@@ -70,28 +69,39 @@ function addEntablature(b: GeometryBatch, data: HouseData, m: Materials, face: '
     geo.dispose();
   };
 
-  // Bands: full-height sweeps between windows (with the gable returns at both ends), boards above/below each window.
-  const xs: number[] = [r.xMin, ...wins.flatMap((w) => [w.wa, w.wb]), r.xMax];
-  for (let i = 0; i < xs.length; i += 2) {
-    const a = xs[i], c = xs[i + 1];
-    const path: Vec2[] = [];
-    if (i === 0) path.push([r.xMin, z - dir * en.bandReturn]);
-    path.push([a, z], [c, z]);
-    if (i + 2 >= xs.length) path.push([r.xMax, z - dir * en.bandReturn]);
-    if (c - a > 0.01 || path.length > 2) sweep(path, profile, m.trim);
-  }
-  for (const w of wins) {
-    for (const [y0, y1, p] of en.bands) {
-      for (const [lo, hi] of [[y0, Math.min(y1, w.sill)], [Math.max(y0, w.head), y1]]) {
-        if (hi - lo > 0.01) b.box(m.trim, [w.wb - w.wa, hi - lo, p], [(w.wa + w.wb) / 2, (lo + hi) / 2, z + dir * p / 2]);
-      }
-    }
-  }
-
-  // Cornice wrapping the corners.
+  // Spans of wall the entablature runs along. The rear shed dormer replaces the main wall between its cheeks (the
+  // dormer face is plain siding with its own cornice), so there the entablature exists only at the two outer corners.
+  const dormer = front ? undefined : r.rearDormer;
+  const spans: [number, number][] = dormer ? [[r.xMin, dormer.xMin], [dormer.xMax, r.xMax]] : [[r.xMin, r.xMax]];
   const c = en.cornice;
   const cornice: Vec2[] = [[0, c.y0], [c.proud - 1.2, c.y0], [c.proud, c.y0 + 0.8], [c.proud, c.y1], [0, c.y1]];
-  sweep([[r.xMin, z - dir * en.corniceReturn], [r.xMin, z], [r.xMax, z], [r.xMax, z - dir * en.corniceReturn]], cornice, m.trim);
+
+  for (const [sx0, sx1] of spans) {
+    // Gable returns only on the true corners (not at the dormer cheeks).
+    const retA = sx0 === r.xMin, retB = sx1 === r.xMax;
+    const wins = windowsOnFace(data, z).filter((w) => w.wa >= sx0 && w.wb <= sx1);
+
+    // Bands: full-height sweeps between windows, boards above/below each window.
+    const xs: number[] = [sx0, ...wins.flatMap((w) => [w.wa, w.wb]), sx1];
+    for (let i = 0; i < xs.length; i += 2) {
+      const a = xs[i], e = xs[i + 1];
+      const path: Vec2[] = [];
+      if (i === 0 && retA) path.push([sx0, z - dir * en.bandReturn]);
+      path.push([a, z], [e, z]);
+      if (i + 2 >= xs.length && retB) path.push([sx1, z - dir * en.bandReturn]);
+      if (e - a > 0.01) sweep(path, profile, m.trim);
+    }
+    for (const w of wins) {
+      for (const [y0, y1, p] of en.bands) {
+        for (const [lo, hi] of [[y0, Math.min(y1, w.sill)], [Math.max(y0, w.head), y1]]) {
+          if (hi - lo > 0.01) b.box(m.trim, [w.wb - w.wa, hi - lo, p], [(w.wa + w.wb) / 2, (lo + hi) / 2, z + dir * p / 2]);
+        }
+      }
+    }
+
+    // Cornice, wrapping the corners.
+    sweep([...(retA ? [[sx0, z - dir * en.corniceReturn] as Vec2] : []), [sx0, z], [sx1, z], ...(retB ? [[sx1, z - dir * en.corniceReturn] as Vec2] : [])], cornice, m.trim);
+  }
 }
 
 export function buildEntablature(data: HouseData, m: Materials): THREE.Group {

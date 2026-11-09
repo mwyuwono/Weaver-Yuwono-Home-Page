@@ -20,10 +20,14 @@ import { buildSite } from '../builders/SiteBuilder';
 import { buildTerrain, type Grade } from '../builders/TerrainBuilder';
 import { buildCornerPilasters, buildDormerTrim, buildEntablature, buildWaterTable, buildWingCornice } from '../builders/TrimBuilder';
 import { buildStairs, stairwellHole } from '../builders/StairBuilder';
+import { dormerProfile, roofProfile } from '../builders/roofProfile';
 import { buildWalls } from '../builders/WallBuilder';
 import { buildWindows } from '../builders/WindowBuilder';
 
 export type LevelKey = LevelId | 'roof';
+
+/** Gap kept between interior partition tops and the roof underside, inches (nearer than this they show through the roof as dots). */
+const CLEARANCE = 12;
 
 /** Merge all meshes under `parts` by material into a fresh group with per-group material clones. */
 function flatten(name: string, parts: (THREE.Object3D | null)[]): THREE.Group {
@@ -69,13 +73,17 @@ export class House {
     const secondTop = second ? second.floorY + second.ceilingHeight : Infinity;
     const chimney = data.chimney;
 
+    // Highest Y a second-floor partition may reach: a clear gap under the roof slab so nothing is near-coincident with it.
+    const main = roofProfile(data.roof.main), dormer = dormerProfile(data.roof.main), zJoin = data.roof.main.rearDormer?.zJoin ?? -Infinity;
+    const underRoof = (z0: number, z1: number) => Math.min(...[z0, z1].map((z) => (dormer && z < zJoin ? dormer : main).under(z))) - CLEARANCE;
+
     const flights = data.levels.flatMap((l) => l.stairs);
 
     for (const level of data.levels) {
       // A flight arriving at this floor opens a stairwell hole in it.
       const holes = flights.filter((s) => Math.abs(s.topY - level.floorY) < 1).map(stairwellHole);
       const parts: (THREE.Object3D | null)[] = [
-        buildFloor(level, m, holes), buildWalls(level, m), buildWindows(level, m, data.trim.casing), buildDoors(level, m, data.trim),
+        buildFloor(level, m, holes), buildWalls(level, m, level.id === 'second' ? underRoof : undefined), buildWindows(level, m, data.trim.casing), buildDoors(level, m, data.trim),
         buildStairs(level, m), buildFixtures(level, m),
       ];
       if (level.id !== 'basement') parts.push(buildCornerPilasters(data, level, m));

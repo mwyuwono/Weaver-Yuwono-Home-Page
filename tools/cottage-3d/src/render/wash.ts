@@ -5,15 +5,15 @@
  *  - colour is a pigment MULTIPLIER on the paper (1 = bare paper), mixed lit -> shade by a softly quantised sun term,
  *    with low-frequency pigment-density noise in WORLD space so it never swims while orbiting;
  *  - cast shadows only tint the result (weighted per material), they are never drawn as CG shadow;
- *  - selective drafting detail per material (clapboard, brick coursing, glass strokes ...) and diagonal hatching in the
- *    shade, all procedural in world space and faded by screen-space derivatives so thin lines never alias;
+ *  - flat washes only: no hatching or stroke textures. The exceptions are a fine clapboard hairline on siding and standing-seam hairlines on roofs, analytically
+ *    antialiased in world space and faded out completely before they could moire (sub-pixel geometry would break up into dotted lines);
  *  - a second render target receives view normal.xy, the material's ink weight and opacity for the ink pass (Pipeline.ts).
  * Everything works in sRGB "painting space"; nothing is tone mapped.
  */
 import * as THREE from 'three';
 import { NOISE } from './glsl';
 
-export type Detail = 'none' | 'clapboard' | 'brick' | 'glass' | 'ground' | 'floor' | 'stipple';
+export type Detail = 'none' | 'clapboard' | 'seams';
 
 export interface WashSpec {
   /** Pigment multiplier where the surface faces the sun / turns away, hex sRGB. */
@@ -28,10 +28,10 @@ export interface WashSpec {
   shadowWeight?: number;
   /** Pigment-density mottling amplitude (default 0.08). */
   mottle?: number;
-  /** Hatching opacity in shaded areas (default 0.5). */
-  hatch?: number;
   /** Section-cut darkening of upward faces (wall tops), as in a poché. */
   poche?: number;
+  /** Period of the 'seams' detail, feet (along the horizontal axis across the fall line). */
+  period?: number;
   /** False for glass: it never casts a shadow. */
   castShadow?: boolean;
 }
@@ -82,7 +82,7 @@ export class WashMaterial extends THREE.MeshLambertMaterial {
       uLit: { value: hex(s.lit) },
       uShade: { value: hex(s.shade) },
       uInk: { value: s.ink },
-      uParams: { value: new THREE.Vector4(s.shadeRange ?? 0.8, s.shadowWeight ?? 0.3, s.mottle ?? 0.08, s.hatch ?? 0.5) },
+      uParams: { value: new THREE.Vector4(s.shadeRange ?? 0.8, s.shadowWeight ?? 0.3, s.mottle ?? 0.05, s.period ?? 1) },
       uPoche: { value: s.poche ?? 0 },
       uFade: { value: new THREE.Vector4(...(this.fade ?? [0, 0, 1e5, 1e5])) },
       uSunDir: sunDirection,
@@ -107,7 +107,7 @@ const FRAGMENT_PARS = /* glsl */ `
 varying vec3 vWPos;
 uniform vec3 uLit, uShade, uSunDir;
 uniform float uInk, uPoche;
-uniform vec4 uParams; // x shade range, y shadow weight, z mottle, w hatch
+uniform vec4 uParams; // x shade range, y shadow weight, z mottle, w seam period (ft)
 uniform vec4 uFade;   // ground fade: centre xz, start, end
 ${NOISE}
 const vec3 INK_MUL = vec3(0.55, 0.47, 0.40); // a hairline darkens the wash towards sepia
@@ -127,21 +127,6 @@ vec2 planeUV(vec3 p, vec3 n) {
   return (a.x >= a.y && a.x >= a.z) ? p.zy : (a.z >= a.y ? p.xy : p.xz);
 }
 
-/** Diagonal pen hatching that thickens into cross-hatching in deep shade. */
-float hatching(vec3 p, vec3 n, float dark) {
-  vec2 uv = planeUV(p, n);
-  float wobble = (vnoise2(uv * 3.0) - 0.5) * 0.12;
-  float h1 = (uv.x - uv.y) / 0.26 + wobble;
-  float h2 = (uv.x + uv.y) / 0.26 + wobble;
-  float a = stripe(h1, 0.10) * legible(h1) * smoothstep(0.38, 0.8, dark);
-  float b = stripe(h2, 0.08) * legible(h2) * smoothstep(0.78, 0.98, dark);
-  return max(a * 0.38, b * 0.3);
-}
-
-float segment(vec2 p, vec2 a, vec2 b) {
-  vec2 pa = p - a, ba = b - a;
-  return length(pa - ba * clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0));
-}
 `;
 
 const FRAGMENT_MAIN = /* glsl */ `
@@ -164,69 +149,24 @@ const FRAGMENT_MAIN = /* glsl */ `
 
   #ifdef DETAIL_CLAPBOARD
   if (abs(wn.y) < 0.5) {
-    float c = p.y / 0.375; // 4.5" laps
-    float pick = smoothstep(0.30, 0.65, fbm(p * 0.22 + 3.0)); // the draughtsman draws laps only in places
-    line = stripe(c, 0.07) * legible(c) * (0.18 + 0.4 * pick + 0.25 * dark);
-  }
-  #endif
-  #ifdef DETAIL_BRICK
-  if (abs(wn.y) < 0.5) {
-    vec2 uv = planeUV(p, wn);
-    float row = floor(uv.y / 0.2222);
-    float bu = uv.x / 0.6667 + 0.5 * mod(row, 2.0);
-    float brick = hash12(vec2(floor(bu), row));
-    float pick = smoothstep(0.25, 0.6, fbm(p * 0.35 + 5.0));
-    float rows = stripe(uv.y / 0.2222, 0.08) * legible(uv.y / 0.2222) * (0.25 + 0.4 * pick);
-    float joints = stripe(bu, 0.06) * legible(bu * 3.0) * step(0.45, brick) * (0.15 + 0.4 * pick);
-    line = max(rows, joints);
-    col *= 0.95 + 0.07 * brick; // each brick a touch different
-  }
-  #endif
-  #ifdef DETAIL_GLASS
-  {
-    float d = dot(p, vec3(0.9, 1.1, 0.8)) * 1.7;
-    float s = fract(d);
-    float strokes = smoothstep(0.34, 0.36, s) * (1.0 - smoothstep(0.40, 0.42, s)) + smoothstep(0.56, 0.57, s) * (1.0 - smoothstep(0.585, 0.595, s));
-    col = mix(col, vec3(0.93, 0.9, 0.85), strokes * 0.6 * legible(d));
-  }
-  #endif
-  #ifdef DETAIL_FLOOR
-  if (wn.y > 0.8) {
-    float b = p.z / 0.4167; // 5" boards
-    line = stripe(b, 0.06) * legible(b) * 0.3;
-  }
-  #endif
-  #ifdef DETAIL_STIPPLE
-  {
-    vec2 uv = planeUV(p, wn) / 0.09;
-    float speck = step(0.86, hash12(floor(uv))) * (1.0 - smoothstep(0.2, 0.34, length(fract(uv) - 0.5)));
-    line = speck * legible(uv.x) * (0.1 + 0.5 * dark);
-  }
-  #endif
-  #ifdef DETAIL_GROUND
-  {
-    float near = 1.0 - smoothstep(8.0, 30.0, distance(p.xz, uFade.xy));
-    float contour = stripe(p.y / 1.0, 0.03) * legible(p.y) * 0.15 * near; // fine contour lines
-    vec2 cell = floor(p.xz / 1.6);
-    float tufts = 0.0;
-    for (int i = 0; i < 3; i++) { // short pen strokes standing for grass, clustered in sparse tufts
-      vec2 h = vec2(hash12(cell + float(i) * 7.1), hash12(cell + float(i) * 3.7 + 1.0));
-      vec2 a = (cell + 0.15 + 0.7 * h) * 1.6;
-      vec2 b = a + vec2(0.07 * (h.y - 0.5), 0.55 * (0.5 + h.x));
-      float w = 0.014;
-      float px = fwidth(p.x) + fwidth(p.z);
-      tufts += (1.0 - smoothstep(w, w + px, segment(p.xz, a, b))) * step(0.62, hash12(cell + 9.0)) * step(h.x, 0.8);
-    }
-    line = max(contour, min(tufts, 1.0) * 0.32 * near * near);
+    // 4.5" laps as one fine, even hairline; fades out completely well before the laps get close enough to moire
+    float c = p.y / 0.375;
+    line = stripe(c, 0.05) * smoothstep(5.0, 11.0, 1.0 / max(fwidth(c), 1e-5)) * 0.2;
   }
   #endif
 
-  line = max(line, hatching(p, wn, dark) * uParams.w * 2.0);
+  #ifdef DETAIL_SEAMS
+  if (wn.y > 0.78 && wn.y < 0.9995) {
+    // Standing seams run down the fall line: t counts seam periods across it. Ridge caps and rake edges are steeper than this.
+    vec2 h = normalize(wn.xz);
+    float t = dot(p.xz, vec2(-h.y, h.x)) / uParams.w;
+    line = stripe(t, 0.03) * smoothstep(7.0, 16.0, 1.0 / max(fwidth(t), 1e-5)) * 0.34;
+  }
+  #endif
+
   col = mix(col, col * INK_MUL, line);
   if (uPoche > 0.0 && wn.y > 0.85) { // wall cut by the section plane
-    float c = (p.x + p.z) / 0.11;
     col = mix(col, vec3(0.66, 0.6, 0.53), uPoche);
-    col = mix(col, col * INK_MUL, stripe(c, 0.12) * legible(c) * 0.35 * uPoche);
   }
 
   float a = diffuseColor.a;
@@ -238,5 +178,8 @@ const FRAGMENT_MAIN = /* glsl */ `
   #endif
   gl_FragColor = vec4(col, a);
   gNormal = vec4(normal.xy * 0.5 + 0.5, uInk, cover);
+  #ifdef FADE
+  gNormal.rgb *= cover; // the ink pass un-premultiplies by alpha, as it must for blended levels; the fade is not blended, so premultiply it here
+  #endif
 }
 `;

@@ -61,6 +61,24 @@ export function extrudeAlongZ(profile: Vec2[], z0: number, z1: number): THREE.Ex
   return geo;
 }
 
+/** The geometry without its downward-facing triangles (non-indexed input). Bottom faces that are never seen only add coincident-face ties. */
+export function withoutDownFaces(geo: THREE.BufferGeometry): THREE.BufferGeometry {
+  const src = geo.index ? geo.toNonIndexed() : geo;
+  const n = src.getAttribute('normal');
+  const keep: number[] = [];
+  for (let t = 0; t < n.count / 3; t++) if (!(n.getY(3 * t) < -0.9 && n.getY(3 * t + 1) < -0.9 && n.getY(3 * t + 2) < -0.9)) keep.push(t);
+  const out = new THREE.BufferGeometry();
+  for (const name of ['position', 'normal', 'uv']) {
+    const a = src.getAttribute(name);
+    if (!a) continue;
+    const arr = new Float32Array(keep.length * 3 * a.itemSize);
+    keep.forEach((t, k) => { for (let v = 0; v < 3; v++) for (let c = 0; c < a.itemSize; c++) arr[(k * 3 + v) * a.itemSize + c] = (a.array as Float32Array)[(3 * t + v) * a.itemSize + c]; });
+    out.setAttribute(name, new THREE.BufferAttribute(arr, a.itemSize));
+  }
+  if (src !== geo) src.dispose();
+  return out;
+}
+
 /** Split an ExtrudeGeometry into its cap faces and its side faces. */
 export function splitExtrudeGroups(geo: THREE.ExtrudeGeometry): { caps: THREE.BufferGeometry; sides: THREE.BufferGeometry } {
   const slice = (start: number, count: number): THREE.BufferGeometry => {

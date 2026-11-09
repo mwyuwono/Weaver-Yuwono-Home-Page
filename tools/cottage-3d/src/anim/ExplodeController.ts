@@ -15,7 +15,7 @@ import * as THREE from 'three';
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { LevelId } from '../data/schema';
 import type { House, LevelKey } from '../model/House';
-import { frameBox, type View } from '../scene/framing';
+import { frameBox, type Insets, type View } from '../scene/framing';
 import type { TweenSet } from './tween';
 
 export type ViewState = { kind: 'assembled' } | { kind: 'exploded' } | { kind: 'isolate'; level: LevelId };
@@ -49,6 +49,8 @@ export class ExplodeController {
   private readonly reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   /** Notified whenever the state changes, so UI can reflect it. */
   onState: ((s: ViewState) => void) | null = null;
+  /** Reports how much of the canvas the UI covers; separated floors are framed between the header and the control bar. */
+  insets: (() => Insets) | null = null;
 
   constructor(
     private readonly house: House,
@@ -164,7 +166,7 @@ export class ExplodeController {
       if (horizontal < 1e-6) look.copy(HERO_DIR);
       else if (state.kind !== 'assembled') look.y = Math.max(look.y, horizontal * Math.tan(MIN_ELEVATION));
     }
-    return frameBox(box, look, this.camera);
+    return frameBox(box, look, this.camera, 1.12, state.kind === 'assembled' ? undefined : this.insets?.());
   }
 
   private moveCamera(target: View): void {

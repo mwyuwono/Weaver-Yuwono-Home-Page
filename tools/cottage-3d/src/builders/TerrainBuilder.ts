@@ -21,6 +21,8 @@ const SKIRT_DEPTH = 900;
 const BANK_EASE = 140;
 /** Half-width (inches) over which the terrace and the walk-out grade blend into each other beyond the rear end of the stepX retaining wall. */
 const SEAM_EASE = 60;
+/** Distance (inches) ahead of the rear end of the stepX retaining wall over which the grade step fades into the blend. */
+const SEAM_RUN = 60;
 /** Length (inches) of the ramp that replaces a retaining-wall step beyond the end of the wall. */
 const BANK_RAMP = 110;
 
@@ -51,7 +53,7 @@ export class Grade {
   private readonly eased: Vec2[] | null;
   private readonly wallEndX: number;
   /** Rear end (z) of the retaining wall that stands on x = stepX; beyond it nothing holds the two grades apart. */
-  private readonly seamRearZ: number;
+  readonly seamRearZ: number;
 
   constructor(private readonly data: HouseData) {
     const r = rampedProfile(data.site.terrain.right);
@@ -76,9 +78,15 @@ export class Grade {
       const t = Math.min(1, Math.max(0, (x - r.xMin) / (r.xMax - r.xMin)));
       return profileY(left, z) * (1 - t) + rightY() * t;
     }
-    if (z < this.seamRearZ) { // past the wall the two grades meet smoothly instead of leaving a crack along x = stepX
+    if (z < this.seamRearZ + SEAM_RUN) { // toward and past the wall end the two grades meet smoothly instead of leaving a crack along x = stepX
       const k = Math.min(1, Math.max(0, (x - (stepX - SEAM_EASE)) / (2 * SEAM_EASE)));
-      return profileY(left, z) * (1 - k * k * (3 - 2 * k)) + rightY() * (k * k * (3 - 2 * k));
+      const blended = profileY(left, z) * (1 - k * k * (3 - 2 * k)) + rightY() * (k * k * (3 - 2 * k));
+      // The step fades into that blend over the last SEAM_RUN of the wall (hidden beside it), so the crack has already
+      // closed where the wall ends and no sliver of cliff sticks out past it.
+      const w = Math.min(1, (this.seamRearZ + SEAM_RUN - z) / SEAM_RUN);
+      const stepped = xr < stepX ? profileY(left, z) : rightY();
+      const s = w * w * (3 - 2 * w);
+      return stepped * (1 - s) + blended * s;
     }
     return xr < stepX ? profileY(left, z) : rightY();
   }
@@ -114,7 +122,7 @@ export function buildTerrain(data: HouseData, m: Materials, centre: THREE.Vector
   const xsAll = all.map((p) => p[0]), zsAll = all.map((p) => p[1]);
   const mg = data.site.margin, t = data.site.terrain;
   const xs = refine([Math.min(...xsAll) - mg, Math.max(...xsAll) + mg, ...xsAll, t.stepX, t.stepX - SEAM_EASE, t.stepX + SEAM_EASE, ...data.site.retainingWalls.flatMap((w) => w.outline.map((q) => q[0]))], 100);
-  const zs = refine([Math.min(...zsAll) - mg, Math.max(...zsAll) + mg, ...zsAll, ...t.left.map((p) => p[0]), ...t.right.map((p) => p[0])].filter((z) => Math.abs(z) < 2000), 100);
+  const zs = refine([Math.min(...zsAll) - mg, Math.max(...zsAll) + mg, ...zsAll, ...t.left.map((p) => p[0]), ...t.right.map((p) => p[0]), ...data.site.retainingWalls.flatMap((w) => w.outline.map((q) => q[1])), grade.seamRearZ + SEAM_RUN].filter((z) => Math.abs(z) < 2000), 100);
 
   const pos: number[] = [];
   const vertex = (x: number, z: number, xr: number) => {

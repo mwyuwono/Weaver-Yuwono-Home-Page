@@ -85,6 +85,12 @@ async function start(root: HTMLElement): Promise<void> {
     resetView: () => ex.resetView(),
   }, data.levels.map((l) => l.id));
   ex.onState = (s) => ui.setState(s);
+  ex.insets = () => { // header at the top, control bar at the bottom (plus a little air)
+    const rect = root.getBoundingClientRect();
+    const header = document.querySelector('.site-header')?.getBoundingClientRect().bottom ?? rect.top;
+    const bar = document.querySelector('.ctl-bar')?.getBoundingClientRect().top ?? rect.bottom;
+    return { top: Math.max(0, header - rect.top) + 8, bottom: Math.max(0, rect.bottom - bar) + 8, height: rect.height };
+  };
 
   loop.onFirstFrame = () => {
     console.info(`[cottage-3d] draw calls (first frame, both passes): ${pipeline.stats.calls}, triangles: ${pipeline.stats.triangles}`);

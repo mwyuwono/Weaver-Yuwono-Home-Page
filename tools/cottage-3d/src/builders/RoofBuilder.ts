@@ -13,21 +13,13 @@
 import * as THREE from 'three';
 import type { HouseData, Opening, Vec2 } from '../data/schema';
 import type { Materials } from '../materials';
-import { GeometryBatch, extrudeAlongX, extrudeAlongZ, slopedBox, solidFromTriangles } from './geometry';
+import { GeometryBatch, extrudeAlongX, extrudeAlongZ, slopedBox, solidFromTriangles, splitExtrudeGroups } from './geometry';
 import { dormerProfile, roofProfile, truncatedProfile, type RoofProfile } from './roofProfile';
 
 /** Exterior wall thickness (all levels above the foundation). */
 const WALL_T = 6;
-const SEAM = 1.2;
 /** Vertical depth of the rake board below the roof slab underside. */
 const RAKE_DROP = 8.8;
-
-/** Standing seams along a sloped top line p→q, every `spacing` inches in x. */
-function addSeams(b: GeometryBatch, m: Materials, x0: number, x1: number, spacing: number, p: Vec2, q: Vec2): void {
-  const n = Math.floor((x1 - x0) / spacing);
-  const start = x0 + ((x1 - x0) - n * spacing) / 2;
-  for (let i = 0; i <= n; i++) slopedBox(b, m.roof, start + i * spacing, SEAM, p, q, SEAM, SEAM / 2);
-}
 
 /** Region between height `base` and the roof underside for z in [zb, za] (za > zb), as a (z, y) polygon. */
 function underRoofRegion(prof: RoofProfile, base: number, za: number, zb: number): Vec2[] {
@@ -36,12 +28,33 @@ function underRoofRegion(prof: RoofProfile, base: number, za: number, zb: number
   return [[za, base], [zb, base], ...top.reverse()];
 }
 
-/** A slab (top path + thickness) over x0..x1 with seams and a rake board on each end that has `rake`. */
-function addSlab(b: GeometryBatch, m: Materials, prof: RoofProfile, x0: number, x1: number, seamSpacing: number, rake: [boolean, boolean]): void {
+/** A slab (top path + thickness) over x0..x1 with a rake board on each end that has `rake`. */
+type End = 'full' | 'rear' | 'none';
+
+function addSlab(b: GeometryBatch, m: Materials, prof: RoofProfile, x0: number, x1: number, rake: [boolean, boolean], ends: [End, End] = ['full', 'full'], cut = 0): void {
   const { path, thickness: t } = prof;
-  b.add(extrudeAlongX([...path, ...[...path].reverse().map(([z, y]): Vec2 => [z, y - t])], x0, x1), m.roof);
+  const outline = (pts: Vec2[]): Vec2[] => [...pts, ...[...pts].reverse().map(([z, y]): Vec2 => [z, y - t])];
+  const slab = extrudeAlongX(outline(path), x0, x1);
+  // An end face shared with the next slab would sit exactly on the neighbour's end face and flicker where it meets the roof surface, so
+  // it is not built ('none'); 'rear' keeps only the part behind z = cut, which stays exposed beside the dormer cheek wall.
+  const [lo, hi] = ends;
+  if (lo === 'full' && hi === 'full') b.add(slab, m.roof);
+  else {
+    b.add(splitExtrudeGroups(slab).sides, m.roof);
+    for (const [kind, x] of [[lo, x0], [hi, x1]] as const) {
+      if (kind === 'none') continue;
+      let pts = path;
+      if (kind === 'rear') pts = [[cut, prof.top(cut)], ...path.filter(([z]) => z < cut)];
+      if (kind === 'full') pts = path;
+      const cap = new THREE.ShapeGeometry(new THREE.Shape(outline(pts).map(([z, y]) => new THREE.Vector2(-z, y))));
+      cap.applyMatrix4(new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 1, 0), new THREE.Vector3(1, 0, 0)));
+      cap.translate(x, 0, 0);
+      b.add(cap, m.roof);
+      cap.dispose();
+    }
+    slab.dispose();
+  }
   for (let i = 0; i < path.length - 1; i++) {
-    addSeams(b, m, x0 + 3, x1 - 3, seamSpacing, path[i], path[i + 1]);
     // Rake frieze board: hangs RAKE_DROP below the slab underside (measured on the side elevations), the slab edge shows above it.
     const cos = Math.abs(path[i + 1][0] - path[i][0]) / Math.hypot(path[i + 1][0] - path[i][0], path[i + 1][1] - path[i][1]);
     const thick = RAKE_DROP * cos, offset = -(t * cos + thick / 2);
@@ -59,11 +72,11 @@ function addEave(b: GeometryBatch, m: Materials, prof: RoofProfile, wallZ: numbe
   b.box(m.trim, [x1 - x0, tip[1] - fasciaY0, 1.5], [(x0 + x1) / 2, (tip[1] + fasciaY0) / 2, tip[0] + dir * 0.75]);
 }
 
-/** Dormer: roof slab with seams, rake boards and fascia, plus the siding cheek walls between the main slope and its underside. */
+/** Dormer: roof slab, rake boards and fascia, plus the siding cheek walls between the main slope and its underside. */
 function addDormer(b: GeometryBatch, data: HouseData, m: Materials, main: RoofProfile): void {
   const r = data.roof.main, d = r.rearDormer, dp = dormerProfile(r);
   if (!d || !dp) return;
-  addSlab(b, m, dp, d.roofXMin, d.roofXMax, r.seamSpacing, [true, true]);
+  addSlab(b, m, dp, d.roofXMin, d.roofXMax, [true, true]);
   const fasciaY0 = data.trim.dormerCornice.bands[data.trim.dormerCornice.bands.length - 1][0];
   b.box(m.trim, [d.roofXMax - d.roofXMin, d.tipY - fasciaY0, 1.5], [(d.roofXMin + d.roofXMax) / 2, (d.tipY + fasciaY0) / 2, d.tipZ - 0.75]); // fascia
 
@@ -87,11 +100,11 @@ export function buildMainRoof(data: HouseData, m: Materials): THREE.Group {
   const wallTop = data.roof.frieze?.topY ?? r.eaveY - r.thickness;
 
   if (d) {
-    addSlab(b, m, prof, x0, d.xMin, r.seamSpacing, [true, false]);
-    addSlab(b, m, prof, d.xMax, x1, r.seamSpacing, [false, true]);
-    addSlab(b, m, truncatedProfile(prof, r.zRear + WALL_T / 2), d.xMin, d.xMax, r.seamSpacing, [false, false]); // ends inside the dormer wall
+    addSlab(b, m, prof, x0, d.xMin, [true, false], ['full', 'rear'], r.zRear + WALL_T / 2);
+    addSlab(b, m, prof, d.xMax, x1, [false, true], ['rear', 'full'], r.zRear + WALL_T / 2);
+    addSlab(b, m, truncatedProfile(prof, r.zRear + WALL_T / 2), d.xMin, d.xMax, [false, false], ['none', 'none']); // ends inside the dormer wall
   } else {
-    addSlab(b, m, prof, x0, x1, r.seamSpacing, [true, true]);
+    addSlab(b, m, prof, x0, x1, [true, true]);
   }
   b.box(m.roof, [x1 - x0, 3, 3], [xc, r.ridgeY - 2.1, (r.zFront + r.zRear) / 2], [Math.PI / 4, 0, 0]); // ridge cap (top at ridgeY)
 
@@ -148,7 +161,7 @@ function slabSolid(top: [number, number, number][], t: number): THREE.BufferGeom
 
 /**
  * Wing hip roof: three roof planes (far slope and the two sides) meeting at an apex on the main rear wall, with
- * fascia boards round the eave, seams, and siding wedges closing the wall tops under the rising roof.
+ * fascia boards round the eave and siding wedges closing the wall tops under the rising roof.
  * Lives with the first floor.
  */
 export function buildWingRoof(data: HouseData, m: Materials): THREE.Group | null {
@@ -169,22 +182,7 @@ export function buildWingRoof(data: HouseData, m: Materials): THREE.Group | null
     geo.dispose();
   }
 
-  // Standing seams: along the fall line of each plane, trimmed to the plane's outline.
-  const sp = data.roof.main.seamSpacing;
   const farRun = zn - h.zFar, farRise = h.apexY - h.eaveY;
-  for (let x = h.x0 + sp / 2; x < h.x1; x += sp) { // far slope: along z, ends where the hip lines cut it
-    const zEnd = zn - farRun * (Math.abs(x - apex[0]) / (h.x1 - apex[0]));
-    slopedBox(b, m.roof, x, SEAM, [h.zFar, h.eaveY], [zEnd, h.eaveY + farRise * ((zEnd - h.zFar) / farRun)], SEAM, SEAM / 2);
-  }
-  for (const side of [-1, 1] as const) { // hip faces: along x, from the eave edge to the far-slope hip line
-    const xe = side < 0 ? h.x0 : h.x1;
-    for (let z = h.zFar + sp / 2; z < zn; z += sp) {
-      const xEnd = apex[0] + side * (h.x1 - apex[0]) * ((zn - z) / farRun);
-      const rise = farRise * (1 - Math.abs(xEnd - apex[0]) / (h.x1 - apex[0]));
-      const len = Math.abs(xEnd - xe), ang = Math.atan2(h.apexY - h.eaveY, h.x1 - apex[0]) * -side;
-      b.box(m.roof, [len, SEAM, SEAM], [(xe + xEnd) / 2, h.eaveY + rise / 2 + SEAM / 2, z], [0, 0, ang]);
-    }
-  }
 
   // Fascia boards round the eave (far and both sides).
   const bands = data.trim.wingCornice.bands, f = h.fascia, fy0 = bands[bands.length - 1][1], drop = h.eaveY - fy0, fy = (h.eaveY + fy0) / 2;
