@@ -14,8 +14,11 @@ import { buildChimneySlice } from '../builders/ChimneyBuilder';
 import { buildDoors } from '../builders/DoorBuilder';
 import { buildFixtures } from '../builders/FixtureBuilder';
 import { buildFloor } from '../builders/FloorBuilder';
-import { buildCornerPilasters, buildFrieze, buildGableInfill, buildMainRoof, buildWingRoof } from '../builders/RoofBuilder';
+import { buildGableInfill, buildMainRoof, buildWingRoof } from '../builders/RoofBuilder';
+import { buildPorch } from '../builders/PorchBuilder';
 import { buildSite } from '../builders/SiteBuilder';
+import { buildTerrain, type Grade } from '../builders/TerrainBuilder';
+import { buildCornerPilasters, buildDormerTrim, buildEntablature, buildWaterTable, buildWingCornice } from '../builders/TrimBuilder';
 import { buildStairs, stairwellHole } from '../builders/StairBuilder';
 import { buildWalls } from '../builders/WallBuilder';
 import { buildWindows } from '../builders/WindowBuilder';
@@ -52,8 +55,10 @@ export class House {
   readonly root = new THREE.Group();
   /** Independently movable groups: basement, first, second, roof. */
   readonly levels = new Map<LevelKey, THREE.Group>();
-  /** Ground, garden walls, steps, deck — static, not part of the explode. */
+  /** Terrain, retaining walls, steps, fence — static while assembled; the explode controller sinks it away. */
   readonly site: THREE.Group;
+  /** Grade height function (inches) used by the terrain and by the camera ground clamp. */
+  readonly grade: Grade;
   /** Assembled-position bounds per level group (scene feet). */
   readonly bounds = new Map<LevelKey, THREE.Box3>();
 
@@ -70,12 +75,12 @@ export class House {
       // A flight arriving at this floor opens a stairwell hole in it.
       const holes = flights.filter((s) => Math.abs(s.topY - level.floorY) < 1).map(stairwellHole);
       const parts: (THREE.Object3D | null)[] = [
-        buildFloor(level, m, holes), buildWalls(level, m), buildWindows(level, m), buildDoors(level, m),
+        buildFloor(level, m, holes), buildWalls(level, m), buildWindows(level, m, data.trim.casing), buildDoors(level, m, data.trim),
         buildStairs(level, m), buildFixtures(level, m),
       ];
       if (level.id !== 'basement') parts.push(buildCornerPilasters(data, level, m));
-      if (level.id === 'first') parts.push(buildWingRoof(data, m));
-      if (level.id === 'second') parts.push(buildFrieze(data, m), buildGableInfill(data, m));
+      if (level.id === 'first') parts.push(buildWaterTable(data, m), buildWingRoof(data, m), buildWingCornice(data, m), buildPorch(data, m));
+      if (level.id === 'second') parts.push(buildEntablature(data, m), buildGableInfill(data, m));
       // Chimney slice that passes through this level, from its slab up to the next level's slab.
       const top = level.id === 'basement' ? (first?.floorY ?? 0) : level.id === 'first' ? (second?.floorY ?? secondTop) : secondTop;
       const bottom = level.id === 'basement' ? -Infinity : level.floorY;
@@ -85,6 +90,7 @@ export class House {
 
     this.levels.set('roof', flatten('roof', [
       buildMainRoof(data, m),
+      buildDormerTrim(data, m),
       buildChimneySlice(chimney, secondTop, Infinity, true, m),
     ]));
 
@@ -92,7 +98,11 @@ export class House {
       this.root.add(group);
       this.bounds.set(key, new THREE.Box3().setFromObject(group));
     }
-    this.site = buildSite(data, m);
+    const terrain = buildTerrain(data, m, planToScene([(data.roof.main.xMin + data.roof.main.xMax) / 2, (data.roof.main.zFront + data.roof.main.zRear) / 2]));
+    this.grade = terrain.grade;
+    this.site = new THREE.Group();
+    this.site.name = 'site';
+    this.site.add(terrain.mesh, flatten('site-structures', [buildSite(data, m)]));
     this.root.add(this.site);
     const r = data.roof.main;
     this.center = planToScene([(r.xMin + r.xMax) / 2, (r.zFront + r.zRear) / 2]);

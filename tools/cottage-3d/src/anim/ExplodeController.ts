@@ -22,6 +22,9 @@ export type ViewState = { kind: 'assembled' } | { kind: 'exploded' } | { kind: '
 
 /** Bottom → top. */
 const ORDER: LevelKey[] = ['basement', 'first', 'second', 'roof'];
+/** Moving parts: the levels plus the terrain group, which sinks away and fades whenever the model is not assembled. */
+type NodeKey = LevelKey | 'site';
+const SITE_SINK = 60; // feet
 /** Exploded lift per group, feet (clear gaps of ~7–8 ft between neighbours). */
 const EXPLODE_LIFT: Record<LevelKey, number> = { basement: 0, first: 7, second: 14, roof: 22 };
 /** How far hidden levels slide up while fading out, feet. */
@@ -41,7 +44,7 @@ interface Node {
 }
 
 export class ExplodeController {
-  private readonly nodes = new Map<LevelKey, Node>();
+  private readonly nodes = new Map<NodeKey, Node>();
   private current: ViewState = { kind: 'assembled' };
   private readonly reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   /** Notified whenever the state changes, so UI can reflect it. */
@@ -53,8 +56,8 @@ export class ExplodeController {
     private readonly controls: OrbitControls,
     private readonly tweens: TweenSet,
   ) {
-    for (const key of ORDER) {
-      const group = house.levels.get(key);
+    for (const key of [...ORDER, 'site'] as NodeKey[]) {
+      const group = key === 'site' ? house.site : house.levels.get(key);
       if (!group) continue;
       const materials = new Set<THREE.Material>();
       group.traverse((o) => {
@@ -68,6 +71,11 @@ export class ExplodeController {
 
   get state(): ViewState {
     return this.current;
+  }
+
+  /** True while the terrain is (becoming) visible, i.e. the camera must stay above grade. */
+  get groundActive(): boolean {
+    return this.current.kind === 'assembled';
   }
 
   assemble(): void { this.go({ kind: 'assembled' }); }
@@ -91,12 +99,12 @@ export class ExplodeController {
     this.current = state;
     const targets = this.targets(state);
     const exploding = state.kind !== 'assembled';
-    ORDER.forEach((key, i) => {
+    ([...ORDER, 'site'] as NodeKey[]).forEach((key, i) => {
       const node = this.nodes.get(key);
       const to = targets.get(key);
       if (!node || !to) return;
       const fromY = node.y, fromO = node.opacity;
-      const rank = exploding ? i : ORDER.length - 1 - i; // lift bottom-up, settle top-down
+      const rank = key === 'site' ? 0 : exploding ? i : ORDER.length - 1 - i; // lift bottom-up, settle top-down; the ground goes first
       this.tweens.start(`level:${key}`, {
         delay: this.reduceMotion ? 0 : rank * STAGGER,
         duration: this.reduceMotion ? 0 : DURATION,
@@ -109,8 +117,9 @@ export class ExplodeController {
   }
 
   /** Target lift and opacity per group for a state. */
-  private targets(state: ViewState): Map<LevelKey, { y: number; opacity: number }> {
-    const out = new Map<LevelKey, { y: number; opacity: number }>();
+  private targets(state: ViewState): Map<NodeKey, { y: number; opacity: number }> {
+    const out = new Map<NodeKey, { y: number; opacity: number }>();
+    out.set('site', state.kind === 'assembled' ? { y: 0, opacity: 1 } : { y: -SITE_SINK, opacity: 0 });
     const keep = state.kind === 'isolate' ? ORDER.indexOf(state.level) : ORDER.length;
     ORDER.forEach((key, i) => {
       if (state.kind === 'assembled') out.set(key, { y: 0, opacity: 1 });
@@ -129,8 +138,9 @@ export class ExplodeController {
     for (const m of node.materials) {
       m.opacity = opacity;
       m.depthWrite = !transparent;
-      if (m.transparent !== transparent) {
-        m.transparent = transparent;
+      const wantTransparent = transparent || m.userData.keepTransparent === true; // the terrain's edge fade needs blending always
+      if (m.transparent !== wantTransparent) {
+        m.transparent = wantTransparent;
         m.needsUpdate = true; // transparency changes the compiled program's alpha output
       }
     }
@@ -145,7 +155,7 @@ export class ExplodeController {
     const targets = this.targets(state);
     const box = new THREE.Box3();
     for (const [key, t] of targets) {
-      const b = this.house.bounds.get(key);
+      const b = this.house.bounds.get(key as LevelKey); // the terrain is not part of the framing
       if (b && t.opacity > 0) box.union(b.clone().translate(new THREE.Vector3(0, t.y, 0)));
     }
     let look = dir?.clone();

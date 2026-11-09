@@ -85,3 +85,6 @@ a { color: inherit; }
   .ctl-reset { background: rgba(255, 255, 255, 0.08); }
   .ctl-btn[aria-pressed="true"] { color: #10201a; }
 }
+
+/* QA elevations (?qa=...): chrome off so the capture is just the model. */
+body.qa .site-header, body.qa .overlay { display: none; }

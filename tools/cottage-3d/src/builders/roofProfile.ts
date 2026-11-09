@@ -1,18 +1,16 @@
 /**
- * Side profile of the main roof in the (z, y) plane — shared by the roof slab,
- * the gable infill, the frieze and the cornice so they all agree on where the
- * roof is.
+ * Side profiles of the roofs in the (z, y) plane — shared by the roof slab, the gable infill, the cornice wedge and
+ * the dormer so they all agree on where the roof is.
  *
- * Schema semantics: eaveY / ridgeY / dormer Y values are TOP surfaces; the
- * underside is `thickness` (vertical) below. The front slope and the main rear
- * slope share one slope derived from eaveY, ridgeY and the plan depth; the
- * optional rear dormer replaces the rear slope behind `zJoin` with a shallower
- * shed roof that ends in an eave tip beyond the rear wall plane.
+ * Schema semantics: eaveY / ridgeY / dormer Y values are TOP surfaces; the underside is `thickness` (vertical) below.
+ * The main profile is the plain symmetric gable (front tip → ridge → rear tip); the rear dormer is inset from the
+ * gable ends, so outside its cheek walls the main roof runs on to the normal rear eave and the dormer has its own
+ * shallower profile (`dormerProfile`).
  */
 import type { Roof, Vec2 } from '../data/schema';
 
 export interface RoofProfile {
-  /** Top-surface polyline, front tip → ridge → (join) → rear tip, as [z, y]. */
+  /** Top-surface polyline as [z, y], high z first. */
   path: Vec2[];
   /** Vertical slab thickness. */
   thickness: number;
@@ -20,18 +18,11 @@ export interface RoofProfile {
   top(z: number): number;
   /** Underside Y at plan z. */
   under(z: number): number;
-  /** z of the path's interior vertices (ridge, join), descending — where the underside changes slope. */
+  /** z of the path's interior vertices (ridge), descending — where the underside changes slope. */
   breaks: number[];
 }
 
-export function roofProfile(r: Roof['main']): RoofProfile {
-  const mid = (r.zFront + r.zRear) / 2;
-  const slope = (r.ridgeY - r.eaveY) / ((r.zFront - r.zRear) / 2);
-  const front: Vec2 = [r.zFront + r.overhangEave, r.ridgeY - slope * (r.zFront + r.overhangEave - mid)];
-  const d = r.rearDormer;
-  const rear: Vec2 = d ? [d.tipZ, d.tipY] : [r.zRear - r.overhangEave, r.ridgeY - slope * (mid - (r.zRear - r.overhangEave))];
-  const path: Vec2[] = [front, [mid, r.ridgeY], ...(d ? ([[d.zJoin, d.joinY]] as Vec2[]) : []), rear];
-
+function fromPath(path: Vec2[], thickness: number): RoofProfile {
   const top = (z: number): number => {
     if (z >= path[0][0]) return path[0][1];
     for (let i = 0; i < path.length - 1; i++) {
@@ -40,9 +31,24 @@ export function roofProfile(r: Roof['main']): RoofProfile {
     }
     return path[path.length - 1][1];
   };
-  return {
-    path, thickness: r.thickness, top,
-    under: (z) => top(z) - r.thickness,
-    breaks: path.slice(1, -1).map((p) => p[0]),
-  };
+  return { path, thickness, top, under: (z) => top(z) - thickness, breaks: path.slice(1, -1).map((p) => p[0]) };
+}
+
+export function roofProfile(r: Roof['main']): RoofProfile {
+  const mid = (r.zFront + r.zRear) / 2;
+  const slope = (r.ridgeY - r.eaveY) / ((r.zFront - r.zRear) / 2);
+  const zf = r.zFront + r.overhangEave, zr = r.zRear - r.overhangEave;
+  return fromPath([[zf, r.ridgeY - slope * (zf - mid)], [mid, r.ridgeY], [zr, r.ridgeY - slope * (mid - zr)]], r.thickness);
+}
+
+/** Main profile cut off at plan z (the dormer zone: the main slab stops at the rear wall plane). */
+export function truncatedProfile(prof: RoofProfile, z: number): RoofProfile {
+  const keep = prof.path.filter((p) => p[0] > z);
+  return fromPath([...keep, [z, prof.top(z)]], prof.thickness);
+}
+
+/** Dormer roof: from where it leaves the main rear slope to its eave tip. */
+export function dormerProfile(r: Roof['main']): RoofProfile | null {
+  const d = r.rearDormer;
+  return d ? fromPath([[d.zJoin, d.joinY], [d.tipZ, d.tipY]], r.thickness) : null;
 }

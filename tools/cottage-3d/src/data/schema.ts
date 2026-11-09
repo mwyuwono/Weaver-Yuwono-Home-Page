@@ -33,6 +33,7 @@ export interface HouseData {
   };
   levels: Level[];
   roof: Roof;
+  trim: Trim;
   chimney: Chimney;
   site: Site;
 }
@@ -132,35 +133,64 @@ export interface Roof {
     thickness: number; // VERTICAL thickness of the slab
     seamSpacing: number; // standing-seam spacing
     /**
-     * Optional full-width shed dormer over the rear half of the second floor. Its roof replaces the main rear
-     * slope behind `zJoin`; omit for a plain symmetric gable.
+     * Optional rear shed dormer, INSET from both gable ends: the main roof runs on to the normal rear eave outside the
+     * cheek walls. Its shallower roof starts on the main rear slope at `zJoin` and ends in an eave tip past the rear wall.
      */
     rearDormer?: {
       zJoin: number; // z where the dormer roof meets the main rear slope
       joinY: number; // roof top Y at that join
       tipZ: number; // z of the dormer eave tip (past the rear wall plane)
       tipY: number; // roof top Y at the tip
-      wallTopY: number; // top of the rear second-floor wall (cornice starts here)
+      wallTopY: number; // top of the dormer rear wall (dormer cornice starts here)
+      xMin: number; // outer face of the left cheek wall
+      xMax: number; // outer face of the right cheek wall
+      roofXMin: number; // left edge of the dormer roof (rake overhang)
+      roofXMax: number;
     };
   };
-  /** One-storey rear wing with a shed roof sloping away from the main block. */
+  /** One-storey rear wing under a hip roof whose apex sits on the main rear wall; the roof also covers the porch. */
   wing: {
-    xMin: number;
+    xMin: number; // wing wall outer faces
     xMax: number;
-    zNear: number; // edge against main block rear wall (high side)
-    zFar: number; // far outside face (low side)
-    highY: number; // roof top Y at zNear
-    lowY: number; // roof top Y at zFar
-    overhang: number;
+    zNear: number; // main block rear wall
+    zFar: number; // far wall outer face
+    wallTopY: number; // top of the wing walls (cornice stack starts here)
+    hip: {
+      x0: number; x1: number; // eave rectangle (roof top surface at the eave line)
+      zFar: number; // far eave line
+      apex: Vec2; // [x, z] — on the main rear wall
+      apexY: number; // roof top Y at the apex
+      eaveY: number; // roof top Y along the eave
+      fascia: number; // fascia board projection past the eave line
+    };
     thickness: number;
   } | null;
-  /** Frieze / entablature band under the main eave (front only), for Option 1 trim. */
+  /** Frieze under the main eave: `topY` is the top of the second-floor front/rear walls (the entablature profiles are in `trim`). */
   frieze: {
-    height: number;
-    projection: number;
     /** Y of the top of the frieze (= front second-floor wall top). Defaults to eaveY − roof thickness. */
     topY?: number;
   } | null;
+}
+
+/** Option 1 trim profiles (inches, Y from the subfloor). Bands are [y0, y1, proud]; capital bands are [y0, y1, grow]. */
+export interface Trim {
+  waterTable: { y0: number; y1: number; proud: number };
+  pilaster: {
+    width: number; proud: number; baseY: number; shaftTopY: number;
+    capital: [number, number, number][];
+    panel: { y0: number; y1: number; width: number; innerWidth: number; innerInset: number; proud: number };
+  };
+  entablature: { bands: [number, number, number][]; cornice: { y0: number; y1: number; proud: number }; bandReturn: number; corniceReturn: number };
+  dormerCornice: { bands: [number, number, number][]; cornerBoard: { width: number; y0: number; y1: number; proud: number } };
+  wingCornice: { bands: [number, number, number][] };
+  casing: {
+    side: number; outer: number; headHeight: number; headAboveOpening: number; proud: number;
+    sillHeight: number; sillWider: number; sillProud: number; dripProud: number;
+  };
+  doorSurround: {
+    pilasterX: [number, number]; pilasterY: [number, number]; baseY: [number, number]; capitalTopY: number;
+    headY: [number, number]; corniceY: [number, number]; corniceHalfWidth: [number, number]; proud: number;
+  };
 }
 
 export interface Chimney {
@@ -170,12 +200,24 @@ export interface Chimney {
 }
 
 export interface Site {
-  /** Approximate grade Y at front wall, rear wall (walk-out side), used for a sloped ground plane. */
-  gradeFrontY: number;
-  gradeRearY: number;
-  /** Ground plane extent around the house (inches beyond the footprint). */
+  /** Ground extent around the house (inches beyond the footprint). */
   margin: number;
+  /**
+   * Grade profiles [z, Y] (z descending) read from the left and right elevations. Grade at the left/right wall planes
+   * IS the profile; between them it is interpolated across x, and behind the main block (z < zRear) the rear-left terrace
+   * (left profile) is separated from the walk-out (right profile) at x = stepX.
+   */
+  terrain: { left: Vec2[]; right: Vec2[]; stepX: number };
   retainingWalls: { outline: Vec2[]; baseY: number; topY: number }[];
   frontSteps: { outline: Vec2[]; bottomY: number; topY: number; risers: number } | null;
-  deck: { outline: Vec2[]; y: number; thickness: number; railingHeight: number } | null;
+  /** Rear porch outside back door F (under the wing hip roof). */
+  porch: {
+    deck: { x0: number; x1: number; z0: number; z1: number; topY: number; bottomY: number };
+    stair: { x0: number; x1: number; z0: number; z1: number; risers: number; bottomY: number };
+    post: { x: number; z: number; width: number; shaftY0: number; shaftY1: number; capY1: number; capWidth: number };
+    rail: { balusterY0: number; balusterY1: number; topY: number; post: number };
+    lattice: { y0: number; y1: number };
+  } | null;
+  /** Fenced storage behind the wing (basement level). */
+  fence: { posts: Vec2[]; postWidth: number; shaftY0: number; capY0: number; capY1: number; rails: [number, number][]; curbY: [number, number] } | null;
 }

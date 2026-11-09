@@ -53,6 +53,13 @@ export function extrudeAlongX(profile: Vec2[], x0: number, x1: number): THREE.Ex
   return geo;
 }
 
+/** Extrude a front profile given as [x, y] points along z from z0 to z1 (wedges above the wing side walls). */
+export function extrudeAlongZ(profile: Vec2[], z0: number, z1: number): THREE.ExtrudeGeometry {
+  const geo = new THREE.ExtrudeGeometry(new THREE.Shape(profile.map(([x, y]) => new THREE.Vector2(x, y))), { depth: z1 - z0, bevelEnabled: false, curveSegments: 1 });
+  geo.translate(0, 0, z0);
+  return geo;
+}
+
 /** Split an ExtrudeGeometry into its cap faces and its side faces. */
 export function splitExtrudeGroups(geo: THREE.ExtrudeGeometry): { caps: THREE.BufferGeometry; sides: THREE.BufferGeometry } {
   const slice = (start: number, count: number): THREE.BufferGeometry => {
@@ -159,4 +166,86 @@ export function slopedBox(
   const phi = Math.atan2(-dy, dz);
   batch.box(mat, [width, thick, len],
     [x, (p[1] + q[1]) / 2 + ny * offset, (p[0] + q[0]) / 2 + nz * offset], [phi, 0, 0]);
+}
+
+/** Turn a closed triangle soup (inches) so every face points away from its centroid — cheap winding fix for hand-built solids. */
+function orientOutward(pos: number[]): void {
+  let cx = 0, cy = 0, cz = 0;
+  const n = pos.length / 3;
+  for (let i = 0; i < pos.length; i += 3) { cx += pos[i]; cy += pos[i + 1]; cz += pos[i + 2]; }
+  cx /= n; cy /= n; cz /= n;
+  let score = 0;
+  for (let i = 0; i < pos.length; i += 9) {
+    const ax = pos[i + 3] - pos[i], ay = pos[i + 4] - pos[i + 1], az = pos[i + 5] - pos[i + 2];
+    const bx = pos[i + 6] - pos[i], by = pos[i + 7] - pos[i + 1], bz = pos[i + 8] - pos[i + 2];
+    const nx = ay * bz - az * by, ny = az * bx - ax * bz, nz = ax * by - ay * bx;
+    score += nx * ((pos[i] + pos[i + 3] + pos[i + 6]) / 3 - cx) + ny * ((pos[i + 1] + pos[i + 4] + pos[i + 7]) / 3 - cy) + nz * ((pos[i + 2] + pos[i + 5] + pos[i + 8]) / 3 - cz);
+  }
+  if (score >= 0) return;
+  for (let i = 0; i < pos.length; i += 9) for (let k = 0; k < 3; k++) {
+    const t = pos[i + 3 + k]; pos[i + 3 + k] = pos[i + 6 + k]; pos[i + 6 + k] = t;
+  }
+}
+
+/** Flat-shaded BufferGeometry from a triangle soup (inches); `outward` re-winds a closed solid so faces point away from its centroid. */
+export function solidFromTriangles(tris: number[], outward = true): THREE.BufferGeometry {
+  const pos = [...tris];
+  if (outward) orientOutward(pos);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.computeVertexNormals();
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(new Array((pos.length / 3) * 2).fill(0), 2));
+  return g;
+}
+
+/**
+ * Sweep a cross-section along a plan path with mitred corners (cornices, water table, entablature returns).
+ * `path` is the wall line [x, z] traversed so the OUTWARD side is (−dz, dx) — front +x, right −z, rear −x, left +z
+ * for the house outline walked as the elevations are drawn. `profile` is a polygon [proud, y] (`proud` = distance out
+ * from the wall line). `closed` joins the last vertex back to the first.
+ */
+export function sweepProfile(path: Vec2[], profileIn: Vec2[], closed = false): THREE.BufferGeometry {
+  const area = profileIn.reduce((s, [p, y], i) => s + p * profileIn[(i + 1) % profileIn.length][1] - profileIn[(i + 1) % profileIn.length][0] * y, 0);
+  const profile = area < 0 ? [...profileIn].reverse() : profileIn; // counter-clockwise in (proud, y) keeps the winding outward
+  const n = path.length;
+  const segN: Vec2[] = [];
+  for (let i = 0; i < (closed ? n : n - 1); i++) {
+    const [ax, az] = path[i], [bx, bz] = path[(i + 1) % n];
+    const len = Math.hypot(bx - ax, bz - az);
+    segN.push([-(bz - az) / len, (bx - ax) / len]);
+  }
+  // Mitre offset at every vertex: bisector of the adjacent segment normals, scaled so the offset stays `proud` from both segments.
+  const mitre: Vec2[] = path.map((_, i) => {
+    const prev = closed ? segN[(i - 1 + segN.length) % segN.length] : segN[Math.max(i - 1, 0)];
+    const next = closed ? segN[i % segN.length] : segN[Math.min(i, segN.length - 1)];
+    const ax = prev[0] + next[0], az = prev[1] + next[1];
+    const l = Math.hypot(ax, az);
+    const dot = (ax / l) * next[0] + (az / l) * next[1];
+    return [ax / l / dot, az / l / dot];
+  });
+  const at = (i: number, [p, y]: Vec2): number[] => [path[i][0] + mitre[i][0] * p, y, path[i][1] + mitre[i][1] * p];
+  const tris: number[] = [];
+  const segs = closed ? n : n - 1;
+  for (let i = 0; i < segs; i++) {
+    const j = (i + 1) % n;
+    for (let k = 0; k < profile.length; k++) {
+      const q = (k + 1) % profile.length;
+      const a = at(i, profile[k]), b = at(j, profile[k]), c = at(j, profile[q]), d = at(i, profile[q]);
+      tris.push(...a, ...b, ...c, ...a, ...c, ...d);
+    }
+  }
+  if (!closed) { // end caps, each triangle wound to face away along the path
+    const idx = THREE.ShapeUtils.triangulateShape(profile.map(([p, y]) => new THREE.Vector2(p, y)), []);
+    for (const [end, sign] of [[0, -1], [n - 1, 1]] as const) {
+      const s = end === 0 ? 0 : segN.length - 1;
+      const dir: Vec2 = [segN[s][1], -segN[s][0]]; // path direction of the end segment
+      for (const [a, b, c] of idx) {
+        const pa = at(end, profile[a]), pb = at(end, profile[b]), pc = at(end, profile[c]);
+        const ux = pb[0] - pa[0], uy = pb[1] - pa[1], uz = pb[2] - pa[2], vx = pc[0] - pa[0], vy = pc[1] - pa[1], vz = pc[2] - pa[2];
+        const facing = (uy * vz - uz * vy) * dir[0] + (ux * vy - uy * vx) * dir[1]; // normal · direction
+        tris.push(...pa, ...(facing * sign >= 0 ? [...pb, ...pc] : [...pc, ...pb]));
+      }
+    }
+  }
+  return solidFromTriangles(tris, false);
 }

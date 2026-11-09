@@ -7,7 +7,7 @@
  * not 40 hand-built models. Everything ends up merged per material.
  */
 import * as THREE from 'three';
-import type { Level, Opening } from '../data/schema';
+import type { Level, Opening, Trim } from '../data/schema';
 import type { Materials } from '../materials';
 import { GeometryBatch } from './geometry';
 import { openingFrame } from './openingFrame';
@@ -30,15 +30,24 @@ export function addSash(b: GeometryBatch, m: Materials, s: SashSpec): void {
   for (let j = 1; j < s.lites[1]; j++) b.box(m.sash, [gw, 0.8, 0.9], [s.cx, s.y0 + rail + (gh * j) / s.lites[1], s.z]);
 }
 
-/** Flat casing (two sides + head) on one face of the wall; `faceZ` is the wall face, `dir` ±1 the way it projects. */
-export function addCasing(b: GeometryBatch, m: Materials, w: number, y0: number, h: number, faceZ: number, dir: 1 | -1, drip: boolean): void {
-  const cz = faceZ + dir * 0.5;
-  for (const side of [-1, 1]) b.box(m.trim, [3.5, h, 1], [side * (w / 2 + 1.75), y0 + h / 2, cz]);
-  b.box(m.trim, [w + 7, 3.5, 1], [0, y0 + h + 1.75, cz]);
-  if (drip) b.box(m.trim, [w + 8, 0.8, 1.8], [0, y0 + h + 3.9, faceZ + dir * 0.9]);
+/**
+ * Casing on one face of the wall (`faceZ` is the wall face, `dir` ±1 the way it projects): side boards, a head board
+ * rising above the opening with a drip cap, and — on exterior faces — a projecting sill. Sizes are measured (data.trim).
+ */
+export function addCasing(b: GeometryBatch, m: Materials, c: Trim['casing'], w: number, y0: number, h: number, faceZ: number, dir: 1 | -1, exterior: boolean): void {
+  const outer = c.outer, proud = c.proud;
+  const cz = faceZ + dir * proud / 2;
+  const sideW = c.side, sideX = w / 2 + outer - sideW / 2;
+  for (const side of [-1, 1]) b.box(m.trim, [sideW, h + c.headAboveOpening, proud], [side * sideX, y0 + (h + c.headAboveOpening) / 2, cz]);
+  const headTop = y0 + h + c.headAboveOpening;
+  b.box(m.trim, [w + 2 * outer, c.headHeight, proud], [0, headTop - c.headHeight / 2, cz]);
+  if (exterior) {
+    b.box(m.trim, [w + 2 * outer + 1.6, 0.8, c.dripProud], [0, headTop + 0.4, faceZ + dir * c.dripProud / 2]); // drip cap
+    b.box(m.trim, [w + 2 * c.sillWider, c.sillHeight, c.sillProud], [0, y0 - c.sillHeight / 2, faceZ + dir * c.sillProud / 2]); // sill
+  }
 }
 
-function buildTemplate(op: Opening, m: Materials): GeometryBatch {
+function buildTemplate(op: Opening, m: Materials, c: Trim['casing']): GeometryBatch {
   const b = new GeometryBatch();
   const { width: w, depth: d, sill: y0 } = op;
   const h = op.head - op.sill;
@@ -58,17 +67,12 @@ function buildTemplate(op: Opening, m: Materials): GeometryBatch {
     } else {
       addSash(b, m, { cx: 0, y0: y0 + 1.5, w: iw, h: ih, z: 0, lites });
     }
-    if (op.exterior) {
-      addCasing(b, m, w, y0, h, half, 1, true);
-      b.box(m.trim, [w + 5, 1.5, 3.2], [0, y0 - 0.75, half + 1.1]); // projecting sill
-    } else {
-      addCasing(b, m, w, y0, h, half, 1, false);
-      addCasing(b, m, w, y0, h, -half, -1, false);
-    }
+    if (op.sym !== 'D') addCasing(b, m, c, w, y0, h, half, 1, op.exterior); // brow windows sit in the frieze board, no casing
+    if (!op.exterior) addCasing(b, m, c, w, y0, h, -half, -1, false);
   } else {
     // Cased opening: trim on both faces only.
-    addCasing(b, m, w, y0, h, half, 1, false);
-    addCasing(b, m, w, y0, h, -half, -1, false);
+    addCasing(b, m, c, w, y0, h, half, 1, false);
+    addCasing(b, m, c, w, y0, h, -half, -1, false);
   }
   return b;
 }
@@ -76,14 +80,14 @@ function buildTemplate(op: Opening, m: Materials): GeometryBatch {
 const templates = new Map<string, GeometryBatch>();
 
 /** Build all windows and cased openings of a level into one merged group. */
-export function buildWindows(level: Level, m: Materials): THREE.Group {
+export function buildWindows(level: Level, m: Materials, casing: Trim['casing']): THREE.Group {
   const out = new GeometryBatch();
   for (const op of level.openings) {
     if (op.kind === 'door') continue;
-    const key = JSON.stringify([op.kind, op.width, op.depth, op.sill, op.head, op.lites, op.style, op.exterior]);
+    const key = JSON.stringify([op.kind, op.sym, op.width, op.depth, op.sill, op.head, op.lites, op.style, op.exterior]);
     let tpl = templates.get(key);
     if (!tpl) {
-      tpl = buildTemplate(op, m);
+      tpl = buildTemplate(op, m, casing);
       templates.set(key, tpl);
     }
     out.addBatch(tpl, openingFrame(op, level));

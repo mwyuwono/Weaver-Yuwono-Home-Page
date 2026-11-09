@@ -1,27 +1,26 @@
 /**
- * RoofBuilder — standing-seam metal roof and the trim that goes with it.
+ * RoofBuilder — standing-seam metal roofs and the construction that goes with them.
  *
- * Main roof (side-gabled, ridge along x, optional rear shed dormer): one slab
- * extruded from the (z, y) profile in roofProfile.ts, plus standing seams,
- * ridge cap, fascia, rake boards and the cornice wedge that closes the gap
- * between the front/rear wall tops and the soffit.
- * Second-floor trim lives with the walls, not the roof, so it travels with the
- * second floor when the model explodes: the frieze band with its brow-window
- * holes (buildFrieze) and the gable siding triangles (buildGableInfill).
- * Wing: shed-roof slab, wedge infills over its side walls, cornice band.
- * Also exports the corner pilasters (Greek Revival trim boards) per level.
+ * Main roof (side-gabled, ridge along x): one slab extruded from the (z, y) profile in roofProfile.ts, standing seams,
+ * ridge cap, rake boards and the cornice wedge that closes the gap between the wall top and the soffit.
+ * Rear shed dormer: inset from both gable ends. Outside its cheek walls the main roof runs on to the normal rear eave;
+ * between them the main slab ends inside the dormer rear wall and the dormer roof, fascia, rake boards and siding cheek
+ * walls take over.
+ * Wing: a hip roof whose apex sits on the main rear wall (it also covers the rear porch).
+ * Second-floor gable siding (buildGableInfill) lives with the second floor so it travels with it when exploding.
+ * Trim (pilasters, entablature, cornices) is in TrimBuilder.ts.
  */
 import * as THREE from 'three';
-import type { HouseData, Level, Opening, Vec2 } from '../data/schema';
+import type { HouseData, Opening, Vec2 } from '../data/schema';
 import type { Materials } from '../materials';
-import { GeometryBatch, extrudeAlongX, slopedBox } from './geometry';
-import { roofProfile, type RoofProfile } from './roofProfile';
+import { GeometryBatch, extrudeAlongX, extrudeAlongZ, slopedBox, solidFromTriangles } from './geometry';
+import { dormerProfile, roofProfile, truncatedProfile, type RoofProfile } from './roofProfile';
 
 /** Exterior wall thickness (all levels above the foundation). */
 const WALL_T = 6;
 const SEAM = 1.2;
-
-const levelTop = (l: Level | undefined): number => (l ? l.floorY + l.ceilingHeight : 0);
+/** Vertical depth of the rake board below the roof slab underside. */
+const RAKE_DROP = 8.8;
 
 /** Standing seams along a sloped top line p→q, every `spacing` inches in x. */
 function addSeams(b: GeometryBatch, m: Materials, x0: number, x1: number, spacing: number, p: Vec2, q: Vec2): void {
@@ -37,33 +36,69 @@ function underRoofRegion(prof: RoofProfile, base: number, za: number, zb: number
   return [[za, base], [zb, base], ...top.reverse()];
 }
 
-/** Main roof slab, seams, boards and cornice wedges. Lives in the `roof` level group. */
-export function buildMainRoof(data: HouseData, m: Materials): THREE.Group {
-  const r = data.roof.main;
-  const prof = roofProfile(r);
+/** A slab (top path + thickness) over x0..x1 with seams and a rake board on each end that has `rake`. */
+function addSlab(b: GeometryBatch, m: Materials, prof: RoofProfile, x0: number, x1: number, seamSpacing: number, rake: [boolean, boolean]): void {
   const { path, thickness: t } = prof;
+  b.add(extrudeAlongX([...path, ...[...path].reverse().map(([z, y]): Vec2 => [z, y - t])], x0, x1), m.roof);
+  for (let i = 0; i < path.length - 1; i++) {
+    addSeams(b, m, x0 + 3, x1 - 3, seamSpacing, path[i], path[i + 1]);
+    // Rake frieze board: hangs RAKE_DROP below the slab underside (measured on the side elevations), the slab edge shows above it.
+    const cos = Math.abs(path[i + 1][0] - path[i][0]) / Math.hypot(path[i + 1][0] - path[i][0], path[i + 1][1] - path[i][1]);
+    const thick = RAKE_DROP * cos, offset = -(t * cos + thick / 2);
+    if (rake[0]) slopedBox(b, m.trim, x0 - 0.75, 1.5, path[i], path[i + 1], thick, offset);
+    if (rake[1]) slopedBox(b, m.trim, x1 + 0.75, 1.5, path[i], path[i + 1], thick, offset);
+  }
+}
+
+/** Cornice wedge under an eave (wall top → soffit) and the fascia board from `fasciaY0` up to the slab edge top, over x0..x1. */
+function addEave(b: GeometryBatch, m: Materials, prof: RoofProfile, wallZ: number, dir: 1 | -1, wallTop: number, fasciaY0: number, x0: number, x1: number): void {
+  const tip = dir === 1 ? prof.path[0] : prof.path[prof.path.length - 1];
+  const inner = wallZ - dir * WALL_T;
+  const edgeTop = Math.max(prof.under(tip[0]), wallTop + 0.5);
+  b.add(extrudeAlongX([[inner, wallTop], [tip[0], wallTop], [tip[0], edgeTop], [inner, prof.under(inner)]], x0, x1), m.trim);
+  b.box(m.trim, [x1 - x0, tip[1] - fasciaY0, 1.5], [(x0 + x1) / 2, (tip[1] + fasciaY0) / 2, tip[0] + dir * 0.75]);
+}
+
+/** Dormer: roof slab with seams, rake boards and fascia, plus the siding cheek walls between the main slope and its underside. */
+function addDormer(b: GeometryBatch, data: HouseData, m: Materials, main: RoofProfile): void {
+  const r = data.roof.main, d = r.rearDormer, dp = dormerProfile(r);
+  if (!d || !dp) return;
+  addSlab(b, m, dp, d.roofXMin, d.roofXMax, r.seamSpacing, [true, true]);
+  const fasciaY0 = data.trim.dormerCornice.bands[data.trim.dormerCornice.bands.length - 1][0];
+  b.box(m.trim, [d.roofXMax - d.roofXMin, d.tipY - fasciaY0, 1.5], [(d.roofXMin + d.roofXMax) / 2, (d.tipY + fasciaY0) / 2, d.tipZ - 0.75]); // fascia
+
+  // Cheek walls: from where the dormer underside clears the main slope back to the rear wall plane.
+  let hi = d.zJoin, lo = r.zRear; // bisect for the z where dormer underside == main top surface
+  for (let i = 0; i < 40; i++) {
+    const mid = (hi + lo) / 2;
+    if (dp.under(mid) > main.top(mid)) lo = mid; else hi = mid;
+  }
+  const zi = lo, zr = r.zRear;
+  const cheek: Vec2[] = [[zi, main.top(zi)], [zr, main.top(zr)], [zr, dp.under(zr)], [zi, dp.under(zi)]];
+  for (const [xa, xb] of [[d.xMin, d.xMin + WALL_T], [d.xMax - WALL_T, d.xMax]]) b.add(extrudeAlongX(cheek, xa, xb), m.siding);
+}
+
+/** Main roof, dormer, cornice wedges. Lives in the `roof` level group. */
+export function buildMainRoof(data: HouseData, m: Materials): THREE.Group {
+  const r = data.roof.main, d = r.rearDormer;
+  const prof = roofProfile(r);
   const b = new GeometryBatch();
   const x0 = r.xMin - r.overhangRake, x1 = r.xMax + r.overhangRake, xc = (x0 + x1) / 2;
+  const wallTop = data.roof.frieze?.topY ?? r.eaveY - r.thickness;
 
-  const slab: Vec2[] = [...path, ...[...path].reverse().map(([z, y]): Vec2 => [z, y - t])];
-  b.add(extrudeAlongX(slab, x0, x1), m.roof);
-  for (let i = 0; i < path.length - 1; i++) {
-    addSeams(b, m, x0 + 3, x1 - 3, r.seamSpacing, path[i], path[i + 1]);
-    for (const sx of [x0 - 0.75, x1 + 0.75]) slopedBox(b, m.trim, sx, 1.5, path[i], path[i + 1], 7, -2.5); // rake boards
+  if (d) {
+    addSlab(b, m, prof, x0, d.xMin, r.seamSpacing, [true, false]);
+    addSlab(b, m, prof, d.xMax, x1, r.seamSpacing, [false, true]);
+    addSlab(b, m, truncatedProfile(prof, r.zRear + WALL_T / 2), d.xMin, d.xMax, r.seamSpacing, [false, false]); // ends inside the dormer wall
+  } else {
+    addSlab(b, m, prof, x0, x1, r.seamSpacing, [true, true]);
   }
-  b.box(m.roof, [x1 - x0, 3, 3], [xc, r.ridgeY, (r.zFront + r.zRear) / 2], [Math.PI / 4, 0, 0]); // ridge cap
+  b.box(m.roof, [x1 - x0, 3, 3], [xc, r.ridgeY - 2.1, (r.zFront + r.zRear) / 2], [Math.PI / 4, 0, 0]); // ridge cap (top at ridgeY)
 
-  // Cornice wedge under each eave: fills wall top → soffit; fascia board on the slab edge.
-  const frontTop = data.roof.frieze?.topY ?? r.eaveY - t;
-  const rearTop = r.rearDormer?.wallTopY ?? frontTop;
-  for (const [wallZ, dir, wallTop, tip] of [
-    [r.zFront, 1, frontTop, path[0]], [r.zRear, -1, rearTop, path[path.length - 1]],
-  ] as const) {
-    const inner = wallZ - dir * WALL_T;
-    const edgeTop = Math.max(prof.under(tip[0]), wallTop + 0.5);
-    b.add(extrudeAlongX([[inner, wallTop], [tip[0], wallTop], [tip[0], edgeTop], [inner, prof.under(inner)]], x0, x1), m.trim);
-    b.box(m.trim, [x1 - x0 + 3, t + 3.5, 1.5], [xc, tip[1] - t / 2 - 1.75, tip[0] + dir * 0.75]);
-  }
+  const fasciaY0 = data.trim.entablature.cornice.y1;
+  addEave(b, m, prof, r.zFront, 1, wallTop, fasciaY0, x0, x1);
+  for (const [xa, xb] of d ? [[x0, d.xMin], [d.xMax, x1]] : [[x0, x1]]) addEave(b, m, prof, r.zRear, -1, wallTop, fasciaY0, xa, xb);
+  addDormer(b, data, m, prof);
   return b.toGroup('roof-main');
 }
 
@@ -72,30 +107,6 @@ function secondFloorOpenings(data: HouseData, pred: (o: Opening) => boolean): { 
   const second = data.levels.find((l) => l.id === 'second');
   if (!second) return [];
   return second.openings.filter((o) => o.exterior && pred(o)).map((op) => ({ op, sill: second.floorY + op.sill, head: second.floorY + op.head }));
-}
-
-/** Frieze band (front, Option 1 trim) with holes for the brow windows. Lives with the second floor. */
-export function buildFrieze(data: HouseData, m: Materials): THREE.Group | null {
-  const fr = data.roof.frieze, r = data.roof.main;
-  if (!fr) return null;
-  const top = fr.topY ?? r.eaveY - r.thickness, bottom = top - fr.height;
-  const wins = secondFloorOpenings(data, (o) => o.kind === 'window' && Math.abs(Math.sin(o.angle)) < 0.5 && Math.abs(o.center[1] - r.zFront) < 10)
-    .sort((a, c) => a.op.center[0] - c.op.center[0]);
-  const b = new GeometryBatch();
-  const depth = fr.projection + 1, cz = r.zFront + (fr.projection - 1) / 2;
-  const band = (xa: number, xb: number, ya: number, yb: number) => {
-    if (xb - xa > 0.01 && yb - ya > 0.01) b.box(m.trim, [xb - xa, yb - ya, depth], [(xa + xb) / 2, (ya + yb) / 2, cz]);
-  };
-  let x = r.xMin - 0.75;
-  for (const { op, sill, head } of wins) {
-    const wa = op.center[0] - op.width / 2, wb = op.center[0] + op.width / 2;
-    band(x, wa, bottom, top);
-    band(wa, wb, bottom, Math.min(sill, top)); // below the window
-    band(wa, wb, Math.max(head, bottom), top); // above it
-    x = wb;
-  }
-  band(x, r.xMax + 0.75, bottom, top);
-  return b.toGroup('frieze');
 }
 
 /** Gable siding triangles above the second-floor gable walls, split around the windows. Lives with the second floor. */
@@ -122,47 +133,71 @@ export function buildGableInfill(data: HouseData, m: Materials): THREE.Group | n
   return b.toGroup('gable-infill');
 }
 
-/** Wing shed roof, wedge infills over its side walls and the far-wall cornice band. Lives with the first floor. */
-export function buildWingRoof(data: HouseData, m: Materials): THREE.Group | null {
-  const w = data.roof.wing;
-  if (!w) return null;
-  const b = new GeometryBatch();
-  const slope = (w.highY - w.lowY) / (w.zNear - w.zFar);
-  const top = (z: number) => w.lowY + slope * (z - w.zFar);
-  const edge = w.zFar - w.overhang, t = w.thickness;
-  const x0 = w.xMin - w.overhang, x1 = w.xMax + w.overhang, xc = (x0 + x1) / 2;
-  const wallTop = levelTop(data.levels.find((l) => l.id === 'first'));
-
-  b.add(extrudeAlongX([[w.zNear, w.highY], [edge, top(edge)], [edge, top(edge) - t], [w.zNear, w.highY - t]], x0, x1), m.roof);
-  addSeams(b, m, x0 + 3, x1 - 3, data.roof.main.seamSpacing, [edge, top(edge)], [w.zNear, w.highY]);
-  b.box(m.trim, [x1 - x0 + 3, t + 3.5, 1.5], [xc, top(edge) - t / 2 - 1.75, edge - 0.75]); // fascia
-
-  // Wedge above each end wall (wall top → sloped underside), and a cornice band over the far wall.
-  const wedge: Vec2[] = [[w.zFar, wallTop], [w.zNear, wallTop], [w.zNear, w.highY - t], [w.zFar, w.lowY - t]];
-  for (const [a, c] of [[w.xMin, w.xMin + WALL_T], [w.xMax - WALL_T, w.xMax]]) b.add(extrudeAlongX(wedge, a, c), m.siding);
-  const inner = w.zFar + WALL_T;
-  b.add(extrudeAlongX([[inner, wallTop], [edge, wallTop], [edge, top(edge) - t], [inner, top(inner) - t]], w.xMin, w.xMax), m.trim);
-  return b.toGroup('roof-wing');
+/** Slab of constant vertical thickness under a planar polygon (top outline `top`, [x, y, z] CCW from above), as a closed solid. */
+function slabSolid(top: [number, number, number][], t: number): THREE.BufferGeometry {
+  const tris: number[] = [];
+  const n = top.length;
+  const low = top.map(([x, y, z]): [number, number, number] => [x, y - t, z]);
+  for (let i = 1; i < n - 1; i++) tris.push(...top[0], ...top[i], ...top[i + 1], ...low[0], ...low[i + 1], ...low[i]);
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    tris.push(...top[i], ...low[i], ...low[j], ...top[i], ...low[j], ...top[j]);
+  }
+  return solidFromTriangles(tris);
 }
 
 /**
- * Corner pilasters (flat trim boards) on the main block for one level.
- * Rear corners hidden by the wing are skipped on the first floor. On the top
- * floor they stop at the frieze (front) and the dormer cornice (rear).
+ * Wing hip roof: three roof planes (far slope and the two sides) meeting at an apex on the main rear wall, with
+ * fascia boards round the eave, seams, and siding wedges closing the wall tops under the rising roof.
+ * Lives with the first floor.
  */
-export function buildCornerPilasters(data: HouseData, level: Level, m: Materials): THREE.Group {
-  const r = data.roof.main, wing = data.roof.wing, fr = data.roof.frieze;
+export function buildWingRoof(data: HouseData, m: Materials): THREE.Group | null {
+  const w = data.roof.wing;
+  if (!w) return null;
+  const h = w.hip, t = w.thickness, zn = w.zNear;
   const b = new GeometryBatch();
-  const y0 = level.floorY - level.floorThickness;
-  const wd = 9, proud = 1.5;
-  for (const [sx, cx] of [[1, r.xMin], [-1, r.xMax]] as const) {
-    for (const [sz, cz] of [[1, r.zFront], [-1, r.zRear]] as const) {
-      if (sz === -1 && wing && level.id === 'first' && cx >= wing.xMin - 1 && cx <= wing.xMax + 1) continue;
-      const cap = sz === 1 ? (fr ? (fr.topY ?? r.eaveY - r.thickness) - fr.height : Infinity) : r.rearDormer?.wallTopY ?? Infinity;
-      const y1 = Math.min(levelTop(level), cap);
-      // Box covers the corner: `wd` wide, projecting `proud` past each wall face.
-      b.box(m.trim, [wd, y1 - y0, wd], [cx + sx * (wd / 2 - proud), (y0 + y1) / 2, cz + sz * (proud - wd / 2)]);
+  const apex: [number, number, number] = [h.apex[0], h.apexY, h.apex[1]];
+  const corner = (x: number, z: number): [number, number, number] => [x, h.eaveY, z];
+  const planes: [number, number, number][][] = [
+    [corner(h.x0, h.zFar), corner(h.x1, h.zFar), apex], // far slope
+    [corner(h.x1, h.zFar), corner(h.x1, zn), apex], // right hip face
+    [corner(h.x0, zn), corner(h.x0, h.zFar), apex], // left hip face
+  ];
+  for (const tri of planes) {
+    const geo = slabSolid(tri, t);
+    b.add(geo, m.roof);
+    geo.dispose();
+  }
+
+  // Standing seams: along the fall line of each plane, trimmed to the plane's outline.
+  const sp = data.roof.main.seamSpacing;
+  const farRun = zn - h.zFar, farRise = h.apexY - h.eaveY;
+  for (let x = h.x0 + sp / 2; x < h.x1; x += sp) { // far slope: along z, ends where the hip lines cut it
+    const zEnd = zn - farRun * (Math.abs(x - apex[0]) / (h.x1 - apex[0]));
+    slopedBox(b, m.roof, x, SEAM, [h.zFar, h.eaveY], [zEnd, h.eaveY + farRise * ((zEnd - h.zFar) / farRun)], SEAM, SEAM / 2);
+  }
+  for (const side of [-1, 1] as const) { // hip faces: along x, from the eave edge to the far-slope hip line
+    const xe = side < 0 ? h.x0 : h.x1;
+    for (let z = h.zFar + sp / 2; z < zn; z += sp) {
+      const xEnd = apex[0] + side * (h.x1 - apex[0]) * ((zn - z) / farRun);
+      const rise = farRise * (1 - Math.abs(xEnd - apex[0]) / (h.x1 - apex[0]));
+      const len = Math.abs(xEnd - xe), ang = Math.atan2(h.apexY - h.eaveY, h.x1 - apex[0]) * -side;
+      b.box(m.roof, [len, SEAM, SEAM], [(xe + xEnd) / 2, h.eaveY + rise / 2 + SEAM / 2, z], [0, 0, ang]);
     }
   }
-  return b.toGroup(`pilasters-${level.id}`);
+
+  // Fascia boards round the eave (far and both sides).
+  const bands = data.trim.wingCornice.bands, f = h.fascia, fy0 = bands[bands.length - 1][1], drop = h.eaveY - fy0, fy = (h.eaveY + fy0) / 2;
+  b.box(m.trim, [h.x1 - h.x0 + 2 * f, drop, f], [(h.x0 + h.x1) / 2, fy, h.zFar - f / 2]);
+  for (const x of [h.x0 - f / 2, h.x1 + f / 2]) b.box(m.trim, [f, drop, zn - h.zFar], [x, fy, (zn + h.zFar) / 2]);
+
+  // Siding closing each wing wall top up to the roof underside (the roof rises above the wall top).
+  const slope = farRise / farRun, sideSlope = farRise / (h.x1 - apex[0]);
+  const underFar = (z: number) => h.eaveY + slope * (z - h.zFar) - t;
+  b.add(extrudeAlongX([[w.zFar, w.wallTopY], [w.zFar + WALL_T, w.wallTopY], [w.zFar + WALL_T, underFar(w.zFar + WALL_T)], [w.zFar, underFar(w.zFar)]], w.xMin, w.xMax), m.siding);
+  const underLeft = (x: number) => h.eaveY + sideSlope * (x - h.x0) - t;
+  const underRight = (x: number) => h.eaveY + sideSlope * (h.x1 - x) - t;
+  b.add(extrudeAlongZ([[w.xMin, w.wallTopY], [w.xMin + WALL_T, w.wallTopY], [w.xMin + WALL_T, underLeft(w.xMin + WALL_T)], [w.xMin, underLeft(w.xMin)]], w.zFar, zn), m.siding);
+  b.add(extrudeAlongZ([[w.xMax - WALL_T, w.wallTopY], [w.xMax, w.wallTopY], [w.xMax, underRight(w.xMax)], [w.xMax - WALL_T, underRight(w.xMax - WALL_T)]], w.zFar, zn), m.siding);
+  return b.toGroup('roof-wing');
 }

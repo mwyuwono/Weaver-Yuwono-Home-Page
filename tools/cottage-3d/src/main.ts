@@ -13,6 +13,11 @@ import { RenderLoop } from './scene/RenderLoop';
 import { ExplodeController } from './anim/ExplodeController';
 import { TweenSet } from './anim/tween';
 import { Controls } from './ui/Controls';
+import type { QaFace } from './scene/qaView';
+import { IN } from './units';
+
+/** Camera stays this far above the terrain (feet). */
+const GROUND_CLEARANCE_FT = 1.5;
 
 function webglAvailable(): boolean {
   try {
@@ -32,17 +37,33 @@ async function start(root: HTMLElement): Promise<void> {
   }
 
   const data = await loadHouseData();
+  const qa = new URLSearchParams(location.search).get('qa');
+  const qaFace = (['front', 'rear', 'left', 'right'].includes(qa ?? '') ? qa : null) as QaFace | null;
   const renderer = createRenderer(root);
   const scene = new THREE.Scene();
   const camera = createCamera();
-  const controls = createControls(camera, renderer.domElement);
   const house = new House(data);
+  let explode: ExplodeController | null = null;
+  const controls = createControls(camera, renderer.domElement, (x, z) => (explode?.groundActive === false ? -Infinity : (house.grade.y(x / IN, z / IN) * IN) + GROUND_CLEARANCE_FT));
   scene.add(house.root);
   addLights(scene, renderer, house.center);
 
+  if (qaFace) {
+    // Dev-only straight-on elevation for qa/overlay.mjs; no UI, no animation.
+    const { applyQaView } = await import('./scene/qaView');
+    const { clientWidth: w, clientHeight: h } = root;
+    renderer.setSize(w, h, false);
+    const ortho = applyQaView(scene, renderer, house, data, qaFace, house.center, { w, h });
+    renderer.render(scene, ortho);
+    loading?.classList.add('done');
+    document.body.dataset.qaReady = '1';
+    return;
+  }
+
   const tweens = new TweenSet();
   const loop = new RenderLoop(renderer, scene, camera, controls, tweens);
-  const explode = new ExplodeController(house, camera, controls, tweens);
+  explode = new ExplodeController(house, camera, controls, tweens);
+  const ex = explode;
 
   const resize = () => {
     const { clientWidth: w, clientHeight: h } = root;
@@ -52,16 +73,16 @@ async function start(root: HTMLElement): Promise<void> {
     loop.invalidate();
   };
   resize();
-  explode.snapCamera();
+  ex.snapCamera();
   new ResizeObserver(resize).observe(root);
 
   const ui = new Controls(root, {
-    assemble: () => explode.assemble(),
-    explode: () => explode.explode(),
-    isolate: (id) => explode.isolate(id),
-    resetView: () => explode.resetView(),
+    assemble: () => ex.assemble(),
+    explode: () => ex.explode(),
+    isolate: (id) => ex.isolate(id),
+    resetView: () => ex.resetView(),
   }, data.levels.map((l) => l.id));
-  explode.onState = (s) => ui.setState(s);
+  ex.onState = (s) => ui.setState(s);
 
   loop.onFirstFrame = () => {
     console.info(`[cottage-3d] draw calls (first frame): ${renderer.info.render.calls}, triangles: ${renderer.info.render.triangles}`);

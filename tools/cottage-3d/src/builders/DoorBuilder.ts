@@ -6,7 +6,7 @@
  *  - interior doors: painted six-panel leaf with plain casing.
  */
 import * as THREE from 'three';
-import type { Level, Opening } from '../data/schema';
+import type { Level, Opening, Trim } from '../data/schema';
 import type { Materials } from '../materials';
 import { GeometryBatch } from './geometry';
 import { openingFrame } from './openingFrame';
@@ -27,7 +27,22 @@ function addPanelLeaf(b: GeometryBatch, mat: THREE.Material, w: number, h: numbe
   }
 }
 
-function buildTemplate(op: Opening, m: Materials): GeometryBatch {
+/** Front door surround (measured): pilasters with base and capital, a head board and a two-step cornice, both sides mirrored. */
+function addSurround(b: GeometryBatch, m: Materials, s: Trim['doorSurround'], half: number): void {
+  const [px0, px1] = s.pilasterX, [py0, py1] = s.pilasterY, pw = px1 - px0, z = half;
+  for (const side of [-1, 1]) {
+    const x = side * (px0 + px1) / 2;
+    b.box(m.trim, [pw, py1 - py0, s.proud], [x, (py0 + py1) / 2, z + s.proud / 2]);
+    b.box(m.trim, [pw + 1.6, s.baseY[1] - s.baseY[0], s.proud + 0.8], [x, (s.baseY[0] + s.baseY[1]) / 2, z + (s.proud + 0.8) / 2]);
+    b.box(m.trim, [pw + 1.6, s.capitalTopY - py1, s.proud + 0.8], [x, (py1 + s.capitalTopY) / 2, z + (s.proud + 0.8) / 2]);
+  }
+  const [h0, h1] = s.headY, [c0, c1] = s.corniceY, [w0, w1] = s.corniceHalfWidth, mid = (c0 + c1) / 2;
+  b.box(m.trim, [2 * px1 + 1.6, h1 - h0, s.proud], [0, (h0 + h1) / 2, z + s.proud / 2]);
+  b.box(m.trim, [2 * w0, mid - c0, s.proud + 2.2], [0, (c0 + mid) / 2, z + (s.proud + 2.2) / 2]);
+  b.box(m.trim, [2 * w1, c1 - mid, s.proud + 3.4], [0, (mid + c1) / 2, z + (s.proud + 3.4) / 2]);
+}
+
+function buildTemplate(op: Opening, m: Materials, c: Trim['casing'], s: Trim['doorSurround']): GeometryBatch {
   const b = new GeometryBatch();
   const { width: w, depth: d, head } = op;
   const half = d / 2;
@@ -40,29 +55,17 @@ function buildTemplate(op: Opening, m: Materials): GeometryBatch {
 
   if (front) {
     addPanelLeaf(b, m.door, w - 4, head, 1.75);
-    addCasing(b, m, w, 0, head, half, 1, false);
-    // Pilasters with base and capital
-    for (const side of [-1, 1]) {
-      const x = side * (w / 2 + 3 + 2.75);
-      b.box(m.trim, [5.5, head - 6, 1.6], [x, 3 + (head - 6) / 2, half + 0.8]);
-      b.box(m.trim, [7, 6, 2.4], [x, 3, half + 1.2]);
-      b.box(m.trim, [7, 2.5, 2.4], [x, head - 1.25, half + 1.2]);
-    }
-    // Flat cornice head: architrave, frieze, projecting cornice, crown
-    const ew = w + 2 * 6.5 + 8;
-    b.box(m.trim, [ew - 2, 3, 1.5], [0, head + 1.5, half + 0.75]);
-    b.box(m.trim, [ew, 6, 1.5], [0, head + 6, half + 0.75]);
-    b.box(m.trim, [ew + 3, 2.5, 4.5], [0, head + 10.25, half + 2.25]);
-    b.box(m.trim, [ew + 5, 1.5, 5.5], [0, head + 12.25, half + 2.75]);
-    addCasing(b, m, w, 0, head, -half, -1, false); // interior side
+    addCasing(b, m, c, w, 0, head, half, 1, false);
+    addSurround(b, m, s, half);
+    addCasing(b, m, c, w, 0, head, -half, -1, false); // interior side
   } else if (op.exterior) {
     addSash(b, m, { cx: 0, y0: 1, w: w - 4, h: head - 3, z: 0, lites: op.lites ?? [2, 4], stile: 4, rail: 4 });
-    addCasing(b, m, w, 0, head, half, 1, true);
-    addCasing(b, m, w, 0, head, -half, -1, false);
+    addCasing(b, m, c, w, 0, head, half, 1, true);
+    addCasing(b, m, c, w, 0, head, -half, -1, false);
   } else {
     addPanelLeaf(b, m.trim, w - 4, head, 1.75);
-    addCasing(b, m, w, 0, head, half, 1, false);
-    addCasing(b, m, w, 0, head, -half, -1, false);
+    addCasing(b, m, c, w, 0, head, half, 1, false);
+    addCasing(b, m, c, w, 0, head, -half, -1, false);
   }
   return b;
 }
@@ -70,14 +73,14 @@ function buildTemplate(op: Opening, m: Materials): GeometryBatch {
 const templates = new Map<string, GeometryBatch>();
 
 /** Build every door of a level into one merged group. */
-export function buildDoors(level: Level, m: Materials): THREE.Group {
+export function buildDoors(level: Level, m: Materials, trim: Trim): THREE.Group {
   const out = new GeometryBatch();
   for (const op of level.openings) {
     if (op.kind !== 'door') continue;
     const key = JSON.stringify([op.sym, op.width, op.depth, op.head, op.lites, op.exterior]);
     let tpl = templates.get(key);
     if (!tpl) {
-      tpl = buildTemplate(op, m);
+      tpl = buildTemplate(op, m, trim.casing, trim.doorSurround);
       templates.set(key, tpl);
     }
     out.addBatch(tpl, openingFrame(op, level));

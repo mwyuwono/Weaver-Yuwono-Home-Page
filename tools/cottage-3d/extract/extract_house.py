@@ -265,6 +265,148 @@ def measure_elevations(msp):
     return M
 
 
+# --------------------------------------------------------------------------
+# elevation details (dormer extent, wing hip roof, grade profiles, trim)
+# --------------------------------------------------------------------------
+def elevation_segments(msp):
+    """All straight segments (layer, start, end) of the elevation area: LINE, (LW)POLYLINE and the contents of blocks
+    (the corner pilasters are blocks). Block content on layer 0 takes the INSERT's layer."""
+    segs = []
+
+    def walk(e, layer, depth):
+        t = e.dxftype()
+        lay = e.dxf.layer if e.dxf.layer != '0' else layer
+        if t == 'LINE':
+            segs.append((lay, e.dxf.start, e.dxf.end))
+        elif t in ('LWPOLYLINE', 'POLYLINE'):
+            for v in e.virtual_entities():
+                if v.dxftype() == 'LINE':
+                    segs.append((lay, v.dxf.start, v.dxf.end))
+        elif t == 'INSERT' and depth < 3:
+            for v in e.virtual_entities():
+                walk(v, lay, depth + 1)
+
+    for e in msp.query('LINE LWPOLYLINE POLYLINE INSERT'):
+        if e.dxftype() == 'INSERT':
+            p = e.dxf.insert
+            if not (3800 < p.x < 6400 and -2900 < p.y < -2300):
+                continue
+        walk(e, e.dxf.layer, 0)
+    return segs
+
+
+class Face:
+    """One elevation drawing. u = DXF x - centre (inches, +u to the right as drawn from outside), Y from the subfloor.
+
+    The centre is the middle of the corner-pilaster outer edges (A-ELEV-OPT1 verticals), which every elevation draws
+    symmetrically about the main block."""
+    RANGES = {'front': (3900, 4430), 'right': (4520, 5120), 'rear': (5100, 5700), 'left': (5640, 6300)}
+
+    def __init__(self, msp, name, sub_y):
+        self.name, self.sub = name, sub_y
+        x0, x1 = self.RANGES[name]
+        self.lines = [(L, a, b) for L, a, b in elevation_segments(msp) if x0 <= min(a.x, b.x) and max(a.x, b.x) <= x1]
+        pil = sorted({round(a.x, 1) for L, a, b in self.lines if L == 'A-ELEV-OPT1' and abs(a.x - b.x) < .01
+                      and abs(a.y - b.y) > 100 and min(a.y, b.y) < sub_y < max(a.y, b.y)})
+        self.c = 0.5 * (pil[0] + pil[-1])
+
+    def segs(self, layer, horizontal=None, y=None, tol=0.15, u0=-1e9, u1=1e9, minlen=0.0):
+        """(u_a, u_b, Y_a, Y_b) of straight segments on `layer` (None = any), optionally horizontal/vertical at height/offset."""
+        out = []
+        for L, a, b in self.lines:
+            if layer and L != layer:
+                continue
+            ua, ub, ya, yb = a.x - self.c, b.x - self.c, a.y - self.sub, b.y - self.sub
+            if horizontal is True and abs(ya - yb) > .02:
+                continue
+            if horizontal is False and abs(ua - ub) > .02:
+                continue
+            if y is not None and abs((ya if horizontal else ua) - y) > tol:
+                continue
+            if min(ua, ub) < u0 or max(ua, ub) > u1 or math.hypot(ua - ub, ya - yb) < minlen:
+                continue
+            out.append((ua, ub, ya, yb))
+        return out
+
+
+def grade_splines(msp, x0, x1, to_z, sub_y):
+    """The V-layer grade splines inside the x range, each as [(z, Y), ...] sorted from high z to low z."""
+    out = []
+    for e in msp.query('SPLINE'):
+        if e.dxf.layer != 'V' or not (-2800 <= list(e.flattening(0.5))[0].y <= -2600):
+            continue
+        p = [(to_z(q.x), q.y - sub_y) for q in e.flattening(0.1)]
+        if x0 <= min(q.x for q in e.flattening(0.5)) and max(q.x for q in e.flattening(0.5)) <= x1:
+            out.append(sorted(p, key=lambda t: -t[0]))
+    return out
+
+
+def sample(spline, zs):
+    """Linear interpolation of a [(z, Y)] polyline (z descending) at the given z values."""
+    zz = [p[0] for p in spline][::-1]
+    yy = [p[1] for p in spline][::-1]
+    def f(z):
+        if z >= zz[-1]:
+            return yy[-1]
+        if z <= zz[0]:
+            return yy[0]
+        for i in range(len(zz) - 1):
+            if zz[i] <= z <= zz[i + 1]:
+                t = (z - zz[i]) / (zz[i + 1] - zz[i])
+                return yy[i] + t * (yy[i + 1] - yy[i])
+    return [[round(z, 1), round(f(z), 2)] for z in zs]
+
+
+def measure_details(msp, SUB, W, D, wing):
+    """Everything the builders need beyond the plan: dormer extent, wing hip roof, porch/fence, terrain, trim."""
+    F = {n: Face(msp, n, SUB) for n in Face.RANGES}
+    out = {}
+    hx = W / 2.0                      # house x of the face centre (u = hx - x on the rear elevation)
+
+    # ---- rear shed dormer: cheek-wall outer faces and roof edges (rear elevation, symmetric about the centre) ----
+    r = F['rear']
+    spans = lambda y0, y1: (lambda s: abs(min(s[2], s[3]) - y0) < 0.3 and abs(max(s[2], s[3]) - y1) < 0.3)
+    roof_edge = list(filter(spans(227.9, 275.1), r.segs('A-ELEV', horizontal=False)))
+    cheek = list(filter(spans(184.8, 217.6), r.segs('A-ELEV', horizontal=False)))
+    ru = max(abs(s[0]) for s in roof_edge)
+    cu = max(abs(s[0]) for s in cheek)
+    out['dormer'] = dict(xMin=round(hx - cu, 2), xMax=round(hx + cu, 2), roofXMin=round(hx - ru, 2), roofXMax=round(hx + ru, 2))
+
+    # ---- wing hip roof (rear elevation: eave line and hip lines; right elevation: eave end) ----
+    hip = list(filter(lambda s: spans(120.5, 141.7)(s) and abs(s[0] - s[1]) > 100, r.segs('A-ELEV')))
+    eave_u = max(max(abs(s[0]), abs(s[1])) for s in hip)
+    apex_y = max(max(s[2], s[3]) for s in hip)
+    ri = F['right']
+    far = list(filter(spans(120.5, 140.7), ri.segs('A-ELEV')))
+    far_u = max(max(s[0], s[1]) for s in far)
+    fascia = max(max(s[0], s[1]) for s in ri.segs('A-ELEV', horizontal=True, y=120.5, u0=150))
+    out['wingHip'] = dict(x0=round(hx - eave_u, 2), x1=round(hx + eave_u, 2), zFar=round(-(far_u + D / 2.0), 2),
+                          apex=[round(hx, 2), round(-D, 2)], apexY=round(apex_y, 2), eaveY=120.5,
+                          fascia=round(fascia - far_u, 2))
+    out['wingWallTopY'] = round(max(s[2] for s in r.segs('A-ELEV-DETL', horizontal=True, y=110.1)), 2)
+
+    # ---- grade profiles: [z, Y] along the left and right faces (z = 0 at the front wall face, - toward the rear) ----
+    left_to_z = lambda x: x - (F['left'].c + D / 2.0)
+    right_to_z = lambda x: -(x - (F['right'].c - D / 2.0))
+    ls = grade_splines(msp, 5600, 6400, left_to_z, SUB)
+    rs = grade_splines(msp, 4500, 5100, right_to_z, SUB)
+    # left: front lawn, the long side spline (z 0 -> -316), the flat terrace behind the house (V line y=-48.2), the falling spline
+    l_side = [sp for sp in ls if abs(sp[0][0]) < 1 and sp[-1][0] < -300][0]
+    l_fall = [sp for sp in ls if sp[0][0] < -380][0]
+    r_side = [sp for sp in rs if abs(sp[0][0]) < 1 and sp[-1][0] < -200][0]
+    r_low1 = [sp for sp in rs if -210 < sp[0][0] < -200][0]
+    r_low2 = [sp for sp in rs if sp[-1][0] < -440][0]
+    terrace_y = round(sample(l_side, [-316.0])[0][1], 2)
+    out['terrain'] = dict(
+        left=[[400.0, -23.4]] + sample(l_side, [0, -13, -65, -116, -165, -213, -262, -316]) + [[-387.3, -48.17]]
+             + sample(l_fall, [-404, -430, -470, -505, -535, -558, -567.6]) + [[-900.0, -87.15]],
+        right=[[400.0, -24.12], [72.0, -24.12]] + sample(r_side, [0, -46, -98, -154, -213.3])
+              + sample(r_low1, [-227, -250, -283, -328.9]) + sample(r_low2, [-447.1]) + [[-900.0, -90.0]],
+        terraceY=terrace_y)
+    out['faces'] = {n: round(f.c, 2) for n, f in F.items()}
+    return out
+
+
 def window_insert_levels(msp):
     """Y of elevation window blocks by schedule type (A,B,C,D) -> list of insert y."""
     names = {'*U330': 'A', '*U331': 'B', '*U337': 'C', '*U156': 'D'}
@@ -548,6 +690,24 @@ def stair_flights(msp, XF, bsmt_floor, floor2):
     return {'basement': (b0, d1, bsmt_floor, 0.0), 'first': (u0, s1, 0.0, floor2)}
 
 
+# Trim profiles measured from the Option 1 elevations (A-ELEV-OPT1*, all inches, Y from the subfloor). Bands are
+# [y0, y1, proud] boards stacked up the face; capital bands are [y0, y1, grow] (extra width per side, proud = pilaster proud + grow).
+TRIM = dict(
+    waterTable=dict(y0=-9.25, y1=-1.2, proud=1.0),
+    pilaster=dict(width=19.4, proud=2.0, baseY=-9.25, shaftTopY=133.2,
+                  capital=[[133.2, 139.0, 0.5], [139.0, 140.8, 1.2], [140.8, 146.1, 3.3]],
+                  panel=dict(y0=-1.2, y1=126.4, width=9.6, innerWidth=7.0, innerInset=1.2, proud=0.5)),
+    entablature=dict(bands=[[146.1, 155.7, 2.0], [155.7, 157.6, 3.3], [157.6, 167.2, 2.0]],
+                     cornice=dict(y0=167.2, y1=171.2, proud=5.6), bandReturn=19.4, corniceReturn=27.3),
+    dormerCornice=dict(bands=[[217.6, 222.5, 0.8], [222.5, 223.6, 4.2]], cornerBoard=dict(width=6.0, y0=184.8, y1=217.6, proud=1.0)),
+    wingCornice=dict(bands=[[110.1, 115.0, 1.9], [115.0, 119.4, 5.3]]),
+    casing=dict(side=5.0, outer=6.15, headHeight=5.1, headAboveOpening=2.8, proud=1.0, sillHeight=2.7, sillWider=2.5,
+                sillProud=2.5, dripProud=1.8),
+    doorSurround=dict(pilasterX=[21.5, 31.1], pilasterY=[3.3, 79.6], baseY=[-5.8, 0.8], capitalTopY=88.2, headY=[88.2, 97.2],
+                      corniceY=[98.5, 102.4], corniceHalfWidth=[36.8, 39.0], proud=2.0),
+)
+
+
 def build(dxf_path, out_path):
     doc = ezdxf.readfile(dxf_path)
     msp = doc.modelspace()
@@ -594,6 +754,8 @@ def build(dxf_path, out_path):
     W = round(W_main, 2)
     D = round(D_main, 2)
     XF = {k: Xf(alignment[k]['left'], alignment[k]['front']) for k in alignment}
+    DET = measure_details(msp, SUB, W, D, None)
+    dorm = DET['dormer']
 
     # wing rectangle (house coords) from the foundation (matches first-floor wing to ~0.2")
     wing_x0 = fwing[0] - alignment['basement']['left']
@@ -669,16 +831,25 @@ def build(dxf_path, out_path):
 
         zlev = {'basement': bsmt_floor, 'first': 0.0, 'second': floor2}[k]
         for p in ext_polys:
-            if k == 'second':
+            if k == 'first' and p.centroid.y > XF[k].oy + D + 3:
+                # one-storey wing: its walls run up to the eave cornice (Y~110), 2" above the 9' ceiling
+                add_wall(p, True, DET['wingWallTopY'])
+            elif k == 'second':
                 # Half-storey: split corner polygons into the front wall (ends at the frieze top), the rear
                 # dormer wall (ends at its cornice) and the gable walls (also cut at the frieze top; the app
                 # adds the siding triangle above them up to the roof).
                 _, fy, _, ry = rect[k]
                 front_band = box(-1e5, fy - 1, 1e5, fy + ext_t_here + 0.4)
                 rear_band = box(-1e5, ry - ext_t_here - 0.4, 1e5, ry + 1)
-                for band, top in ((front_band, front_top), (rear_band, rear_top)):
-                    for q in clean(p.intersection(band), 2.0):
-                        add_wall(q, True, top - zlev)
+                # The dormer is inset from both gable ends: outside the cheek walls the rear wall stops at the
+                # frieze top like the front, so the main roof can run down to the rear eave there.
+                dormer_cols = box(XF[k].ox + dorm['xMin'], -1e5, XF[k].ox + dorm['xMax'], 1e5)
+                for q in clean(p.intersection(front_band), 2.0):
+                    add_wall(q, True, front_top - zlev)
+                for q in clean(p.intersection(rear_band).intersection(dormer_cols), 2.0):
+                    add_wall(q, True, rear_top - zlev)
+                for q in clean(p.intersection(rear_band).difference(dormer_cols), 2.0):
+                    add_wall(q, True, front_top - zlev)
                 for q in clean(p.difference(front_band).difference(rear_band), 2.0):
                     add_wall(q, True, front_top - zlev)
             else:
@@ -994,7 +1165,8 @@ def build(dxf_path, out_path):
     # join distance q from the front wall: tip_y + ds*(|tip_z| - q) = ridge_y - ms*(q - D/2)
     zj = (ridge_y + ms * half - tip_y - ds * abs(tip_z)) / (ms - ds)
     join_y = ridge_y - ms * (zj - half)
-    dormer = dict(zJoin=r2(-zj), joinY=r2(join_y), tipZ=r2(tip_z), tipY=r2(tip_y), wallTopY=r2(Yh(M['rear_wall_top_y'])))
+    dormer = dict(zJoin=r2(-zj), joinY=r2(join_y), tipZ=r2(tip_z), tipY=r2(tip_y), wallTopY=r2(Yh(M['rear_wall_top_y'])),
+                  xMin=dorm['xMin'], xMax=dorm['xMax'], roofXMin=dorm['roofXMin'], roofXMax=dorm['roofXMax'])
     note('Roof: ridge top surface Y=%.2f (=25\'-10" above the front grade Y=%.2f, as the ridge mark says); measured slope %.2f/12 '
          '(front slope and the main rear slope). thickness is VERTICAL (%.1f" between top/underside lines). eaveY=%.2f is the roof '
          'TOP surface at the front wall plane; the front wall/frieze top is Y=%.2f (frieze band Y %.2f..%.2f, crown above it up to '
@@ -1002,33 +1174,26 @@ def build(dxf_path, out_path):
          '+~%.1f" vs the plan faces).'
          % (ridge_y, Yh(M['grade_front_y']), pitch, ridge_y - Yh(M['roof_underside_apex_y']), eave_y, Yh(M['frieze_top_y']),
             Yh(M['frieze_bot_y']), Yh(M['frieze_top_y']), oh_eave, oh_rake, plan_vs_elev))
-    note('Rear shed dormer (right-side/rear elevations): the rear half of the second floor is a full-width shed dormer. Its roof '
-         '(%.2f/12) leaves the main rear slope at z=%.1f (top Y=%.1f) and ends at an eave tip z=%.1f, Y=%.1f; the rear wall rises to '
-         'Y=%.1f (C windows end at 202.7). The rear second-floor walls and the gable walls behind the ridge are therefore taller '
-         'than the front half-storey.' % (ds * 12, -zj, join_y, tip_z, tip_y, Yh(M['rear_wall_top_y'])))
-    # wing shed roof
-    hiP, loP = M['wing_hi'], M['wing_lo']
-    # elevation x -> house z:  z = -(x - elev_front_x)
-    z_hi = -(hiP.x - M['elev_front_x'])
-    z_lo = -(loP.x - M['elev_front_x'])
+    note('Rear shed dormer (rear/side elevations): the dormer is INSET from both gable ends - cheek-wall outer faces at x=%.1f and '
+         '%.1f (%.1f" in from the gable walls), roof edges at x=%.1f / %.1f. Its roof (%.2f/12) leaves the main rear slope at z=%.1f '
+         '(top Y=%.1f) and ends at an eave tip z=%.1f, Y=%.1f; its wall rises to Y=%.1f (C windows end at 202.7). Outside the cheeks '
+         'the main roof (%.2f/12) runs on to the normal rear eave and the rear wall stops at the frieze top like the front.'
+         % (dorm['xMin'], dorm['xMax'], dorm['xMin'], dorm['roofXMin'], dorm['roofXMax'], ds * 12, -zj, join_y, tip_z, tip_y,
+            Yh(M['rear_wall_top_y']), pitch))
+    # wing hip roof (rear elevation: the hip lines meet at the middle of the main rear wall; the roof also covers the porch)
+    wh = DET['wingHip']
     zfar = -(D + wing_depth)
-    slope = M['wing_slope'] / 12.0
-    top_at = lambda z: Yh(hiP.y) - slope * (z_hi - z)  # z more negative -> lower
-    high_y = top_at(-D)
-    low_y = top_at(zfar)
-    wing_oh = M['wing_fascia_end_x'] - (M['elev_front_x'] - zfar)
-    wing_top = Yh(M['wing_wall_top_y'])
-    note('Wing shed roof: slope %.2f/12 measured on the right-side elevation; top surface Y=%.2f at the main rear wall (high) and '
-         'Y=%.2f at the far wall face (low); fascia projects %.1f" past the far wall; wing wall tops at Y~%.1f (9\' ceiling +2").'
-         % (M['wing_slope'], high_y, low_y, wing_oh, wing_top))
+    note('Rear wing roof is a HIP (plan "Roof Below"): eave rectangle x %.1f..%.1f (%.1f" past the wing left wall, over the '
+         'porch), far eave z=%.1f (fascia +%.1f"), eave top Y=%.1f, apex x=%.1f on the main rear wall z=%.1f, Y=%.1f; wing wall tops Y=%.1f.'
+         % (wh['x0'], wh['x1'], wing_x0 - wh['x0'], wh['zFar'], wh['fascia'], wh['eaveY'], wh['apex'][0], wh['apex'][1],
+            wh['apexY'], DET['wingWallTopY']))
     roof = dict(
         main=dict(xMin=0.0, xMax=r2(W), zFront=0.0, zRear=r2(-D), eaveY=r2(eave_y), ridgeY=r2(ridge_y),
                   pitch=r2(pitch), overhangEave=r2(oh_eave), overhangRake=13.0, thickness=r2(M['roof_thk']),
                   seamSpacing=31.25, rearDormer=dormer),
-        wing=dict(xMin=r2(wing_x0), xMax=r2(wing_x1), zNear=r2(-D), zFar=r2(zfar), highY=r2(high_y), lowY=r2(low_y),
-                  overhang=r2(round(wing_oh)), thickness=6.0),
-        frieze=dict(height=r2(M['frieze_top_y'] - M['frieze_bot_y']), projection=r2(M['frieze_projection']),
-                    topY=r2(Yh(M['frieze_top_y']))),
+        wing=dict(xMin=r2(wing_x0), xMax=r2(wing_x1), zNear=r2(-D), zFar=r2(zfar), wallTopY=DET['wingWallTopY'],
+                  hip=wh, thickness=6.0),
+        frieze=dict(topY=r2(Yh(M['frieze_top_y']))),
     )
     note('seamSpacing 31.25 = ANSI31 hatch scale 250 x 0.125 used to draw the roof seams on the front elevation (drawn spacing; '
          'real standing seam would be tighter).')
@@ -1069,12 +1234,26 @@ def build(dxf_path, out_path):
     steps = dict(outline=xff.box_poly(5689, -3840, 5760, -3782), bottomY=r2(gf), topY=-1.5, risers=3)
     note('Front steps: between the brick cheeks, 71" wide x 58" deep, 3 risers from grade Y=%.1f to the stoop (door threshold Y=0, '
          'top set -1.5).' % gf)
-    # deck: A-FLOR hatch ANSI31 x 5519..5634, y -3469..-3378
-    deck_o = xff.box_poly(5519, -3469, 5634, -3378)
-    deck = dict(outline=deck_o, y=-1.5, thickness=9.25, railingHeight=36.0)
-    note('Deck (rear-left, outside the back door F): outline from the A-FLOR deck hatch; surface Y=-1.5 and 36" railing are '
-         'assumed (not dimensioned); framing thickness assumed = floor framing 9.25".')
-    site = dict(gradeFrontY=r2(gf), gradeRearY=r2(gr), margin=240.0, retainingWalls=rw, frontSteps=steps, deck=deck)
+    # rear porch outside back door F (measured on the rear/side elevations; sits under the wing hip roof)
+    porch = dict(
+        deck=dict(x0=57.4, x1=113.3, z0=-404.0, z1=-313.0, topY=0.1, bottomY=-9.2),
+        stair=dict(x0=-1.7, x1=57.4, z0=-377.5, z1=-315.2, risers=7, bottomY=-48.2),
+        post=dict(x=64.6, z=-397.5, width=9.5, shaftY0=6.6, shaftY1=102.8, capY1=107.1, capWidth=12.5),
+        rail=dict(balusterY0=4.6, balusterY1=33.3, topY=35.7, post=3.5),
+        lattice=dict(y0=-36.6, y1=-11.1))
+    note('Rear porch (outside back door F): deck platform x %.1f..%.1f / z %.1f..%.1f, top Y=%.1f; 7-riser stair running -x to the '
+         'terrace (Y=%.1f); one 9.5" post with capital at (%.1f, %.1f) carrying the wing hip roof corner; baluster rails and a lattice '
+         'skirt under the deck. All measured on the rear/left elevations.' % (57.4, 113.3, -404.0, -313.0, 0.1, -48.2, 64.6, -397.5))
+    fence = dict(posts=[[405.7, -336.5], [405.7, -401.0], [351.0, -401.0]], postWidth=8.0, shaftY0=-77.8, capY0=-12.8, capY1=-9.3,
+                 rails=[[-16.8, -13.8], [-39.8, -36.8], [-74.7, -70.7]], curbY=[-85.0, -77.8])
+    note('Fenced storage (basement level, x 350..408 behind the wing): three 8" posts with caps, three rails per side and a low '
+         'curb, from the rear elevation.')
+    terrain = DET['terrain']
+    note('Terrain: grade profiles read from the V-layer grade splines of the left and right elevations ([z, Y] pairs). Left profile = '
+         'x<=0 side and the rear-left terrace (stops at the retaining wall x=%.1f), right profile = x>=%.1f side and the rear walk-out. '
+         'In between (z>-D) grade is interpolated across x.' % (ret2[0][0], W))
+    site = dict(margin=1200.0, terrain=dict(left=terrain['left'], right=terrain['right'], stepX=r2(wing_x0)), retainingWalls=rw,
+                frontSteps=steps, porch=porch, fence=fence)
 
     # ---------- meta ----------
     for s in notes_open:
@@ -1091,7 +1270,7 @@ def build(dxf_path, out_path):
     meta = dict(units='in', source='cottage.dxf (AutoCAD 2018, inches)',
                 generated=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
                 notes=NOTES)
-    house = dict(meta=meta, levels=final_levels, roof=roof, chimney=chim, site=site)
+    house = dict(meta=meta, levels=final_levels, roof=roof, trim=TRIM, chimney=chim, site=site)
     with open(out_path, 'w') as f:
         json.dump(house, f, indent=2)
         f.write('\n')
