@@ -24,19 +24,24 @@ function levelRail(b: GeometryBatch, m: Materials, p: Porch, a: Vec2, c: Vec2, y
   }
 }
 
-/** Open lattice panel on the plane through a→c (plan), from y0 to y1: frame plus crossing slats. */
+/**
+ * Open lattice panel on the plane through a→c (plan), from y0 to y1: frame plus crossing slats.
+ * Geometry is unchanged; the slats draw as hairline linework so they fade out
+ * (instead of moiréing) as the panel gets small on screen.
+ */
 function lattice(b: GeometryBatch, m: Materials, a: Vec2, c: Vec2, y0: number, y1: number): void {
   const len = Math.hypot(c[0] - a[0], c[1] - a[1]);
   const yaw = Math.atan2(-(c[1] - a[1]), c[0] - a[0]);
   const mid: [number, number] = [(a[0] + c[0]) / 2, (a[1] + c[1]) / 2];
   const h = y1 - y0, yc = (y0 + y1) / 2;
-  b.box(m.railing, [len, 1.5, 1.5], [mid[0], y0 + 0.75, mid[1]], [0, yaw, 0]);
-  b.box(m.railing, [len, 1.5, 1.5], [mid[0], y1 - 0.75, mid[1]], [0, yaw, 0]);
+  const hairline = { tier: 'hairline' as const };
+  b.box(m.railing, [len, 1.5, 1.5], [mid[0], y0 + 0.75, mid[1]], [0, yaw, 0], hairline);
+  b.box(m.railing, [len, 1.5, 1.5], [mid[0], y1 - 0.75, mid[1]], [0, yaw, 0], hairline);
   for (let s = 3; s < len; s += 4) {
     const x = a[0] + (c[0] - a[0]) * (s / len), z = a[1] + (c[1] - a[1]) * (s / len);
-    b.box(m.railing, [0.6, h, 0.6], [x, yc, z]);
+    b.box(m.railing, [0.6, h, 0.6], [x, yc, z], [0, 0, 0], hairline);
   }
-  for (let s = 3; s < h; s += 4) b.box(m.railing, [len, 0.6, 0.5], [mid[0], y0 + s, mid[1]], [0, yaw, 0]);
+  for (let s = 3; s < h; s += 4) b.box(m.railing, [len, 0.6, 0.5], [mid[0], y0 + s, mid[1]], [0, yaw, 0], hairline);
 }
 
 /** Deck, stair, post, rails and lattice. Lives with the first floor. */

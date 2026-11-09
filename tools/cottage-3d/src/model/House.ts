@@ -6,8 +6,10 @@
  */
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import type { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js';
 import type { HouseData, Level, LevelId } from '../data/schema';
 import { materials as m } from '../materials';
+import type { CottageLineMaterial } from '../render/lines';
 import { WashMaterial } from '../render/wash';
 import { planToScene } from '../units';
 import { buildChimneySlice } from '../builders/ChimneyBuilder';
@@ -29,12 +31,24 @@ export type LevelKey = LevelId | 'roof';
 /** Gap kept between interior partition tops and the roof underside, inches (nearer than this they show through the roof as dots). */
 const CLEARANCE = 12;
 
-/** Merge all meshes under `parts` by material into a fresh group with per-group material clones. */
+/**
+ * Merge all meshes under `parts` by material into a fresh group with
+ * per-group material clones. Vector linework (LineSegments2, a Mesh
+ * subclass) is carried over untouched with its own per-group material clone,
+ * so the explode controller fades lines together with their level.
+ */
 function flatten(name: string, parts: (THREE.Object3D | null)[]): THREE.Group {
   const byMaterial = new Map<THREE.Material, THREE.BufferGeometry[]>();
+  const lines: LineSegments2[] = [];
+  const isLine = (o: object): o is LineSegments2 =>
+    (o as { isLineSegments2?: boolean }).isLineSegments2 === true;
   for (const part of parts) {
     part?.traverse((o) => {
       if (!(o instanceof THREE.Mesh)) return;
+      if (isLine(o)) {
+        lines.push(o);
+        return;
+      }
       const list = byMaterial.get(o.material) ?? [];
       list.push(o.geometry);
       byMaterial.set(o.material, list);
@@ -51,6 +65,12 @@ function flatten(name: string, parts: (THREE.Object3D | null)[]): THREE.Group {
     mesh.receiveShadow = true;
     group.add(mesh);
   }
+  for (const l of lines) {
+    l.material = (l.material as CottageLineMaterial).clone() as CottageLineMaterial;
+    l.castShadow = false;
+    l.receiveShadow = false;
+    group.add(l);
+  }
   return group;
 }
 
@@ -65,6 +85,8 @@ export class House {
   readonly grade: Grade;
   /** Assembled-position bounds per level group (scene feet). */
   readonly bounds = new Map<LevelKey, THREE.Box3>();
+  /** Total vector-linework segments across every level group. */
+  readonly lineSegments: number;
 
   constructor(data: HouseData) {
     const byId = new Map<LevelId, Level>(data.levels.map((l) => [l.id, l]));
@@ -114,6 +136,13 @@ export class House {
     this.root.add(this.site);
     const r = data.roof.main;
     this.center = planToScene([(r.xMin + r.xMax) / 2, (r.zFront + r.zRear) / 2]);
+    let segments = 0;
+    this.root.traverse((o) => {
+      if ((o as { isLineSegments2?: boolean }).isLineSegments2 === true) {
+        segments += (o as LineSegments2).geometry.instanceCount ?? 0;
+      }
+    });
+    this.lineSegments = segments;
   }
 
   /** Plan centre of the main block at Y = 0, in scene feet (light and camera anchor). */

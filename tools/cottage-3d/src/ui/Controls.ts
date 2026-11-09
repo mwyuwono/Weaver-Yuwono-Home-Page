@@ -6,19 +6,28 @@
  * focusable and keyboard-operable by default.
  */
 import type { LevelId } from '../data/schema';
-import type { ViewState } from '../anim/ExplodeController';
+import type { PlateId, ViewState } from '../anim/ExplodeController';
 
 export interface ControlHandlers {
   assemble(): void;
   explode(): void;
   isolate(level: LevelId): void;
   resetView(): void;
+  plate(id: PlateId): void;
 }
 
 const FLOORS: { id: LevelId; label: string }[] = [
   { id: 'basement', label: 'Basement' },
   { id: 'first', label: 'First' },
   { id: 'second', label: 'Second' },
+];
+
+/** Preset presentation views. Plain action buttons (they fly the camera, not a pressed state). */
+const PLATES: { id: PlateId; label: string }[] = [
+  { id: 'hero', label: 'Hero' },
+  { id: 'front', label: 'Front' },
+  { id: 'rear', label: 'Rear ¾' },
+  { id: 'axon', label: 'Axon' },
 ];
 
 export class Controls {
@@ -40,6 +49,17 @@ export class Controls {
         if (this.buttons.get(f.id)?.getAttribute('aria-pressed') === 'true') handlers.assemble();
         else handlers.isolate(f.id);
       });
+    }
+
+    const plates = this.group(bar, 'Preset views');
+    for (const p of PLATES) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ctl-btn';
+      b.textContent = p.label;
+      b.setAttribute('aria-label', `Preset view: ${p.label}`);
+      b.addEventListener('click', () => handlers.plate(p.id));
+      plates.appendChild(b);
     }
 
     const reset = document.createElement('button');

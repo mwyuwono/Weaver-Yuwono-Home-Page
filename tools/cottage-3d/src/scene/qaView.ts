@@ -32,6 +32,12 @@ export function applyQaView(scene: THREE.Scene, renderer: THREE.WebGLRenderer, h
   const flat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
   const ink = new THREE.LineBasicMaterial({ color: 0x000000 });
   house.root.traverse((o) => {
+    // Vector linework is hidden in QA: the elevation check compares wash
+    // geometry against the DXF, and LineSegments2 is a Mesh subclass.
+    if ((o as { isLineSegments2?: boolean }).isLineSegments2 === true) {
+      o.visible = false;
+      return;
+    }
     if (!(o instanceof THREE.Mesh)) return;
     o.material = flat;
     o.add(new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry, 20), ink));

@@ -83,6 +83,7 @@ async function start(root: HTMLElement): Promise<void> {
     explode: () => ex.explode(),
     isolate: (id) => ex.isolate(id),
     resetView: () => ex.resetView(),
+    plate: (id) => ex.plate(id),
   }, data.levels.map((l) => l.id));
   ex.onState = (s) => ui.setState(s);
   ex.insets = () => { // header at the top, control bar at the bottom (plus a little air)
@@ -93,7 +94,7 @@ async function start(root: HTMLElement): Promise<void> {
   };
 
   loop.onFirstFrame = () => {
-    console.info(`[cottage-3d] draw calls (first frame, both passes): ${pipeline.stats.calls}, triangles: ${pipeline.stats.triangles}`);
+    console.info(`[cottage-3d] draw calls (first frame, all passes): ${pipeline.stats.calls}, triangles: ${pipeline.stats.triangles}, segments: ${house.lineSegments}`);
     root.setAttribute('aria-busy', 'false');
     loading?.classList.add('done');
   };

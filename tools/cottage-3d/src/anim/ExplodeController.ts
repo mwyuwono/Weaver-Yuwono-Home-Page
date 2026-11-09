@@ -20,6 +20,9 @@ import type { TweenSet } from './tween';
 
 export type ViewState = { kind: 'assembled' } | { kind: 'exploded' } | { kind: 'isolate'; level: LevelId };
 
+/** Preset presentation views ("plates"). */
+export type PlateId = 'hero' | 'front' | 'rear' | 'axon';
+
 /** Bottom → top. */
 const ORDER: LevelKey[] = ['basement', 'first', 'second', 'roof'];
 /** Moving parts: the levels plus the terrain group, which sinks away and fades whenever the model is not assembled. */
@@ -35,6 +38,16 @@ const STAGGER = 80;
 /** Minimum camera elevation (radians) while floors are separated. */
 const MIN_ELEVATION = THREE.MathUtils.degToRad(32);
 const HERO_DIR = new THREE.Vector3(-0.72, 0.42, 1);
+/** Rear three-quarter: same side as the hero, from behind. */
+const REAR34_DIR = new THREE.Vector3(-0.72, 0.42, -1);
+/** Exploded axon: high front-left, reading the separated plates from above. */
+const AXON_DIR = new THREE.Vector3(-0.7, 0.75, 1);
+/** Front elevation: straight down the +z axis (front faces +z). */
+const FRONT_DIR = new THREE.Vector3(0, 0.02, 1);
+/** Plate camera flights ease over ~900 ms; free orbit always remains. */
+const PLATE_DURATION = 900;
+const DEFAULT_FOV = 32;
+const FRONT_FOV = 12;
 
 interface Node {
   group: THREE.Group;
@@ -67,8 +80,15 @@ export class ExplodeController {
       });
       this.nodes.set(key, { group, materials: [...materials], y: 0, opacity: 1 });
     }
-    // A user drag takes over from any running camera move.
-    controls.addEventListener('start', () => tweens.cancel('camera'));
+    // A user drag takes over from any running camera move (and leaves the
+    // narrow front-elevation field of view behind).
+    controls.addEventListener('start', () => {
+      tweens.cancel('camera');
+      if (this.camera.fov !== DEFAULT_FOV) {
+        this.camera.fov = DEFAULT_FOV;
+        this.camera.updateProjectionMatrix();
+      }
+    });
   }
 
   get state(): ViewState {
@@ -87,6 +107,52 @@ export class ExplodeController {
   /** Put the camera at the hero angle, framed for the current state. */
   resetView(): void {
     this.moveCamera(this.frame(this.current, HERO_DIR));
+  }
+
+  /**
+   * Fly to a preset presentation view ("plate"). Hero/Front/Rear assemble
+   * the model; the axon explodes it. Free orbit remains afterwards; grabbing
+   * the model restores the default field of view.
+   */
+  plate(id: PlateId): void {
+    if (id === 'axon') {
+      this.explode();
+      this.fly(AXON_DIR, { kind: 'exploded' }, DEFAULT_FOV);
+      return;
+    }
+    this.assemble();
+    if (id === 'hero') this.fly(HERO_DIR, { kind: 'assembled' }, DEFAULT_FOV);
+    else if (id === 'rear') this.fly(REAR34_DIR, { kind: 'assembled' }, DEFAULT_FOV);
+    else this.fly(FRONT_DIR, { kind: 'assembled' }, this.frontFov());
+  }
+
+  /** Widest field of view (starting from FRONT_FOV) that still fits the zoom limit. */
+  private frontFov(): number {
+    let fov = FRONT_FOV;
+    for (;;) {
+      this.camera.fov = fov;
+      this.camera.updateProjectionMatrix();
+      const view = this.frame({ kind: 'assembled' }, FRONT_DIR);
+      if (view.position.distanceTo(view.target) <= this.controls.maxDistance * 0.98 || fov >= DEFAULT_FOV) {
+        return fov;
+      }
+      fov += 2;
+    }
+  }
+
+  /** Camera flight for a plate: ~900 ms, eased, retargeting any running move. */
+  private fly(dir: THREE.Vector3, state: ViewState, fov: number): void {
+    this.camera.fov = fov;
+    this.camera.updateProjectionMatrix();
+    const target = this.frame(state, dir);
+    const fromPos = this.camera.position.clone(), fromTarget = this.controls.target.clone();
+    this.tweens.start('camera', {
+      duration: this.reduceMotion ? 0 : PLATE_DURATION,
+      update: (e) => {
+        this.camera.position.lerpVectors(fromPos, target.position, e);
+        this.controls.target.lerpVectors(fromTarget, target.target, e);
+      },
+    });
   }
 
   /** Place the camera immediately (initial layout and window resizes before any interaction). */
@@ -138,11 +204,17 @@ export class ExplodeController {
     node.group.visible = opacity > 0.01;
     const transparent = opacity < 0.999;
     for (const m of node.materials) {
-      m.opacity = opacity;
-      m.depthWrite = !transparent;
-      if (m.transparent !== transparent) {
-        m.transparent = transparent;
-        m.needsUpdate = true; // transparency changes the compiled program's alpha output
+      // Linework materials carry their tier's base opacity and stay
+      // transparent always (they fade with the group, never toggle programs).
+      const base = (m.userData.baseOpacity as number | undefined) ?? 1;
+      const keepTransparent = (m.userData.keepTransparent as boolean | undefined) ?? false;
+      m.opacity = opacity * base;
+      if (!keepTransparent) {
+        m.depthWrite = !transparent;
+        if (m.transparent !== transparent) {
+          m.transparent = transparent;
+          m.needsUpdate = true; // transparency changes the compiled program's alpha output
+        }
       }
     }
   }

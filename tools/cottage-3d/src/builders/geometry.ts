@@ -3,10 +3,34 @@
  * GeometryBatch converts to scene feet when it emits meshes.
  */
 import * as THREE from 'three';
+import { EdgesGeometry } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { Vec2 } from '../data/schema';
 import { WashMaterial } from '../render/wash';
+import { buildTierLines, dedupeTierSegments, tierForInk, type LineTierName, type TierSegments } from '../render/lines';
 import { IN } from '../units';
+
+/**
+ * Which model edges become drawing lines for a piece.
+ *  - 'all': every crease edge (the default — silhouettes and real corners);
+ *  - 'outline': only hard corners (for simple panels such as lattice work);
+ *  - 'none': the piece draws no lines (sill/header infill boxes flush with a
+ *    wall face, hidden structure, terrain — anything whose edges would read
+ *    as spurious ticks rather than drawing lines).
+ */
+export type LineMode = 'all' | 'none' | 'outline';
+
+export interface PieceLineOpts {
+  lines?: LineMode;
+  /** Force a tier (e.g. lattice slats draw as hairline); default follows the material's ink weight. */
+  tier?: LineTierName;
+}
+
+interface BatchEntry {
+  geo: THREE.BufferGeometry;
+  mode: LineMode;
+  tier: LineTierName | null;
+}
 
 const unitBox = new THREE.BoxGeometry(1, 1, 1);
 
@@ -104,16 +128,20 @@ const _e = new THREE.Euler();
  * builder pours its boxes/extrusions into a batch instead of creating meshes.
  */
 export class GeometryBatch {
-  private readonly buckets = new Map<THREE.Material, THREE.BufferGeometry[]>();
+  private readonly buckets = new Map<THREE.Material, BatchEntry[]>();
 
-  /** Add a geometry (inches), optionally transformed. The input is not modified. */
-  add(geo: THREE.BufferGeometry, material: THREE.Material, matrix?: THREE.Matrix4): this {
+  /**
+   * Add a geometry (inches), optionally transformed. The input is not modified.
+   * `opts.lines` controls which of the piece's crease edges become drawing
+   * lines (default 'all'); `opts.tier` forces a line-weight tier.
+   */
+  add(geo: THREE.BufferGeometry, material: THREE.Material, matrix?: THREE.Matrix4, opts?: PieceLineOpts): this {
     let g = geo.index ? geo.toNonIndexed() : geo.clone();
     if (matrix) g.applyMatrix4(matrix);
     for (const name of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(name)) g.deleteAttribute(name);
     g.clearGroups();
     const list = this.buckets.get(material) ?? [];
-    list.push(g);
+    list.push({ geo: g, mode: opts?.lines ?? 'all', tier: opts?.tier ?? null });
     this.buckets.set(material, list);
     return this;
   }
@@ -122,30 +150,62 @@ export class GeometryBatch {
    * Add an axis-aligned-in-its-own-frame box: size [w,h,d], centre [x,y,z],
    * optional rotation (Euler radians, XYZ order).
    */
-  box(material: THREE.Material, size: [number, number, number], center: [number, number, number], rot: [number, number, number] = [0, 0, 0]): this {
+  box(material: THREE.Material, size: [number, number, number], center: [number, number, number], rot: [number, number, number] = [0, 0, 0], opts?: PieceLineOpts): this {
     _q.setFromEuler(_e.set(rot[0], rot[1], rot[2]));
-    return this.add(unitBox, material, _m.compose(new THREE.Vector3(...center), _q, new THREE.Vector3(...size)));
+    return this.add(unitBox, material, _m.compose(new THREE.Vector3(...center), _q, new THREE.Vector3(...size)), opts);
   }
 
   /** Copy every bucket of another batch in, transformed (used to stamp window/door templates). */
   addBatch(other: GeometryBatch, matrix: THREE.Matrix4): this {
-    for (const [mat, list] of other.buckets) for (const g of list) this.add(g, mat, matrix);
+    for (const [mat, list] of other.buckets) {
+      for (const e of list) this.add(e.geo, mat, matrix, { lines: e.mode, ...(e.tier ? { tier: e.tier } : {}) });
+    }
     return this;
   }
 
-  /** Emit merged meshes (scaled inches → feet). */
+  /**
+   * Emit merged meshes (scaled inches → feet) plus one fat-line object per
+   * ink tier, holding every drawing-line segment of the batch's pieces.
+   * Segments are keyed by material ink weight (primary ≥ 0.85).
+   */
   toGroup(name: string): THREE.Group {
     const group = new THREE.Group();
     group.name = name;
+    const tiers: Record<LineTierName, TierSegments> = {
+      primary: { positions: [], sizes: [] },
+      secondary: { positions: [], sizes: [] },
+      hairline: { positions: [], sizes: [] },
+    };
     for (const [mat, list] of this.buckets) {
-      const geo = mergeGeometries(list, false);
+      const geo = mergeGeometries(list.map((e) => e.geo), false);
       if (!geo) continue;
       geo.scale(IN, IN, IN);
       const mesh = new THREE.Mesh(geo, mat);
       mesh.castShadow = !(mat instanceof WashMaterial) || mat.castsShadow;
       mesh.receiveShadow = true;
       group.add(mesh);
+      const ink = mat instanceof WashMaterial ? mat.spec.ink : 0.5;
+      for (const e of list) {
+        if (e.mode === 'none') continue;
+        e.geo.computeBoundingBox();
+        const bb = e.geo.boundingBox;
+        const sizeIn = bb ? Math.min(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z) : 1;
+        const edges = new EdgesGeometry(e.geo, e.mode === 'outline' ? 45 : 20);
+        const pos = edges.getAttribute('position');
+        const tier = e.tier ?? tierForInk(ink);
+        const seg = tiers[tier];
+        for (let i = 0; i < pos.count; i++) {
+          seg.positions.push(pos.getX(i) * IN, pos.getY(i) * IN, pos.getZ(i) * IN);
+        }
+        for (let s = 0; s < pos.count / 2; s++) seg.sizes.push(sizeIn);
+        edges.dispose();
+      }
     }
+    (Object.keys(tiers) as LineTierName[]).forEach((tier) => {
+      dedupeTierSegments(tiers[tier]);
+      const lines = buildTierLines(tiers[tier], tier);
+      if (lines) group.add(lines);
+    });
     return group;
   }
 }

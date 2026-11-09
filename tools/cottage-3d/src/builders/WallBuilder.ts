@@ -88,9 +88,11 @@ export function buildWalls(level: Level, m: Materials, ceiling?: (z0: number, z1
       top = Math.min(top, ceiling(op.center[1] - reach, op.center[1] + reach) - level.floorY);
     }
     // Boxes are authored in the opening's local frame, then placed with `frame`.
+    // Infill strips sit flush with the wall faces, so their box edges are not
+    // drawing lines (the reveal edges come from the wall extrusion itself).
     const strip = (y0: number, y1: number) => {
       if (y1 - y0 < 0.01) return;
-      const local = new GeometryBatch().box(mat, [op.width, y1 - y0, op.depth], [0, (y0 + y1) / 2, 0]);
+      const local = new GeometryBatch().box(mat, [op.width, y1 - y0, op.depth], [0, (y0 + y1) / 2, 0], [0, 0, 0], { lines: 'none' });
       batch.addBatch(local, frame);
     };
     strip(op.exterior ? -SKIRT(level) : 0, op.sill); // sill infill
