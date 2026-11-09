@@ -5,7 +5,7 @@
 
 /**
  * Project data structure
- * @type {Array<{title: string, location: string, pdfUrl: string, image: {src: string, srcset: string, sizes: string, alt: string}}>}
+ * @type {Array<{title: string, location: string, pdfUrl: string, modelUrl?: string, image: {src: string, srcset: string, sizes: string, alt: string}}>}
  */
 const projects = [
   {
@@ -23,6 +23,7 @@ const projects = [
     title: 'Architectural Design',
     location: 'Sharon, CT',
     pdfUrl: '../projects/assets/pdfs/connecticut-cottage.pdf',
+    modelUrl: '../projects/connecticut-cottage/',
     image: {
       src: '../projects/assets/images/103smain.jpeg',
       srcset: '../projects/assets/images/103smain.jpeg',
@@ -39,8 +40,10 @@ const projects = [
  */
 function createProjectCard(project) {
   const card = document.createElement('a');
-  card.href = project.pdfUrl;
-  card.target = '_blank';
+  // Projects with an interactive 3D model link to it (the model page links to the PDF);
+  // otherwise the card opens the PDF in a new tab.
+  card.href = project.modelUrl || project.pdfUrl;
+  if (!project.modelUrl) card.target = '_blank';
   card.className = 'card project-card';
   card.setAttribute('data-element', 'card');
 
@@ -74,7 +77,7 @@ function createProjectCard(project) {
 
   const helper = document.createElement('span');
   helper.className = 'card__link';
-  helper.textContent = 'PDF download';
+  helper.textContent = project.modelUrl ? '3D model & plans' : 'PDF download';
   helper.setAttribute('data-element', 'card-link');
   linksContainer.appendChild(helper);
 
