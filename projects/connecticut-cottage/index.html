@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connecticut Cottage — 3D Model</title>
+    <meta name="description" content="Interactive 3D model of the Connecticut Cottage, Sharon, CT. Explode the floors, isolate a level, orbit and zoom." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Noto+Serif:wght@400;500&display=swap" />
+    <script type="module" crossorigin src="./assets/index-D2gF3OrM.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CKacHUWF.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="back" href="../">&larr; Projects</a>
+      <div class="titles">
+        <h1>Connecticut Cottage</h1>
+        <p>Architectural Design &middot; Sharon, CT</p>
+      </div>
+      <a class="pdf" href="../assets/pdfs/connecticut-cottage.pdf">Plan set (PDF)</a>
+    </header>
+
+    <main id="cottage-root" aria-busy="true">
+      <div id="cottage-loading" class="overlay" role="status">Building the model&hellip;</div>
+      <div id="cottage-fallback" class="overlay" hidden>
+        <p><strong>3D view unavailable.</strong></p>
+        <p>This model needs WebGL, which your browser or device has disabled. You can still read the
+          <a href="../assets/pdfs/connecticut-cottage.pdf">plan set (PDF)</a>.</p>
+      </div>
+      <noscript><div class="overlay">This 3D model needs JavaScript. See the <a href="../assets/pdfs/connecticut-cottage.pdf">plan set (PDF)</a>.</div></noscript>
+    </main>
+
+  </body>
+</html>

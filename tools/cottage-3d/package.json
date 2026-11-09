@@ -1,0 +1,24 @@
+{
+  "name": "cottage-3d",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Procedural Three.js model of the Connecticut Cottage, driven by src/data/house.json",
+  "scripts": {
+    "bake": "node scripts/bake-lines.mjs",
+    "predev": "npm run bake",
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "prebuild": "npm run bake",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.170.0"
+  },
+  "devDependencies": {
+    "@types/three": "0.170.0",
+    "typescript": "5.6.3",
+    "vite": "5.4.11"
+  }
+}
