@@ -4,3 +4,4 @@ landing-assets/backup/
 # Cottage 3D app dependencies
 tools/cottage-3d/node_modules
 __pycache__/
+tools/cottage-3d/qa/out
