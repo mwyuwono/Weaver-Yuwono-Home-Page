@@ -3,11 +3,11 @@
  * GeometryBatch converts to scene feet when it emits meshes.
  */
 import * as THREE from 'three';
-import { EdgesGeometry } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { Vec2 } from '../data/schema';
 import { WashMaterial } from '../render/wash';
-import { buildTierLines, dedupeTierSegments, tierForInk, type LineTierName, type TierSegments } from '../render/lines';
+import { tierForInk, type LineTierName } from '../render/lines';
+import { extractCandidates, type LineData } from '../render/edgeClassify';
 import { IN } from '../units';
 
 /**
@@ -171,11 +171,7 @@ export class GeometryBatch {
   toGroup(name: string): THREE.Group {
     const group = new THREE.Group();
     group.name = name;
-    const tiers: Record<LineTierName, TierSegments> = {
-      primary: { positions: [], sizes: [] },
-      secondary: { positions: [], sizes: [] },
-      hairline: { positions: [], sizes: [] },
-    };
+    const lineData: LineData = { candidates: [], tris: [] };
     for (const [mat, list] of this.buckets) {
       const geo = mergeGeometries(list.map((e) => e.geo), false);
       if (!geo) continue;
@@ -186,26 +182,18 @@ export class GeometryBatch {
       group.add(mesh);
       const ink = mat instanceof WashMaterial ? mat.spec.ink : 0.5;
       for (const e of list) {
+        const pos = e.geo.getAttribute('position').array as ArrayLike<number>;
+        for (let i = 0; i < pos.length; i++) lineData.tris.push(pos[i]);
         if (e.mode === 'none') continue;
         e.geo.computeBoundingBox();
         const bb = e.geo.boundingBox;
-        const sizeIn = bb ? Math.min(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z) : 1;
-        const edges = new EdgesGeometry(e.geo, e.mode === 'outline' ? 45 : 20);
-        const pos = edges.getAttribute('position');
-        const tier = e.tier ?? tierForInk(ink);
-        const seg = tiers[tier];
-        for (let i = 0; i < pos.count; i++) {
-          seg.positions.push(pos.getX(i) * IN, pos.getY(i) * IN, pos.getZ(i) * IN);
-        }
-        for (let s = 0; s < pos.count / 2; s++) seg.sizes.push(sizeIn);
-        edges.dispose();
+        // Feature size for the LOD fade: the piece's MIDDLE dimension, so a thin-but-wide piece (a pilaster, a casing)
+        // keeps its lines as long as its face is legible; only small things (muntins, balusters) fade early.
+        const dims = bb ? [bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z].sort((a, b) => a - b) : [1, 1, 1];
+        extractCandidates(pos, e.mode === 'outline' ? 45 : 20, dims[1], e.tier ?? tierForInk(ink), lineData.candidates);
       }
     }
-    (Object.keys(tiers) as LineTierName[]).forEach((tier) => {
-      dedupeTierSegments(tiers[tier]);
-      const lines = buildTierLines(tiers[tier], tier);
-      if (lines) group.add(lines);
-    });
+    group.userData.lineData = lineData;
     return group;
   }
 }

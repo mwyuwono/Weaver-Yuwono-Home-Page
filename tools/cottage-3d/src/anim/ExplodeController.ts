@@ -11,6 +11,7 @@
  * a small stagger; issuing a new command mid-flight retargets from the current
  * positions.
  */
+import { lineState } from '../render/lines';
 import * as THREE from 'three';
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { LevelId } from '../data/schema';
@@ -202,6 +203,10 @@ export class ExplodeController {
     node.opacity = opacity;
     node.group.position.y = y;
     node.group.visible = opacity > 0.01;
+    // Join lines (where floors meet flush) appear as soon as any floor leaves its assembled position.
+    let sep = 0;
+    for (const [key, n] of this.nodes) if (key !== 'site') sep = Math.max(sep, Math.min(1, Math.abs(n.y) / 1.5));
+    lineState.separate = sep;
     const transparent = opacity < 0.999;
     for (const m of node.materials) {
       // Linework materials carry their tier's base opacity and stay

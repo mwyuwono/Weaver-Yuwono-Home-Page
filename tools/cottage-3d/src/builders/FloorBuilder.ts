@@ -39,7 +39,9 @@ export function buildFloor(level: Level, m: Materials, holes: Vec2[][] = []): TH
     const inside = holes.filter((h) => h.every((p) => pointIn(p, poly)));
     const withHoles = extrudeVertical(poly, inside, y0, level.floorY);
     const solid = inside.length ? extrudeVertical(poly, undefined, y0, level.floorY) : withHoles;
-    batch.add(splitExtrudeGroups(withHoles).caps, finish).add(splitExtrudeGroups(solid).sides, wallMaterial(level, true, m));
+    // The slab edge hides 0.5" inside the walls: its lines would only leak through them as a faint band across each
+    // elevation, so the slab draws none. Walls outline the floor plate; the stairwell boxes below outline the holes.
+    batch.add(splitExtrudeGroups(withHoles).caps, finish, undefined, { lines: 'none' }).add(splitExtrudeGroups(solid).sides, wallMaterial(level, true, m), undefined, { lines: 'none' });
     for (const h of inside) {
       h.forEach((a, i) => {
         const c = h[(i + 1) % h.length];

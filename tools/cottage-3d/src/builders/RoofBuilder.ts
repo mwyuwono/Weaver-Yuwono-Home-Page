@@ -13,7 +13,7 @@
 import * as THREE from 'three';
 import type { HouseData, Opening, Vec2 } from '../data/schema';
 import type { Materials } from '../materials';
-import { GeometryBatch, extrudeAlongX, extrudeAlongZ, slopedBox, solidFromTriangles, splitExtrudeGroups } from './geometry';
+import { GeometryBatch, extrudeAlongX, slopedBox, solidFromTriangles, splitExtrudeGroups } from './geometry';
 import { dormerProfile, roofProfile, truncatedProfile, type RoofProfile } from './roofProfile';
 
 /** Exterior wall thickness (all levels above the foundation). */
@@ -102,7 +102,9 @@ export function buildMainRoof(data: HouseData, m: Materials): THREE.Group {
   if (d) {
     addSlab(b, m, prof, x0, d.xMin, [true, false], ['full', 'rear'], r.zRear + WALL_T / 2);
     addSlab(b, m, prof, d.xMax, x1, [false, true], ['rear', 'full'], r.zRear + WALL_T / 2);
-    addSlab(b, m, truncatedProfile(prof, r.zRear + WALL_T / 2), d.xMin, d.xMax, [false, false], ['none', 'none']); // ends inside the dormer wall
+    // Between the cheeks the main slope stops just under the dormer roof (2" past the join): carried on to the rear wall it
+    // crossed the dormer windows behind the glass line.
+    addSlab(b, m, truncatedProfile(prof, d.zJoin - 2), d.xMin, d.xMax, [false, false], ['none', 'none']);
   } else {
     addSlab(b, m, prof, x0, x1, [true, true]);
   }
@@ -195,7 +197,14 @@ export function buildWingRoof(data: HouseData, m: Materials): THREE.Group | null
   b.add(extrudeAlongX([[w.zFar, w.wallTopY], [w.zFar + WALL_T, w.wallTopY], [w.zFar + WALL_T, underFar(w.zFar + WALL_T)], [w.zFar, underFar(w.zFar)]], w.xMin, w.xMax), m.siding);
   const underLeft = (x: number) => h.eaveY + sideSlope * (x - h.x0) - t;
   const underRight = (x: number) => h.eaveY + sideSlope * (h.x1 - x) - t;
-  b.add(extrudeAlongZ([[w.xMin, w.wallTopY], [w.xMin + WALL_T, w.wallTopY], [w.xMin + WALL_T, underLeft(w.xMin + WALL_T)], [w.xMin, underLeft(w.xMin)]], w.zFar, zn), m.siding);
-  b.add(extrudeAlongZ([[w.xMax - WALL_T, w.wallTopY], [w.xMax, w.wallTopY], [w.xMax, underRight(w.xMax)], [w.xMax - WALL_T, underRight(w.xMax - WALL_T)]], w.zFar, zn), m.siding);
+  // Side wedges: under the side hip face, but near the far corner the far slope is lower still — clip to both or the
+  // wedge pokes through the far slope at the corners.
+  const sideWedge = (xa: number, xb: number, under: number): void => {
+    const zc = Math.min(zn, h.zFar + (under - (h.eaveY - t)) / slope); // where the far slope's underside reaches `under`
+    const prof: Vec2[] = [[zn, w.wallTopY], [zn, under], [zc, under], [w.zFar, underFar(w.zFar)], [w.zFar, w.wallTopY]];
+    b.add(extrudeAlongX(prof.filter((q, i, arr) => i === 0 || Math.hypot(q[0] - arr[i - 1][0], q[1] - arr[i - 1][1]) > 1e-3), xa, xb), m.siding);
+  };
+  sideWedge(w.xMin, w.xMin + WALL_T, Math.min(underLeft(w.xMin), underLeft(w.xMin + WALL_T)));
+  sideWedge(w.xMax - WALL_T, w.xMax, Math.min(underRight(w.xMax), underRight(w.xMax - WALL_T)));
   return b.toGroup('roof-wing');
 }

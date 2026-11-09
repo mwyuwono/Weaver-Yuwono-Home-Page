@@ -6,10 +6,11 @@
  */
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import type { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js';
 import type { HouseData, Level, LevelId } from '../data/schema';
 import { materials as m } from '../materials';
-import type { CottageLineMaterial } from '../render/lines';
+import { buildTierLines, dedupeTierSegments, type LineTierName, type TierSegments } from '../render/lines';
+import { classifyEdge, PlaneIndex, type LineData } from '../render/edgeClassify';
+import { IN } from '../units';
 import { WashMaterial } from '../render/wash';
 import { planToScene } from '../units';
 import { buildChimneySlice } from '../builders/ChimneyBuilder';
@@ -39,16 +40,15 @@ const CLEARANCE = 12;
  */
 function flatten(name: string, parts: (THREE.Object3D | null)[]): THREE.Group {
   const byMaterial = new Map<THREE.Material, THREE.BufferGeometry[]>();
-  const lines: LineSegments2[] = [];
-  const isLine = (o: object): o is LineSegments2 =>
-    (o as { isLineSegments2?: boolean }).isLineSegments2 === true;
+  const lineData: LineData = { candidates: [], tris: [] };
   for (const part of parts) {
     part?.traverse((o) => {
-      if (!(o instanceof THREE.Mesh)) return;
-      if (isLine(o)) {
-        lines.push(o);
-        return;
+      const ld = o.userData.lineData as LineData | undefined;
+      if (ld) {
+        for (const c of ld.candidates) lineData.candidates.push(c);
+        for (const v of ld.tris) lineData.tris.push(v);
       }
+      if (!(o instanceof THREE.Mesh)) return;
       const list = byMaterial.get(o.material) ?? [];
       list.push(o.geometry);
       byMaterial.set(o.material, list);
@@ -65,13 +65,47 @@ function flatten(name: string, parts: (THREE.Object3D | null)[]): THREE.Group {
     mesh.receiveShadow = true;
     group.add(mesh);
   }
-  for (const l of lines) {
-    l.material = (l.material as CottageLineMaterial).clone() as CottageLineMaterial;
-    l.castShadow = false;
-    l.receiveShadow = false;
-    group.add(l);
-  }
+  group.userData.lineData = lineData;
   return group;
+}
+
+/**
+ * Turn every group's candidate edges into drawing lines (see render/edgeClassify): joints covered flush by the same
+ * group are dropped, joints covered only by another group become join lines (shown once floors separate).
+ */
+function addLinework(groups: THREE.Group[]): number {
+  const own = groups.map((g) => (g.userData.lineData as LineData | undefined) ?? { candidates: [], tris: [] });
+  const indices = own.map((ld) => new PlaneIndex([ld.tris]));
+  let total = 0;
+  groups.forEach((group, gi) => {
+    const tiers: Record<LineTierName, TierSegments> = {
+      primary: { positions: [], sizes: [], joins: [] },
+      secondary: { positions: [], sizes: [], joins: [] },
+      hairline: { positions: [], sizes: [], joins: [] },
+    };
+    const others = indices.filter((_, j) => j !== gi);
+    const at = (c: { a: number[]; b: number[] }, t: number, k: number): number => (c.a[k] + (c.b[k] - c.a[k]) * t) * IN;
+    for (const c of own[gi].candidates) {
+      for (const [t0, t1, state] of classifyEdge(c, indices[gi], others)) {
+        if (state === 0 || t1 - t0 < 1e-3) continue;
+        const seg = tiers[c.tier];
+        seg.positions.push(at(c, t0, 0), at(c, t0, 1), at(c, t0, 2), at(c, t1, 0), at(c, t1, 1), at(c, t1, 2));
+        seg.sizes.push(c.sizeIn);
+        seg.joins.push(state === 1 ? 1 : 0);
+      }
+    }
+    (Object.keys(tiers) as LineTierName[]).forEach((tier) => {
+      dedupeTierSegments(tiers[tier]);
+      const lines = buildTierLines(tiers[tier], tier);
+      if (!lines) return;
+      lines.castShadow = false;
+      lines.receiveShadow = false;
+      group.add(lines);
+      total += tiers[tier].sizes.length;
+    });
+    delete group.userData.lineData;
+  });
+  return total;
 }
 
 export class House {
@@ -124,6 +158,8 @@ export class House {
       buildChimneySlice(chimney, secondTop, Infinity, true, m),
     ]));
 
+    const siteStructures = flatten('site-structures', [buildSite(data, m)]);
+    this.lineSegments = addLinework([...this.levels.values(), siteStructures]);
     for (const [key, group] of this.levels) {
       this.root.add(group);
       this.bounds.set(key, new THREE.Box3().setFromObject(group));
@@ -132,17 +168,10 @@ export class House {
     this.grade = terrain.grade;
     this.site = new THREE.Group();
     this.site.name = 'site';
-    this.site.add(terrain.mesh, flatten('site-structures', [buildSite(data, m)]));
+    this.site.add(terrain.mesh, siteStructures);
     this.root.add(this.site);
     const r = data.roof.main;
     this.center = planToScene([(r.xMin + r.xMax) / 2, (r.zFront + r.zRear) / 2]);
-    let segments = 0;
-    this.root.traverse((o) => {
-      if ((o as { isLineSegments2?: boolean }).isLineSegments2 === true) {
-        segments += (o as LineSegments2).geometry.instanceCount ?? 0;
-      }
-    });
-    this.lineSegments = segments;
   }
 
   /** Plan centre of the main block at Y = 0, in scene feet (light and camera anchor). */
