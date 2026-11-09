@@ -24,7 +24,7 @@ export const COMPOSITE_FRAGMENT = /* glsl */ `
 precision highp float;
 uniform sampler2D tColor, tNorm, tDepth;
 uniform vec2 uRes;
-uniform float uDpr, uNear, uFar;
+uniform float uDpr, uSS, uNear, uFar;
 uniform mat4 uProjInv, uCamWorld;
 varying vec2 vUv;
 ${NOISE}
@@ -67,8 +67,8 @@ vec4 edges(vec2 uv, float r, out float cover) {
       // tying in depth with the surface beside it) does not: one tap further out we are back on the surface's own value, so it
       // is not an edge. Without this, every coincident-face joint in the model is inked as a dotted line.
       if (crease > 0.1 || dw > 0.02) {
-        vec2 step1 = 2.0 * DIRS[i] / uRes;
-        Tap a2 = tap(uv + d + step1), b2 = tap(uv - d - step1); // two device pixels further out
+        vec2 step1 = 3.0 * DIRS[i] / uRes;
+        Tap a2 = tap(uv + d + step1), b2 = tap(uv - d - step1); // three internal pixels further out (~1.5 canvas px at 2x supersampling)
         float persistN = smoothstep(0.85, 0.97, min(dot(a.n, a2.n), dot(b.n, b2.n)));
         float persistW = 1.0 - smoothstep(0.02, 0.06, max(abs(a.w - a2.w), abs(b.w - b2.w)));
         crease *= persistN;
@@ -115,7 +115,7 @@ void main() {
   #endif
 
   // paper: grain (screen space, fixed), mottling and granulation
-  float grain = 0.55 * vnoise2(css * 1.1) + 0.3 * vnoise2(css * 2.7 + 11.0) + 0.15 * hash12(floor(gl_FragCoord.xy));
+  float grain = 0.55 * vnoise2(css * 1.1) + 0.3 * vnoise2(css * 2.7 + 11.0) + 0.15 * hash12(floor(gl_FragCoord.xy / uSS));
   float mottle = vnoise2(css * 0.006 + 3.0) * 0.6 + vnoise2(css * 0.02) * 0.4;
   vec3 paper = PAPER * (1.0 + (grain - 0.5) * 0.016 + (mottle - 0.5) * 0.04);
   wash = 1.0 - (1.0 - wash) * (0.93 + 0.14 * grain);
