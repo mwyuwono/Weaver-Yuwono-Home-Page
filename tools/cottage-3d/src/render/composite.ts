@@ -23,7 +23,7 @@ uniform float uDpr;
 varying vec2 vUv;
 ${NOISE}
 
-const vec3 PAPER = vec3(0.955, 0.925, 0.862);
+const vec3 PAPER = vec3(0.966, 0.960, 0.948);
 
 void main() {
   vec2 uv = vUv;

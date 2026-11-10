@@ -116,7 +116,7 @@ uniform float uInk, uPoche;
 uniform vec4 uParams; // x shade range, y shadow weight, z mottle, w seam period (ft)
 uniform vec4 uFade;   // ground fade: centre xz, start, end
 ${NOISE}
-const vec3 INK_MUL = vec3(0.55, 0.47, 0.40); // a hairline darkens the wash towards sepia
+const vec3 INK_MUL = vec3(0.52, 0.53, 0.55); // a hairline darkens the wash towards graphite
 
 /** Anti-aliased line through every integer of x, w = width as a fraction of the period. */
 float stripe(float x, float w) {
@@ -172,7 +172,7 @@ const FRAGMENT_MAIN = /* glsl */ `
 
   col = mix(col, col * INK_MUL, line);
   if (uPoche > 0.0 && wn.y > 0.85) { // wall cut by the section plane
-    col = mix(col, vec3(0.66, 0.6, 0.53), uPoche);
+    col = mix(col, vec3(0.62, 0.63, 0.64), uPoche);
   }
 
   float a = diffuseColor.a;

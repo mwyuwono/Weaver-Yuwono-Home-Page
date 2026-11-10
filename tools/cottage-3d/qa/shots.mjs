@@ -16,7 +16,7 @@ const server = createServer(async (req, res) => {
 }).listen(0);
 const { port } = server.address();
 const browser = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-// usage: node qa/shots.mjs <hero|mobile|rear|far|exploded|door> [outDir=qa/out] [prefix=shot]
+// usage: node qa/shots.mjs <hero|mobile|rear|far|exploded|door|cam> [outDir=qa/out] [prefix=shot] [cam: px,py,pz,tx,ty,tz inches]
 const mode = process.argv[2];
 const out = resolve(process.argv[3] ?? join(here, 'out')) + '/';
 const prefix = process.argv[4] ?? 'shot';
@@ -27,13 +27,14 @@ const ctx = await browser.newContext(mobile ? { viewport: { width: W, height: H 
 const page = await ctx.newPage();
 page.on('pageerror', (e) => console.log('ERR ' + e.message));
 page.on('console', (m) => { if (m.type() === 'error' || m.text().includes('cottage')) console.log(m.text()); });
-await page.goto(`http://localhost:${port}/index.html`);
+await page.goto(`http://localhost:${port}/index.html${mode === 'cam' ? '?cam=' + process.argv[5] : ''}`);
 await page.waitForFunction(() => document.getElementById('cottage-loading')?.classList.contains('done'), null, { timeout: 240000 });
 await page.waitForTimeout(3500);
 const shot = (n) => page.screenshot({ path: out + prefix + '-' + n + '.png', timeout: 240000 });
 const click = (t) => page.locator(t).first().evaluate((e) => e.click());
-await page.mouse.move(640, 400);
+if (mode !== 'cam') await page.mouse.move(640, 400);
 if (mode === 'hero') await shot('hero');
+else if (mode === 'cam') await shot('cam');
 else if (mode === 'mobile') await shot('mobile');
 else if (mode === 'rear') { await page.mouse.down(); await page.mouse.move(1040, 400, { steps: 20 }); await page.mouse.up(); await page.waitForTimeout(3500); await shot('rear34'); }
 else if (mode === 'far') { for (let i = 0; i < 6; i++) await page.mouse.wheel(0, 300); await page.waitForTimeout(5000); await shot('far'); }
