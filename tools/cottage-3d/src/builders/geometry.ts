@@ -24,12 +24,15 @@ export interface PieceLineOpts {
   lines?: LineMode;
   /** Force a tier (e.g. lattice slats draw as hairline); default follows the material's ink weight. */
   tier?: LineTierName;
+  /** Override the LOD feature size (inches) for a thin piece whose long edges read as a major line (a sill, a crown band). */
+  sizeIn?: number;
 }
 
 interface BatchEntry {
   geo: THREE.BufferGeometry;
   mode: LineMode;
   tier: LineTierName | null;
+  sizeIn: number | null;
 }
 
 const unitBox = new THREE.BoxGeometry(1, 1, 1);
@@ -141,7 +144,7 @@ export class GeometryBatch {
     for (const name of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(name)) g.deleteAttribute(name);
     g.clearGroups();
     const list = this.buckets.get(material) ?? [];
-    list.push({ geo: g, mode: opts?.lines ?? 'all', tier: opts?.tier ?? null });
+    list.push({ geo: g, mode: opts?.lines ?? 'all', tier: opts?.tier ?? null, sizeIn: opts?.sizeIn ?? null });
     this.buckets.set(material, list);
     return this;
   }
@@ -158,7 +161,7 @@ export class GeometryBatch {
   /** Copy every bucket of another batch in, transformed (used to stamp window/door templates). */
   addBatch(other: GeometryBatch, matrix: THREE.Matrix4): this {
     for (const [mat, list] of other.buckets) {
-      for (const e of list) this.add(e.geo, mat, matrix, { lines: e.mode, ...(e.tier ? { tier: e.tier } : {}) });
+      for (const e of list) this.add(e.geo, mat, matrix, { lines: e.mode, ...(e.tier ? { tier: e.tier } : {}), ...(e.sizeIn !== null ? { sizeIn: e.sizeIn } : {}) });
     }
     return this;
   }
@@ -191,7 +194,7 @@ export class GeometryBatch {
         // Feature size for the LOD fade: the piece's MIDDLE dimension, so a thin-but-wide piece (a pilaster, a casing)
         // keeps its lines as long as its face is legible; only small things (muntins, balusters) fade early.
         const dims = bb ? [bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z].sort((a, b) => a - b) : [1, 1, 1];
-        extractCandidates(pos, e.mode === 'outline' ? 45 : 20, dims[1], e.tier ?? tierForInk(ink), lineData.candidates);
+        extractCandidates(pos, e.mode === 'outline' ? 45 : 20, e.sizeIn ?? dims[1], e.tier ?? tierForInk(ink), lineData.candidates);
       }
     }
     group.userData.lineData = lineData;

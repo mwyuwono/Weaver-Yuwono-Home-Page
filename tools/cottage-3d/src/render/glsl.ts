@@ -18,5 +18,5 @@ float vnoise2(vec2 p) {
 float fbm(vec3 p) { return 0.5 * vnoise(p) + 0.3 * vnoise(p * 2.1 + 7.0) + 0.2 * vnoise(p * 4.3 + 13.0); }
 `;
 
-/** Sepia ink colour (sRGB), shared by surface hairlines and the post-pass outlines. */
-export const INK = 'vec3(0.353, 0.263, 0.188)';
+/** Graphite ink colour (sRGB), shared by surface hairlines and the post-pass outlines. */
+export const INK = 'vec3(0.184, 0.196, 0.212)';

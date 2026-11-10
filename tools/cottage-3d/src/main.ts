@@ -77,6 +77,13 @@ async function start(root: HTMLElement): Promise<void> {
   };
   resize();
   ex.snapCamera();
+  // QA: `?cam=px,py,pz,tx,ty,tz` (house inches) places the camera for close-up screenshots (qa/shots.mjs cam).
+  const cam = new URLSearchParams(location.search).get('cam')?.split(',').map(Number);
+  if (cam?.length === 6 && cam.every(Number.isFinite)) {
+    camera.position.set(cam[0] * IN, cam[1] * IN, cam[2] * IN);
+    controls.target.set(cam[3] * IN, cam[4] * IN, cam[5] * IN);
+    controls.update();
+  }
   new ResizeObserver(resize).observe(root);
 
   const ui = new Controls(root, {

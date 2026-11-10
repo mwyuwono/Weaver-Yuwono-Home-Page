@@ -43,7 +43,7 @@ export function addCasing(b: GeometryBatch, m: Materials, c: Trim['casing'], w: 
   b.box(m.trim, [w + 2 * outer, c.headHeight, proud], [0, headTop - c.headHeight / 2, cz]);
   if (exterior) {
     b.box(m.trim, [w + 2 * outer + 1.6, 0.8, c.dripProud], [0, headTop + 0.4, faceZ + dir * c.dripProud / 2]); // drip cap
-    b.box(m.trim, [w + 2 * c.sillWider, c.sillHeight, c.sillProud], [0, y0 - c.sillHeight / 2, faceZ + dir * c.sillProud / 2]); // sill
+    b.box(m.trim, [w + 2 * c.sillWider, c.sillHeight, c.sillProud], [0, y0 - c.sillHeight / 2, faceZ + dir * c.sillProud / 2], [0, 0, 0], { sizeIn: w + 2 * c.sillWider }); // sill: its long edges are a main line of the elevation, so it must not fade with its thin section
   }
 }
 

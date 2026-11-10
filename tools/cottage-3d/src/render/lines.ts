@@ -44,9 +44,9 @@ export interface LineTierStyle {
 export const lineState = { separate: 0 };
 
 export const LINE_TIERS: Record<LineTierName, LineTierStyle> = {
-  primary: { widthCss: 1.1, opacity: 0.8, minPx: 1.5, overrunCss: 0 },
-  secondary: { widthCss: 0.75, opacity: 0.66, minPx: 3, overrunCss: 0 },
-  hairline: { widthCss: 0.5, opacity: 0.5, minPx: 5, overrunCss: 0 },
+  primary: { widthCss: 0.8, opacity: 0.72, minPx: 1.5, overrunCss: 0 },
+  secondary: { widthCss: 0.55, opacity: 0.56, minPx: 3, overrunCss: 0 },
+  hairline: { widthCss: 0.4, opacity: 0.42, minPx: 5, overrunCss: 0 },
 };
 
 /** Tier from a wash material's ink weight (matches the material palette bands). */
@@ -54,8 +54,8 @@ export function tierForInk(ink: number): LineTierName {
   return ink >= 0.85 ? 'primary' : ink >= 0.5 ? 'secondary' : 'hairline';
 }
 
-/** Sepia ink authored in sRGB — must stay identical to render/glsl INK. */
-export const INK_SRGB: [number, number, number] = [0.353, 0.263, 0.188];
+/** Graphite ink authored in sRGB — must stay identical to render/glsl INK. */
+export const INK_SRGB: [number, number, number] = [0.184, 0.196, 0.212];
 
 function replaceOrThrow(src: string, find: string | RegExp, replace: string, what: string): string {
   if (typeof find === 'string' ? !src.includes(find) : !find.test(src)) {
