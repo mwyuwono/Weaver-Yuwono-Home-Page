@@ -298,3 +298,4 @@ body.case-page {
 .case-feature { margin: 0; }
 .case-feature a { display: block; cursor: zoom-in; }
 .case-feature img { display: block; width: 100%; height: auto; border-radius: 8px; background: var(--case-paper); }
+.case-feature + .case-feature { margin-top: 32px; }

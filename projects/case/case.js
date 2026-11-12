@@ -54,27 +54,32 @@
     root.append(fig);
   }
 
-  // Feature image (optional): one large image with its own heading, opens in the viewer
+  // Feature (optional): a heading with one or more large images, each opening in the viewer
   if (p.feature) {
     const f = p.feature;
+    const shots = f.images || [f];
+    const viewerItems = shots.map((x) => ({ src: x.src, full: x.full, label: f.heading, title: x.caption || '' }));
     const sec = el('section', 'case-section');
     sec.append(el('h2', 'case-heading', f.heading));
-    const fig = el('figure', 'case-feature');
-    const a = el('a');
-    a.href = f.full || f.src;
-    a.setAttribute('aria-label', `Open ${f.caption || f.heading} full size`);
-    a.addEventListener('click', (e) => {
-      if (e.metaKey || e.ctrlKey || e.shiftKey) return;
-      e.preventDefault();
-      openViewer([{ src: f.src, full: f.full, label: f.heading, title: f.caption || '' }], 0, a);
+    shots.forEach((x, i) => {
+      const fig = el('figure', 'case-feature');
+      const a = el('a');
+      a.href = x.full || x.src;
+      a.setAttribute('aria-label', `Open ${x.caption || f.heading} full size`);
+      a.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        openViewer(viewerItems, i, a);
+      });
+      a.append(img(x.src, x.alt, null, '(max-width: 1100px) 100vw, 1040px'));
+      fig.append(a);
+      if (x.caption) fig.append(el('figcaption', null, x.caption));
+      sec.append(fig);
     });
-    a.append(img(f.src, f.alt, null, '(max-width: 1100px) 100vw, 1040px'));
-    fig.append(a);
-    if (f.caption) fig.append(el('figcaption', null, f.caption));
-    sec.append(fig);
     root.append(sec);
   }
 
+  // Approach
   if (p.moves && p.moves.length) {
     const sec = el('section', 'case-section');
     sec.append(el('h2', 'case-heading', 'Approach'));

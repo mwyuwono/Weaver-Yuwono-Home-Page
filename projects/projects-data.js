@@ -92,10 +92,19 @@ window.WY_PROJECTS = [
     },
     feature: {
       heading: 'The kitchen',
-      src: '../assets/images/rome-kitchen-2000.jpg',
-      full: '../assets/images/rome-kitchen-full.jpg',
-      alt: 'Rendered elevations of two kitchen walls: glass-front cabinets, a marble backsplash and an arched opening above; a range wall between two refrigerators, a window and a half-glass door below',
-      caption: 'Rendered elevations of the main kitchen walls'
+      images: [
+        {
+          src: '../assets/images/rome-kitchen-view.jpg',
+          alt: 'Rendering of the kitchen: a marble-topped island with four leather stools, a range wall between two refrigerators, beadboard walls, a tall window and a half-glass black door',
+          caption: 'Rendering of the kitchen'
+        },
+        {
+          src: '../assets/images/rome-kitchen-2000.jpg',
+          full: '../assets/images/rome-kitchen-full.jpg',
+          alt: 'Rendered elevations of two kitchen walls: glass-front cabinets, a marble backsplash and an arched opening above; a range wall between two refrigerators, a window and a half-glass door below',
+          caption: 'Rendered elevations of the main kitchen walls'
+        }
+      ]
     },
     moves: [
       { title: 'Measured the house first', body: 'As-built plans of both floors were the starting point for design, pricing and demolition.' },
