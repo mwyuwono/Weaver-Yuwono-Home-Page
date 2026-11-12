@@ -33,9 +33,9 @@ window.WY_PROJECTS = [
       { label: 'Drawings', value: '14-sheet set, renderings, 3D model' }
     ],
     card: {
-      src: '../projects/assets/images/sharon-render-800.jpg',
-      srcset: '../projects/assets/images/sharon-render-800.jpg 800w, ../projects/assets/images/sharon-render-1600.jpg 1600w',
-      alt: 'Rendering of a white clapboard Greek Revival house with a brick chimney'
+      src: '../projects/assets/images/sharon-thumb-900.jpg',
+      srcset: '../projects/assets/images/sharon-thumb-900.jpg 900w, ../projects/assets/images/sharon-thumb-1536.jpg 1536w',
+      alt: 'The Sharon house: white clapboard Greek Revival with a brick chimney, set in a meadow'
     },
     hero: {
       src: '../assets/images/sharon-render-1600.jpg',
@@ -80,9 +80,9 @@ window.WY_PROJECTS = [
       { label: 'Tools', value: 'AutoCAD' }
     ],
     card: {
-      src: '../projects/assets/images/rome-renovation-800.jpg',
-      srcset: '../projects/assets/images/rome-renovation-500.jpg 500w, ../projects/assets/images/rome-renovation-800.jpg 800w, ../projects/assets/images/rome-renovation.jpg 999w',
-      alt: 'Shingle-clad historic house with arched entry, set in a garden'
+      src: '../projects/assets/images/rome-thumb-900.jpg',
+      srcset: '../projects/assets/images/rome-thumb-900.jpg 900w, ../projects/assets/images/rome-thumb-1536.jpg 1536w',
+      alt: 'The Rome house: gray shingle with steep gables, below the city clock tower'
     },
     hero: {
       src: '../assets/images/rome-renovation.jpg',
