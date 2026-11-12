@@ -3,33 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drawings & Renderings</title>
-    <!-- Design System Tokens (m3-design-v2) - Update ?v= after design system changes -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/tokens.css?v=20260203-2044">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/main.css?v=20260203-2044">
-    <!-- Projects Page Styles -->
-    <link rel="stylesheet" href="projects.css">
-    <!-- Component Styles: Base card must load before variants -->
-    <link rel="stylesheet" href="../components/card-base/card-base.css">
-    <link rel="stylesheet" href="../components/project-card/project-card.css">
+    <title>Personal projects — Matt Weaver-Yuwono</title>
+    <meta name="description" content="Personal projects by Matt Weaver-Yuwono: architecture, artworks, software tools and built projects.">
+    <link rel="canonical" href="https://weaver-yuwono.com/projects/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Personal projects — Matt Weaver-Yuwono">
+    <meta property="og:description" content="Architecture, artworks, software tools and built projects.">
+    <meta property="og:url" content="https://weaver-yuwono.com/projects/">
+    <meta property="og:image" content="https://weaver-yuwono.com/projects/assets/social/projects.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600&family=Noto+Sans:wght@100;400&family=Noto+Serif:wght@400;600;800&family=Noto+Serif:ital,wght@1,300;1,600;1,800&display=swap" rel="stylesheet">
-    <!-- Component Scripts -->
-    <script src="../components/project-card/project-card.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500&family=Noto+Sans:wght@400&family=Noto+Serif:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="case/case.css">
+    <link rel="stylesheet" href="hub.css">
+    <script src="projects-data.js" defer></script>
+    <script src="hub.js" defer></script>
 </head>
-<body>
-    <div class="page-container" data-element="main-container">
-        <header class="site-header" data-element="site-header">
-            <img src="assets/images/wy-logo.svg" alt="WY Logo" class="site-logo" data-element="site-logo">
-            <div class="site-title" data-element="site-title">Weaver - Yuwono</div>
-        </header>
-        <main class="cards-container" data-element="cards-container">
-            <div class="project-grid">
-                <!-- Project cards are rendered dynamically by project-card.js -->
-            </div>
-        </main>
+<body class="case-page hub-page">
+    <div class="case-topbar">
+        <a class="case-brand" href="/"><img src="assets/images/wy-logo.svg" alt="" width="40" height="30"><span>Weaver - Yuwono</span></a>
+        <a class="case-back" href="https://work.weaver-yuwono.com/">Product design work ↗</a>
     </div>
+    <main id="hub-root">
+        <header class="hub-intro">
+            <p class="case-eyebrow">Matt Weaver-Yuwono</p>
+            <h1 class="hub-title">Personal projects</h1>
+            <p class="case-summary">Architecture, artworks, software tools and things I have built, outside my product design work.</p>
+            <nav class="hub-index" aria-label="Project categories"></nav>
+        </header>
+        <div id="hub-sections"></div>
+    </main>
+    <noscript><p style="max-width:1040px;margin:0 auto;padding:0 24px 64px">This page needs JavaScript. Projects: <a href="connecticut-cottage/">Greek Revival House</a>, <a href="rome-renovation/">Historic Renovation</a>, <a href="https://art.weaver-yuwono.com/">Original Artworks</a>.</p></noscript>
 </body>
 </html>
-

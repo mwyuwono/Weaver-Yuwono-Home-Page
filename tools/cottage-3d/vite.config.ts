@@ -24,7 +24,7 @@ export default defineConfig({
   base: './',
   plugins: [linesHash()],
   build: {
-    outDir: '../../projects/connecticut-cottage',
+    outDir: '../../projects/connecticut-cottage/model',
     emptyOutDir: true,
     chunkSizeWarningLimit: 900,
   },

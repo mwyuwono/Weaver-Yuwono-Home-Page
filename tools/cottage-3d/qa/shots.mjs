@@ -8,7 +8,7 @@ import { mkdirSync } from 'node:fs';
 const here = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(join(here, '../package.json'));
 const { chromium } = require('playwright');
-const dist = resolve(here, '../../../projects/connecticut-cottage');
+const dist = resolve(here, '../../../projects/connecticut-cottage/model');
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json' };
 const server = createServer(async (req, res) => {
   const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname));

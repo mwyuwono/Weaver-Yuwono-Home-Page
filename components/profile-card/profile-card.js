@@ -5,7 +5,7 @@
 
 /**
  * Profile data structure
- * @type {Array<{name: string, company: string, linkedInUrl: string, projectsUrl: string|null, image: {src: string, alt: string}}>}
+ * @type {Array<{name: string, company: string, linkedInUrl: string, projectsUrl: string|null, workUrl: string|null, image: {src: string, alt: string}}>}
  */
 const profiles = [
   {
@@ -13,6 +13,7 @@ const profiles = [
     company: 'Mercer',
     linkedInUrl: 'https://www.linkedin.com/in/stantonyuwono/',
     projectsUrl: null,
+    workUrl: null,
     image: {
       src: 'landing-assets/stanton-headshot.jpg',
       alt: 'Stanton Yuwono'
@@ -20,7 +21,8 @@ const profiles = [
   },
   {
     name: 'Matt',
-    company: 'McKinsey & Company',
+    company: 'Principal Product Designer',
+    workUrl: 'https://work.weaver-yuwono.com/',
     linkedInUrl: 'https://www.linkedin.com/in/mattweaveryuwono/',
     projectsUrl: '/projects/',
     image: {
@@ -71,6 +73,16 @@ function createProfileCard(profile) {
   const linksContainer = document.createElement('div');
   linksContainer.className = 'card__links';
 
+  // Professional portfolio link (if applicable)
+  if (profile.workUrl) {
+    const workLink = document.createElement('a');
+    workLink.href = profile.workUrl;
+    workLink.className = 'card__link';
+    workLink.textContent = 'Work';
+    workLink.setAttribute('data-element', 'card-link');
+    linksContainer.appendChild(workLink);
+  }
+
   // Projects link (if applicable)
   if (profile.projectsUrl) {
     const projectsLink = document.createElement('a');
@@ -87,7 +99,7 @@ function createProfileCard(profile) {
   linkedInLink.target = '_blank';
   linkedInLink.rel = 'noopener noreferrer';
   linkedInLink.className = 'card__link';
-  linkedInLink.textContent = 'Linked-In';
+  linkedInLink.textContent = 'LinkedIn';
   linkedInLink.setAttribute('data-element', 'card-link');
   linksContainer.appendChild(linkedInLink);
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Dev-only overlay QA (not bundled): serves the BUILT app (projects/connecticut-cottage),
+ * Dev-only overlay QA (not bundled): serves the BUILT app (projects/connecticut-cottage/model),
  * screenshots the straight-on orthographic QA view of each face (`?qa=front|rear|left|right`,
  * 2 px per inch, see src/scene/qaView.ts) and composites the DXF elevation linework in red
  * over it with qa/compare.py (which also prints the alignment metrics).
@@ -19,7 +19,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 
 const here = dirname(fileURLToPath(import.meta.url));
-const dist = join(here, '../../../projects/connecticut-cottage');
+const dist = join(here, '../../../projects/connecticut-cottage/model');
 const dxf = process.env.DXF ?? '/home/claude/dxf/cottage.dxf';
 const out = process.env.OUT ?? '/home/claude/dxf';
 const faces = process.argv.length > 2 ? process.argv.slice(2) : ['front', 'rear', 'left', 'right'];
