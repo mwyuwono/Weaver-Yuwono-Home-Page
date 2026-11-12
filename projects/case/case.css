@@ -294,3 +294,7 @@ body.case-page {
   .viewer__controls { justify-content: space-between; }
   .viewer__stage { padding: 12px; }
 }
+
+.case-feature { margin: 0; }
+.case-feature a { display: block; cursor: zoom-in; }
+.case-feature img { display: block; width: 100%; height: auto; border-radius: 8px; background: var(--case-paper); }

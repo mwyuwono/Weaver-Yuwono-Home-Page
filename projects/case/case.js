@@ -54,10 +54,30 @@
     root.append(fig);
   }
 
-  // Key moves
+  // Feature image (optional): one large image with its own heading, opens in the viewer
+  if (p.feature) {
+    const f = p.feature;
+    const sec = el('section', 'case-section');
+    sec.append(el('h2', 'case-heading', f.heading));
+    const fig = el('figure', 'case-feature');
+    const a = el('a');
+    a.href = f.full || f.src;
+    a.setAttribute('aria-label', `Open ${f.caption || f.heading} full size`);
+    a.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      openViewer([{ src: f.src, full: f.full, label: f.heading, title: f.caption || '' }], 0, a);
+    });
+    a.append(img(f.src, f.alt, null, '(max-width: 1100px) 100vw, 1040px'));
+    fig.append(a);
+    if (f.caption) fig.append(el('figcaption', null, f.caption));
+    sec.append(fig);
+    root.append(sec);
+  }
+
   if (p.moves && p.moves.length) {
     const sec = el('section', 'case-section');
-    sec.append(el('h2', 'case-heading', 'Key design moves'));
+    sec.append(el('h2', 'case-heading', 'Approach'));
     const ol = el('ol', 'case-moves');
     p.moves.forEach((m) => {
       const li = el('li');
@@ -84,7 +104,7 @@
   // Drawings
   if (p.sheets && p.sheets.length) {
     const sec = el('section', 'case-section');
-    sec.append(el('h2', 'case-heading', 'Selected drawings'));
+    sec.append(el('h2', 'case-heading', 'Drawings'));
     const grid = el('div', 'case-sheets');
     p.sheets.forEach((s, i) => {
       const fig = el('figure', 'case-sheet');

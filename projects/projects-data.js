@@ -10,10 +10,10 @@
  * Public file: never put addresses, owner names, phone numbers or other private detail here.
  */
 window.WY_CATEGORIES = [
-  { id: 'architecture', label: 'Architecture', blurb: 'Residential design, carried from survey or first sketch to a drawing set a builder can price from.' },
-  { id: 'art', label: 'Drawing', blurb: 'Academic and architectural drawing in graphite, ink and wash.' },
-  { id: 'tools', label: 'AI tools', blurb: 'Software I have built for my own work.' },
-  { id: 'built', label: 'Built work', blurb: 'Physical projects, documented from plan to finished piece.' }
+  { id: 'architecture', label: 'Architecture', blurb: 'Houses I have designed, from first sketch to construction drawings.' },
+  { id: 'art', label: 'Artworks', blurb: 'Drawings and paintings.' },
+  { id: 'tools', label: 'AI tools', blurb: 'Software tools I have built.' },
+  { id: 'built', label: 'Built projects', blurb: 'Physical things I have designed and made.' }
 ];
 
 window.WY_PROJECTS = [
@@ -23,14 +23,14 @@ window.WY_PROJECTS = [
     title: 'Greek Revival House',
     location: 'Sharon, Connecticut',
     year: '2021',
-    type: 'New residence',
-    headline: 'A Greek Revival house for a historic New England village, carried from concept to a complete 14-sheet drawing set',
-    summary: 'I designed a two-story house on a full basement in the vocabulary of the village around it, then documented it to the level a builder and a historic district commission can work from: plans, elevations, trim and entry details, interior elevations, and a schedule for every system. The house exists here as drawings and renderings; I later built an interactive 3D model from the same dimensions so the design can be read without a plan set.',
+    type: 'New house · Built',
+    headline: 'A new house I designed for the Sharon historic district. Approved and built.',
+    summary: 'I designed this house from scratch to replace an existing non-historic building in the Sharon historic district. The design was approved by the historic district commission and the wetlands commission and received an engineer’s stamp. The house now stands in downtown Sharon.',
     facts: [
-      { label: 'Role', value: 'Designer and owner' },
-      { label: 'Scope', value: 'New two-story house on a full basement' },
-      { label: 'Deliverable', value: '14-sheet drawing set, renderings, 3D model' },
-      { label: 'Tools', value: 'AutoCAD, Photoshop, Three.js' }
+      { label: 'Role', value: 'Designer' },
+      { label: 'Approvals', value: 'Historic district commission, wetlands commission, engineer’s stamp' },
+      { label: 'Status', value: 'Built' },
+      { label: 'Drawings', value: '14-sheet set, renderings, 3D model' }
     ],
     card: {
       src: '../projects/assets/images/sharon-render-800.jpg',
@@ -47,12 +47,12 @@ window.WY_PROJECTS = [
       href: 'model/',
       image: '../assets/images/sharon-model-exploded.jpg',
       alt: 'Exploded 3D model of the house showing basement, first floor, second floor and roof separated',
-      caption: 'Interactive 3D model built from the drawing dimensions. Explode the floors, isolate a level, orbit and zoom.'
+      caption: 'A 3D model built from the drawings. Separate the floors, view one level at a time, and rotate or zoom.'
     },
     moves: [
-      { title: 'Period vocabulary, drawn to be built', body: 'Corner pilasters, a full entablature with frieze windows, and a pedimented entry, each detailed at trim scale rather than left to interpretation on site.' },
-      { title: 'Interiors resolved before construction', body: 'Kitchen and living room elevations fix casework, fixtures and openings, so the key rooms are decided on paper, where changes are cheap.' },
-      { title: 'One document every trade prices from', body: 'Window and door, flooring, power and lighting schedules turn the set into a single specification rather than a set of pictures.' }
+      { title: 'Fits the historic district', body: 'Proportions, trim and materials follow the Greek Revival houses around it: corner pilasters, frieze windows and a pedimented entry.' },
+      { title: 'Detailed for the builder', body: 'Trim, the front entry, the kitchen and the living room are drawn at construction scale.' },
+      { title: 'Every system scheduled', body: 'Windows and doors, flooring, power and lighting each have their own schedule.' }
     ],
     sheets: [
       { src: '../assets/sheets/connecticut-cottage-07.jpg', full: '../assets/sheets/connecticut-cottage-07-full.jpg', label: 'Renderings', title: 'Four elevations, rendered' },
@@ -70,13 +70,13 @@ window.WY_PROJECTS = [
     title: 'Historic Renovation',
     location: 'Rome, Georgia',
     year: '2021',
-    type: 'Renovation and addition',
-    headline: 'A 2,500 sq ft historic house, measured as it stands and redesigned room by room',
-    summary: 'I started by surveying the existing house and drawing it as built, so every decision that followed rested on fact rather than assumption. From that baseline I separated what comes out from what goes in, then redesigned the rooms that carry the cost and the daily use: the kitchen, the primary and guest baths, and a new rear porch addition.',
+    type: 'Renovation · Owner and designer',
+    headline: 'Renovation of a historic house I owned. The kitchen was the highlight.',
+    summary: 'I owned this house in Rome, Georgia and designed its renovation. I measured and drew the existing house first, then redesigned the kitchen and the primary and guest baths and added a rear porch.',
     facts: [
       { label: 'Role', value: 'Designer and owner' },
-      { label: 'Scope', value: 'c. 2,500 sq ft renovation and rear addition' },
-      { label: 'Deliverable', value: '10-sheet drawing set' },
+      { label: 'Scope', value: 'About 2,500 sq ft; kitchen, two baths, rear porch' },
+      { label: 'Drawings', value: '10-sheet set, kitchen renderings' },
       { label: 'Tools', value: 'AutoCAD' }
     ],
     card: {
@@ -90,17 +90,24 @@ window.WY_PROJECTS = [
       alt: 'The house from the street: brown shingle walls, steep gables and an arched front door',
       caption: 'The house from the street'
     },
+    feature: {
+      heading: 'The kitchen',
+      src: '../assets/images/rome-kitchen-2000.jpg',
+      full: '../assets/images/rome-kitchen-full.jpg',
+      alt: 'Rendered elevations of two kitchen walls: glass-front cabinets, a marble backsplash and an arched opening above; a range wall between two refrigerators, a window and a half-glass door below',
+      caption: 'Rendered elevations of the main kitchen walls'
+    },
     moves: [
-      { title: 'Document the current state first', body: 'Measured as-built plans of both floors became the single baseline for design, pricing and demolition.' },
-      { title: 'Make every removal explicit', body: 'Demolition plans separate existing, removed and new work, so scope and cost are visible before anyone opens a wall.' },
-      { title: 'Detail the rooms that carry the cost', body: 'Interior elevations for the kitchen and both baths, plus exterior elevations for the rear porch addition, fix the decisions that drive budget.' }
+      { title: 'Measured the house first', body: 'As-built plans of both floors were the starting point for design, pricing and demolition.' },
+      { title: 'Showed what changes', body: 'Demolition plans mark what stays, what comes out and what is new.' },
+      { title: 'Detailed the key rooms', body: 'The kitchen, both baths and the rear porch are drawn in elevation.' }
     ],
     sheets: [
       { src: '../assets/sheets/rome-renovation-01.jpg', full: '../assets/sheets/rome-renovation-01.svg', label: 'A101', title: 'Existing conditions, as built' },
       { src: '../assets/sheets/rome-renovation-02.jpg', full: '../assets/sheets/rome-renovation-02.svg', label: 'A102', title: 'First floor demolition and new work' },
       { src: '../assets/sheets/rome-renovation-04.jpg', full: '../assets/sheets/rome-renovation-04.svg', label: 'A104', title: 'First floor plan' },
       { src: '../assets/sheets/rome-renovation-06.jpg', full: '../assets/sheets/rome-renovation-06.svg', label: 'A201', title: 'Rear porch addition, elevations' },
-      { src: '../assets/sheets/rome-renovation-07.jpg', full: '../assets/sheets/rome-renovation-07-full.jpg', label: 'A202', title: 'Kitchen elevations and details' },
+      { src: '../assets/sheets/rome-renovation-07.jpg', full: '../assets/sheets/rome-renovation-07.svg', label: 'A202', title: 'Kitchen elevations and details' },
       { src: '../assets/sheets/rome-renovation-08.jpg', full: '../assets/sheets/rome-renovation-08.svg', label: 'A203', title: 'Primary bath' }
     ],
     pdf: { href: '../assets/pdfs/rome-renovation.pdf', label: 'Full drawing set', meta: '10 sheets · PDF · 2 MB' }
@@ -113,7 +120,7 @@ window.WY_PROJECTS = [
     location: 'art.weaver-yuwono.com',
     year: '',
     type: 'Online gallery',
-    headline: 'A curated gallery of my drawings: classical figure and cast studies, architectural ornament and shade-and-shadow exercises',
+    headline: 'A gallery of my drawings and paintings.',
     card: {
       src: '../projects/assets/images/art-ionic-capital-800.jpg',
       srcset: '../projects/assets/images/art-ionic-capital-800.jpg 800w, ../projects/assets/images/art-ionic-capital-1370.jpg 1370w',
