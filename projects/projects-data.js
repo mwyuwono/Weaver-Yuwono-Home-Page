@@ -38,9 +38,9 @@ window.WY_PROJECTS = [
       alt: 'The Sharon house: white clapboard Greek Revival with a brick chimney, set in a meadow'
     },
     hero: {
-      src: '../assets/images/sharon-render-1600.jpg',
-      srcset: '../assets/images/sharon-render-800.jpg 800w, ../assets/images/sharon-render-1600.jpg 1600w',
-      alt: 'Rendering of the front elevation: white clapboard, corner pilasters, frieze windows and a brick chimney',
+      src: '../assets/images/sharon-thumb-1536.jpg',
+      srcset: '../assets/images/sharon-thumb-900.jpg 900w, ../assets/images/sharon-thumb-1536.jpg 1536w',
+      alt: 'Rendering of the front of the house: white clapboard, corner pilasters, frieze windows and a brick chimney, set in a meadow',
       caption: 'Rendering, front elevation'
     },
     model: {
@@ -85,10 +85,10 @@ window.WY_PROJECTS = [
       alt: 'The Rome house: gray shingle with steep gables, below the city clock tower'
     },
     hero: {
-      src: '../assets/images/rome-renovation.jpg',
-      srcset: '../assets/images/rome-renovation-800.jpg 800w, ../assets/images/rome-renovation.jpg 999w',
-      alt: 'The house from the street: brown shingle walls, steep gables and an arched front door',
-      caption: 'The house from the street'
+      src: '../assets/images/rome-thumb-1536.jpg',
+      srcset: '../assets/images/rome-thumb-900.jpg 900w, ../assets/images/rome-thumb-1536.jpg 1536w',
+      alt: 'Rendering of the house from the street: gray shingle walls, steep gables and an arched front door, with the city clock tower behind',
+      caption: 'Rendering, the house from the street'
     },
     feature: {
       heading: 'The kitchen',
