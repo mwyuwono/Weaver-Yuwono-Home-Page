@@ -9,7 +9,9 @@
   const root = document.getElementById('case-root');
   if (index < 0 || !root) return;
   const p = all[index];
-  const next = all.length > 1 ? all[(index + 1) % all.length] : null;
+  const pages = all.filter((x) => !x.href);
+  const pi = pages.indexOf(p);
+  const next = pages.length > 1 ? pages[(pi + 1) % pages.length] : null;
 
   const el = (tag, cls, text) => {
     const n = document.createElement(tag);
@@ -84,12 +86,16 @@
     const sec = el('section', 'case-section');
     sec.append(el('h2', 'case-heading', 'Selected drawings'));
     const grid = el('div', 'case-sheets');
-    p.sheets.forEach((s) => {
+    p.sheets.forEach((s, i) => {
       const fig = el('figure', 'case-sheet');
       const a = el('a');
-      a.href = s.src;
-      a.target = '_blank';
-      a.rel = 'noopener';
+      a.href = s.full || s.src;
+      a.setAttribute('aria-label', `Open ${s.label}: ${s.title} full size`);
+      a.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        openViewer(p.sheets, i, a);
+      });
       a.append(img(s.src, `${s.label}: ${s.title}`, null, '(max-width: 700px) 100vw, 520px'));
       fig.append(a);
       const cap = el('figcaption');
@@ -130,4 +136,120 @@
     nav.append(n);
   }
   root.append(nav);
+
+  // Sheet viewer: full-resolution (vector where available), zoom by resizing the image so SVGs re-render crisply.
+  function openViewer(sheets, start, opener) {
+    let i = start;
+    let zoom = 1; // 1 = fit
+    const box = el('div', 'viewer');
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    const bar = el('div', 'viewer__bar');
+    const cap = el('p', 'viewer__caption');
+    const btn = (label, text, fn) => {
+      const b = el('button', 'viewer__btn', text);
+      b.type = 'button';
+      b.setAttribute('aria-label', label);
+      b.addEventListener('click', fn);
+      return b;
+    };
+    const zoomLabel = el('span', 'viewer__zoom', 'Fit');
+    const controls = el('div', 'viewer__controls');
+    controls.append(
+      btn('Previous sheet', '‹', () => go(-1)),
+      btn('Next sheet', '›', () => go(1)),
+      btn('Zoom out', '−', () => setZoom(zoom / 1.6)),
+      zoomLabel,
+      btn('Zoom in', '+', () => setZoom(zoom * 1.6)),
+      btn('Fit to screen', 'Fit', () => setZoom(1)),
+      btn('Close viewer', 'Close', close)
+    );
+    bar.append(cap, controls);
+    const stage = el('div', 'viewer__stage');
+    const pic = el('img', 'viewer__img');
+    pic.decoding = 'async';
+    stage.append(pic);
+    box.append(bar, stage);
+
+    let natural = { w: 1, h: 1 };
+    function fitWidth() {
+      const sw = stage.clientWidth - 48, sh = stage.clientHeight - 48;
+      return Math.max(1, Math.min(sw, (sh * natural.w) / natural.h));
+    }
+    function setZoom(z, cx, cy) {
+      const prev = zoom;
+      zoom = Math.min(8, Math.max(1, z));
+      const fx = cx == null ? stage.clientWidth / 2 : cx;
+      const fy = cy == null ? stage.clientHeight / 2 : cy;
+      const px = (stage.scrollLeft + fx) / (pic.offsetWidth || 1);
+      const py = (stage.scrollTop + fy) / (pic.offsetHeight || 1);
+      pic.style.width = `${Math.round(fitWidth() * zoom)}px`;
+      stage.classList.toggle('is-zoomed', zoom > 1);
+      zoomLabel.textContent = zoom === 1 ? 'Fit' : `${Math.round(zoom * 100)}%`;
+      if (prev !== zoom) {
+        stage.scrollLeft = px * pic.offsetWidth - fx;
+        stage.scrollTop = py * pic.offsetHeight - fy;
+      }
+    }
+    function show() {
+      const s = sheets[i];
+      cap.textContent = '';
+      cap.append(el('span', 'case-sheet__label', s.label), document.createTextNode(s.title));
+      pic.alt = `${s.label}: ${s.title}`;
+      zoom = 1;
+      pic.style.width = '';
+      pic.onload = () => {
+        natural = { w: pic.naturalWidth || 1600, h: pic.naturalHeight || 1000 };
+        setZoom(1);
+      };
+      pic.src = s.full || s.src;
+    }
+    function go(d) { i = (i + d + sheets.length) % sheets.length; show(); }
+    function close() {
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('resize', onResize);
+      box.remove();
+      document.documentElement.classList.remove('viewer-open');
+      if (opener) opener.focus();
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowRight') go(1);
+      else if (e.key === 'ArrowLeft') go(-1);
+      else if (e.key === '+' || e.key === '=') setZoom(zoom * 1.6);
+      else if (e.key === '-') setZoom(zoom / 1.6);
+    }
+    const onResize = () => setZoom(zoom);
+    pic.addEventListener('dblclick', (e) => {
+      const r = stage.getBoundingClientRect();
+      setZoom(zoom > 1 ? 1 : 3, e.clientX - r.left, e.clientY - r.top);
+    });
+    stage.addEventListener('wheel', (e) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      e.preventDefault();
+      const r = stage.getBoundingClientRect();
+      setZoom(zoom * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX - r.left, e.clientY - r.top);
+    }, { passive: false });
+    // Drag to pan when zoomed.
+    let drag = null;
+    stage.addEventListener('pointerdown', (e) => {
+      if (zoom === 1 || e.pointerType !== 'mouse') return;
+      drag = { x: e.clientX, y: e.clientY, l: stage.scrollLeft, t: stage.scrollTop };
+      stage.setPointerCapture(e.pointerId);
+    });
+    stage.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      stage.scrollLeft = drag.l - (e.clientX - drag.x);
+      stage.scrollTop = drag.t - (e.clientY - drag.y);
+    });
+    stage.addEventListener('pointerup', () => { drag = null; });
+    stage.addEventListener('click', (e) => { if (e.target === stage && zoom === 1) close(); });
+
+    document.addEventListener('keydown', onKey);
+    window.addEventListener('resize', onResize);
+    document.documentElement.classList.add('viewer-open');
+    document.body.append(box);
+    show();
+    controls.lastChild.focus();
+  }
 })();

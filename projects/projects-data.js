@@ -4,12 +4,22 @@
  * To add a project: append an entry here, create projects/<slug>/index.html from an existing
  * case page shell (it only sets data-project="<slug>"), and put images under projects/assets/.
  * Optional fields (model, outcome, notes) render only when present.
+ * Entries with `href` instead of a case page (e.g. the art site) link out and need no shell.
+ * `category` must match an id in WY_CATEGORIES; categories with no entries are hidden.
  *
  * Public file: never put addresses, owner names, phone numbers or other private detail here.
  */
+window.WY_CATEGORIES = [
+  { id: 'architecture', label: 'Architecture', blurb: 'Residential design, carried from survey or first sketch to a drawing set a builder can price from.' },
+  { id: 'art', label: 'Drawing', blurb: 'Academic and architectural drawing in graphite, ink and wash.' },
+  { id: 'tools', label: 'AI tools', blurb: 'Software I have built for my own work.' },
+  { id: 'built', label: 'Built work', blurb: 'Physical projects, documented from plan to finished piece.' }
+];
+
 window.WY_PROJECTS = [
   {
     slug: 'connecticut-cottage',
+    category: 'architecture',
     title: 'Greek Revival House',
     location: 'Sharon, Connecticut',
     year: '2021',
@@ -45,17 +55,18 @@ window.WY_PROJECTS = [
       { title: 'One document every trade prices from', body: 'Window and door, flooring, power and lighting schedules turn the set into a single specification rather than a set of pictures.' }
     ],
     sheets: [
-      { src: '../assets/sheets/connecticut-cottage-07.jpg', label: 'Renderings', title: 'Four elevations, rendered' },
-      { src: '../assets/sheets/connecticut-cottage-04.jpg', label: 'A-201', title: 'Front and right elevations' },
-      { src: '../assets/sheets/connecticut-cottage-02.jpg', label: 'A-102', title: 'First floor plan' },
-      { src: '../assets/sheets/connecticut-cottage-06.jpg', label: 'A-203', title: 'Trim detail' },
-      { src: '../assets/sheets/connecticut-cottage-08.jpg', label: 'A-401', title: 'Kitchen plan and elevations' },
-      { src: '../assets/sheets/connecticut-cottage-11.jpg', label: 'A-601', title: 'Window and door schedule' }
+      { src: '../assets/sheets/connecticut-cottage-07.jpg', full: '../assets/sheets/connecticut-cottage-07-full.jpg', label: 'Renderings', title: 'Four elevations, rendered' },
+      { src: '../assets/sheets/connecticut-cottage-04.jpg', full: '../assets/sheets/connecticut-cottage-04.svg', label: 'A-201', title: 'Front and right elevations' },
+      { src: '../assets/sheets/connecticut-cottage-02.jpg', full: '../assets/sheets/connecticut-cottage-02.svg', label: 'A-102', title: 'First floor plan' },
+      { src: '../assets/sheets/connecticut-cottage-06.jpg', full: '../assets/sheets/connecticut-cottage-06.svg', label: 'A-203', title: 'Trim detail' },
+      { src: '../assets/sheets/connecticut-cottage-08.jpg', full: '../assets/sheets/connecticut-cottage-08.svg', label: 'A-401', title: 'Kitchen plan and elevations' },
+      { src: '../assets/sheets/connecticut-cottage-11.jpg', full: '../assets/sheets/connecticut-cottage-11.svg', label: 'A-601', title: 'Window and door schedule' }
     ],
     pdf: { href: '../assets/pdfs/connecticut-cottage.pdf', label: 'Full drawing set', meta: '14 sheets · PDF · 5.8 MB' }
   },
   {
     slug: 'rome-renovation',
+    category: 'architecture',
     title: 'Historic Renovation',
     location: 'Rome, Georgia',
     year: '2021',
@@ -85,13 +96,28 @@ window.WY_PROJECTS = [
       { title: 'Detail the rooms that carry the cost', body: 'Interior elevations for the kitchen and both baths, plus exterior elevations for the rear porch addition, fix the decisions that drive budget.' }
     ],
     sheets: [
-      { src: '../assets/sheets/rome-renovation-01.jpg', label: 'A101', title: 'Existing conditions, as built' },
-      { src: '../assets/sheets/rome-renovation-02.jpg', label: 'A102', title: 'First floor demolition and new work' },
-      { src: '../assets/sheets/rome-renovation-04.jpg', label: 'A104', title: 'First floor plan' },
-      { src: '../assets/sheets/rome-renovation-06.jpg', label: 'A201', title: 'Rear porch addition, elevations' },
-      { src: '../assets/sheets/rome-renovation-07.jpg', label: 'A202', title: 'Kitchen elevations and details' },
-      { src: '../assets/sheets/rome-renovation-08.jpg', label: 'A203', title: 'Primary bath' }
+      { src: '../assets/sheets/rome-renovation-01.jpg', full: '../assets/sheets/rome-renovation-01.svg', label: 'A101', title: 'Existing conditions, as built' },
+      { src: '../assets/sheets/rome-renovation-02.jpg', full: '../assets/sheets/rome-renovation-02.svg', label: 'A102', title: 'First floor demolition and new work' },
+      { src: '../assets/sheets/rome-renovation-04.jpg', full: '../assets/sheets/rome-renovation-04.svg', label: 'A104', title: 'First floor plan' },
+      { src: '../assets/sheets/rome-renovation-06.jpg', full: '../assets/sheets/rome-renovation-06.svg', label: 'A201', title: 'Rear porch addition, elevations' },
+      { src: '../assets/sheets/rome-renovation-07.jpg', full: '../assets/sheets/rome-renovation-07-full.jpg', label: 'A202', title: 'Kitchen elevations and details' },
+      { src: '../assets/sheets/rome-renovation-08.jpg', full: '../assets/sheets/rome-renovation-08.svg', label: 'A203', title: 'Primary bath' }
     ],
     pdf: { href: '../assets/pdfs/rome-renovation.pdf', label: 'Full drawing set', meta: '10 sheets · PDF · 2 MB' }
+  },
+  {
+    slug: 'artwork',
+    category: 'art',
+    href: 'https://art.weaver-yuwono.com/',
+    title: 'Original Artworks',
+    location: 'art.weaver-yuwono.com',
+    year: '',
+    type: 'Online gallery',
+    headline: 'A curated gallery of my drawings: classical figure and cast studies, architectural ornament and shade-and-shadow exercises',
+    card: {
+      src: '../projects/assets/images/art-ionic-capital-800.jpg',
+      srcset: '../projects/assets/images/art-ionic-capital-800.jpg 800w, ../projects/assets/images/art-ionic-capital-1370.jpg 1370w',
+      alt: 'Framed ink and wash drawing of an Ionic capital with its volute and egg-and-dart moulding'
+    }
   }
 ];

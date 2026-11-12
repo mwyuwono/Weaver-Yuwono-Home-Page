@@ -88,7 +88,7 @@ function createProfileCard(profile) {
     const projectsLink = document.createElement('a');
     projectsLink.href = profile.projectsUrl;
     projectsLink.className = 'card__link';
-    projectsLink.textContent = 'Architecture';
+    projectsLink.textContent = 'Projects';
     projectsLink.setAttribute('data-element', 'card-link');
     linksContainer.appendChild(projectsLink);
   }

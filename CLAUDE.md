@@ -357,23 +357,20 @@ See `components/README.md` for detailed guidelines and examples.
 │   ├── stanton-headshot.jpg
 │   └── matt-headshot.jpg
 ├── projects/              # Portfolio page
-│   ├── index.html         # Portfolio page
-│   ├── projects.css       # Portfolio page layout styles
-│   ├── projects-data.js   # Content model for index cards AND case pages (add projects here)
+│   ├── index.html         # Projects hub (all personal work, grouped by category)
+│   ├── hub.js / hub.css   # Hub renderer and styles
+│   ├── projects-data.js   # Content model: WY_CATEGORIES + WY_PROJECTS, used by hub AND case pages
 │   ├── case/              # Shared case-page renderer (case.js) and styles (case.css)
 │   ├── <slug>/index.html  # One thin shell per case page (sets data-project="<slug>")
 │   ├── connecticut-cottage/model/  # Built 3D model (from tools/cottage-3d)
 │   └── assets/            # Projects-specific assets
 │       ├── images/        # Project images and logo
-│       ├── sheets/        # Selected drawing sheets rendered from the PDFs
+│       ├── sheets/        # Selected sheets: .jpg thumbnails + .svg (vector) for the zoom viewer
 │       ├── social/        # 1200x630 Open Graph images
 │       └── pdfs/          # Project PDFs (title blocks redacted: no names, addresses or phone)
 ├── components/            # Modular components (shared)
 │   ├── card-base/         # Base card component (foundation)
 │   │   └── card-base.css  # Shared card structure & styles
-│   ├── project-card/      # Project card variant
-│   │   ├── project-card.css
-│   │   └── project-card.js
 │   ├── profile-card/      # Profile card variant
 │   │   ├── profile-card.css
 │   │   └── profile-card.js
@@ -402,7 +399,7 @@ they are committed.
   - Both pages load appropriate base + variant combinations
 - **CSS separation**:
   - Landing: `styles.css` (Material Design 3 background) + card-base + profile-card
-  - Projects: `projects/projects.css` (layout, grid) + m3-design-v2 (CDN) + card-base + project-card
+  - Projects: `projects/case/case.css` (shared tokens, case pages) + `projects/hub.css` (hub); no CDN dependency
 - **Asset ownership**: Clear separation between landing and projects assets
 - **Video files**: Both `flow_loop.mp4` and `bloom_loop.mp4` kept for easy swapping
 - **File naming**: Consistent kebab-case for all new/renamed files
