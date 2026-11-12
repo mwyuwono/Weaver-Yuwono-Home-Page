@@ -1,0 +1,7 @@
+# Keep repo-only material off the public site (every committed file is otherwise served).
+*.md
+AGENTS.md
+design-system/
+tools/
+Fat-Logo.svg
+.DS_Store

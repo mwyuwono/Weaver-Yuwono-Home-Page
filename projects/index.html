@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drawings & Renderings</title>
+    <title>Architecture &amp; Design — Weaver-Yuwono</title>
+    <meta name="description" content="Residential architecture by Matt Weaver-Yuwono: a new Greek Revival house in Sharon, Connecticut and a historic renovation in Rome, Georgia, each carried from survey or concept to a full drawing set.">
+    <link rel="canonical" href="https://weaver-yuwono.com/projects/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Architecture &amp; Design — Matt Weaver-Yuwono">
+    <meta property="og:description" content="Residential architecture, carried from survey or concept to a full drawing set.">
+    <meta property="og:url" content="https://weaver-yuwono.com/projects/">
+    <meta property="og:image" content="https://weaver-yuwono.com/projects/assets/social/projects.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <!-- Design System Tokens (m3-design-v2) - Update ?v= after design system changes -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/tokens.css?v=20260203-2044">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/main.css?v=20260203-2044">
@@ -16,14 +28,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600&family=Noto+Sans:wght@100;400&family=Noto+Serif:wght@400;600;800&family=Noto+Serif:ital,wght@1,300;1,600;1,800&display=swap" rel="stylesheet">
     <!-- Component Scripts -->
+    <script src="projects-data.js" defer></script>
     <script src="../components/project-card/project-card.js" defer></script>
 </head>
 <body>
     <div class="page-container" data-element="main-container">
         <header class="site-header" data-element="site-header">
-            <img src="assets/images/wy-logo.svg" alt="WY Logo" class="site-logo" data-element="site-logo">
-            <div class="site-title" data-element="site-title">Weaver - Yuwono</div>
+            <a class="site-home" href="/" aria-label="Weaver-Yuwono home">
+                <img src="assets/images/wy-logo.svg" alt="" class="site-logo" data-element="site-logo">
+                <div class="site-title" data-element="site-title">Weaver - Yuwono</div>
+            </a>
         </header>
+        <section class="projects-intro" aria-labelledby="projects-title">
+            <h1 id="projects-title">Architecture &amp; Design</h1>
+            <p>Residential projects I designed and documented myself, each carried from a survey or first sketch to a drawing set a builder can price from. It is the same discipline behind my product work: establish the current state, decide what changes, and specify it precisely.</p>
+            <a class="projects-intro__link" href="https://work.weaver-yuwono.com/">Product design work</a>
+        </section>
         <main class="cards-container" data-element="cards-container">
             <div class="project-grid">
                 <!-- Project cards are rendered dynamically by project-card.js -->

@@ -5,3 +5,4 @@ landing-assets/backup/
 tools/cottage-3d/node_modules
 __pycache__/
 tools/cottage-3d/qa/out
+.DS_Store

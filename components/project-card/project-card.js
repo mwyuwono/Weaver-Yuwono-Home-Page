@@ -3,35 +3,9 @@
  * Modular component for rendering project cards
  */
 
-/**
- * Project data structure
- * @type {Array<{title: string, location: string, pdfUrl: string, modelUrl?: string, image: {src: string, srcset: string, sizes: string, alt: string}}>}
- */
-const projects = [
-  {
-    title: 'Historic Renovation',
-    location: 'Rome, GA',
-    pdfUrl: '../projects/assets/pdfs/rome-renovation.pdf',
-    image: {
-      src: '../projects/assets/images/rome-renovation.jpg',
-      srcset: '../projects/assets/images/rome-renovation-500.jpg 500w, ../projects/assets/images/rome-renovation-800.jpg 800w, ../projects/assets/images/rome-renovation.jpg 999w',
-      sizes: '(max-width: 479px) 30vw, (max-width: 767px) 35vw, (max-width: 991px) 24vw, 20vw',
-      alt: 'Historic Renovation'
-    }
-  },
-  {
-    title: 'Architectural Design',
-    location: 'Sharon, CT',
-    pdfUrl: '../projects/assets/pdfs/connecticut-cottage.pdf',
-    modelUrl: '../projects/connecticut-cottage/',
-    image: {
-      src: '../projects/assets/images/103smain.jpeg',
-      srcset: '../projects/assets/images/103smain.jpeg',
-      sizes: '(max-width: 479px) 30vw, (max-width: 767px) 35vw, (max-width: 991px) 24vw, 20vw',
-      alt: 'Architectural Design'
-    }
-  }
-];
+/** Card content comes from projects/projects-data.js (window.WY_PROJECTS), shared with the case pages. */
+const projects = window.WY_PROJECTS || [];
+const CARD_IMAGE_SIZES = '(max-width: 767px) 92vw, 25vw';
 
 /**
  * Creates a project card HTML element
@@ -40,10 +14,7 @@ const projects = [
  */
 function createProjectCard(project) {
   const card = document.createElement('a');
-  // Projects with an interactive 3D model link to it (the model page links to the PDF);
-  // otherwise the card opens the PDF in a new tab.
-  card.href = project.modelUrl || project.pdfUrl;
-  if (!project.modelUrl) card.target = '_blank';
+  card.href = `${project.slug}/`;
   card.className = 'card project-card';
   card.setAttribute('data-element', 'card');
 
@@ -68,7 +39,7 @@ function createProjectCard(project) {
   // Subtitle (location or other metadata)
   const subtitle = document.createElement('div');
   subtitle.className = 'card__subtitle';
-  subtitle.textContent = project.location || '';
+  subtitle.textContent = [project.location, project.year].filter(Boolean).join(', ');
   subtitle.setAttribute('data-element', 'card-subtitle');
 
   // Helper text
@@ -77,7 +48,7 @@ function createProjectCard(project) {
 
   const helper = document.createElement('span');
   helper.className = 'card__link';
-  helper.textContent = project.modelUrl ? '3D model & plans' : 'PDF download';
+  helper.textContent = project.model ? 'Case study · 3D model' : 'Case study';
   helper.setAttribute('data-element', 'card-link');
   linksContainer.appendChild(helper);
 
@@ -93,10 +64,10 @@ function createProjectCard(project) {
 
   // Image
   const image = document.createElement('img');
-  image.src = project.image.src;
-  image.srcset = project.image.srcset;
-  image.sizes = project.image.sizes;
-  image.alt = project.image.alt;
+  image.src = project.card.src;
+  if (project.card.srcset) image.srcset = project.card.srcset;
+  image.sizes = CARD_IMAGE_SIZES;
+  image.alt = project.card.alt;
   image.className = 'card__image';
   image.loading = 'lazy';
   image.setAttribute('data-element', 'card-image');

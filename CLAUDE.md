@@ -359,9 +359,15 @@ See `components/README.md` for detailed guidelines and examples.
 ├── projects/              # Portfolio page
 │   ├── index.html         # Portfolio page
 │   ├── projects.css       # Portfolio page layout styles
+│   ├── projects-data.js   # Content model for index cards AND case pages (add projects here)
+│   ├── case/              # Shared case-page renderer (case.js) and styles (case.css)
+│   ├── <slug>/index.html  # One thin shell per case page (sets data-project="<slug>")
+│   ├── connecticut-cottage/model/  # Built 3D model (from tools/cottage-3d)
 │   └── assets/            # Projects-specific assets
 │       ├── images/        # Project images and logo
-│       └── pdfs/          # Project PDFs
+│       ├── sheets/        # Selected drawing sheets rendered from the PDFs
+│       ├── social/        # 1200x630 Open Graph images
+│       └── pdfs/          # Project PDFs (title blocks redacted: no names, addresses or phone)
 ├── components/            # Modular components (shared)
 │   ├── card-base/         # Base card component (foundation)
 │   │   └── card-base.css  # Shared card structure & styles
@@ -379,6 +385,12 @@ See `components/README.md` for detailed guidelines and examples.
 ├── README.md              # Project documentation
 └── .gitignore             # Git ignore rules (iCloud-safe)
 ```
+
+### Public-content rule
+
+Every committed file is publicly served unless listed in `.vercelignore`. Plan sets must have owner names,
+street addresses and phone numbers removed from title blocks (and any street names on site plans) before
+they are committed.
 
 ### File Structure Notes
 
