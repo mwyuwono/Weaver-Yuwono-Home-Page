@@ -32,13 +32,13 @@ const SPECS: Record<keyof Materials, WashSpec> = {
   // Abstract presentation palette: the model reads as a sophisticated white study model, not a picture of surface materials.
   // Near-white neutrals separated by value only; one cool grey tint for glass; contrast comes from the graphite line.
   // Primary architecture (ink >= 0.85): heavier outlines.
-  siding: { lit: '#ffffff', shade: '#e4e5e4', ink: 1.0, detail: 'clapboard', shadowWeight: 0.35, poche: 0.9 },
-  roof: { lit: '#d9dadb', shade: '#c0c2c4', ink: 0.98, shadowWeight: 0.3, mottle: 0.04, detail: 'seams', period: 31.25 / 12 },
+  siding: { lit: '#ffffff', shade: '#e4e5e4', ink: 1.0, detail: 'clapboard', shadowWeight: 0.7, poche: 0.9 },
+  roof: { lit: '#d9dadb', shade: '#c0c2c4', ink: 0.98, shadowWeight: 0.55, mottle: 0.04, detail: 'seams', period: 31.25 / 12 },
   concrete: { lit: '#e6e5e2', shade: '#cdccc8', ink: 0.93, poche: 0.5 },
-  brick: { lit: '#d2cfcc', shade: '#b9b6b3', ink: 0.91, shadowWeight: 0.35, mottle: 0.03 },
+  brick: { lit: '#d2cfcc', shade: '#b9b6b3', ink: 0.91, shadowWeight: 0.55, mottle: 0.03 },
   // Secondary detail: finer, lighter lines.
-  trim: { lit: '#ffffff', shade: '#ebebea', ink: 0.56, shadowWeight: 0.3 },
-  railing: { lit: '#ffffff', shade: '#e8e8e7', ink: 0.54, shadowWeight: 0.25 },
+  trim: { lit: '#ffffff', shade: '#ebebea', ink: 0.56, shadowWeight: 0.7 },
+  railing: { lit: '#ffffff', shade: '#e8e8e7', ink: 0.54, shadowWeight: 0.5 },
   sash: { lit: '#fbfbfa', shade: '#e4e5e4', ink: 0.52 },
   door: { lit: '#c3c6c8', shade: '#aeb1b4', ink: 0.6 },
   // Glass: a single soft cool-grey tint, no strokes.

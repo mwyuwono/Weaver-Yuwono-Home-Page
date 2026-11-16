@@ -1,11 +1,11 @@
 /**
  * RoofBuilder — standing-seam metal roofs and the construction that goes with them.
  *
- * Main roof (side-gabled, ridge along x): one slab extruded from the (z, y) profile in roofProfile.ts, standing seams,
- * ridge cap, rake boards and the cornice wedge that closes the gap between the wall top and the soffit.
- * Rear shed dormer: inset from both gable ends. Outside its cheek walls the main roof runs on to the normal rear eave;
- * between them the main slab ends inside the dormer rear wall and the dormer roof, fascia, rake boards and siding cheek
- * walls take over.
+ * Main roof (side-gabled, ridge along x): a thin skin extruded from the (z, y) profile in roofProfile.ts, sitting on the
+ * cornice (cornice.ts: eave corona and cap, flat-topped returns, rake boards).
+ * Rear shed dormer: inset from both gable ends. Outside its cheek walls the main roof runs on to the normal rear eave,
+ * which carries on a short way past each cheek; between them the main skin ends under the dormer roof and the dormer
+ * roof, fascia, rake boards and siding cheek walls take over.
  * Wing: a hip roof whose apex sits on the main rear wall (it also covers the rear porch).
  * Second-floor gable siding (buildGableInfill) lives with the second floor so it travels with it when exploding.
  * Trim (pilasters, entablature, cornices) is in TrimBuilder.ts.
@@ -14,8 +14,8 @@ import * as THREE from 'three';
 import type { HouseData, Opening, Vec2 } from '../data/schema';
 import type { Materials } from '../materials';
 import { GeometryBatch, extrudeAlongX, solidFromTriangles, splitExtrudeGroups } from './geometry';
-import { dormerProfile, roofProfile, truncatedProfile, type RoofProfile } from './roofProfile';
-import { CROWN, FASCIA_T, SOFFIT_T, addCrownBands, addEaveBox, addPlainRake, addRake, type CorniceSpec } from './cornice';
+import { clippedProfile, dormerProfile, roofProfile, truncatedProfile, type RoofProfile } from './roofProfile';
+import { addDormerRake, addEave, addRake, capTop, type CorniceSpec } from './cornice';
 
 /** Exterior wall thickness (all levels above the foundation). */
 const WALL_T = 6;
@@ -27,10 +27,10 @@ function underRoofRegion(prof: RoofProfile, base: number, za: number, zb: number
   return [[za, base], [zb, base], ...top.reverse()];
 }
 
-/** How a slab end is closed: full end cap, only the part behind z = cut (beside the dormer cheek), or none (shared with the next slab). */
-type End = 'full' | 'rear' | 'none';
+/** How a slab end is closed: with an end face, or left open where the next slab carries on. */
+type End = 'full' | 'none';
 
-/** Slab underside under the top path, never below `clampY` (the eave soffit: rafter tails are cut level at the soffit). */
+/** Skin underside under the top path, never below `clampY` (the cornice cap the roof edge sits on). */
 function undersidePath(path: Vec2[], t: number, clampY: number): Vec2[] {
   const out: Vec2[] = [];
   for (let i = 0; i < path.length; i++) {
@@ -45,87 +45,95 @@ function undersidePath(path: Vec2[], t: number, clampY: number): Vec2[] {
   return out;
 }
 
-/** A roof slab (top path + thickness) over x0..x1. Rake trim is built separately (cornice.ts). */
-function addSlab(b: GeometryBatch, m: Materials, prof: RoofProfile, x0: number, x1: number, ends: [End, End] = ['full', 'full'], cut = 0, clampY = -Infinity): void {
+/** A length of roof skin (top path + thickness) over x0..x1. Rake and eave trim are built separately (cornice.ts). */
+function addSlab(b: GeometryBatch, m: Materials, prof: RoofProfile, x0: number, x1: number, ends: [End, End] = ['full', 'full'], clampY = -Infinity): void {
   const { path, thickness: t } = prof;
-  const outline = (pts: Vec2[]): Vec2[] => [...pts, ...[...undersidePath(pts, t, clampY)].reverse()];
-  const slab = extrudeAlongX(outline(path), x0, x1);
-  // An end face shared with the next slab would sit exactly on the neighbour's end face and flicker where it meets the roof surface, so
-  // it is not built ('none'); 'rear' keeps only the part behind z = cut, which stays exposed beside the dormer cheek wall.
-  const [lo, hi] = ends;
-  if (lo === 'full' && hi === 'full') b.add(slab, m.roof);
+  const outline: Vec2[] = [...path, ...[...undersidePath(path, t, clampY)].reverse()];
+  const slab = extrudeAlongX(outline, x0, x1);
+  // An end face shared with the next slab would sit exactly on the neighbour's end face and flicker, so it is not built.
+  if (ends[0] === 'full' && ends[1] === 'full') b.add(slab, m.roof);
   else {
     b.add(splitExtrudeGroups(slab).sides, m.roof);
-    for (const [kind, x] of [[lo, x0], [hi, x1]] as const) {
-      if (kind === 'none') continue;
-      const pts = kind === 'rear' ? [[cut, prof.top(cut)] as Vec2, ...path.filter(([z]) => z < cut)] : path;
-      const cap = new THREE.ShapeGeometry(new THREE.Shape(outline(pts).map(([z, y]) => new THREE.Vector2(-z, y))));
+    ends.forEach((kind, i) => {
+      if (kind === 'none') return;
+      const cap = new THREE.ShapeGeometry(new THREE.Shape(outline.map(([z, y]) => new THREE.Vector2(-z, y))));
       cap.applyMatrix4(new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 1, 0), new THREE.Vector3(1, 0, 0)));
-      cap.translate(x, 0, 0);
+      cap.translate(i === 0 ? x0 : x1, 0, 0);
       b.add(cap, m.roof);
       cap.dispose();
-    }
-    slab.dispose();
+    });
   }
+  slab.dispose();
 }
 
-/** Dormer: roof slab, rake boards and fascia, plus the siding cheek walls between the main slope and its underside. */
+/** Dormer eave fascia: bottom edge Y, projection from the rear wall and from the cheek walls. */
+const DORMER_FASCIA = { y0: 222.5, proud: 5.6, side: 4.1 };
+/** Drop of the dormer rake board's lower edge below the roof top (vertical). */
+const DORMER_RAKE_DROP = 6.1;
+
+/** Dormer: roof skin, eave fascia, rake boards, plus the siding cheek walls between the main slope and its underside. */
 function addDormer(b: GeometryBatch, data: HouseData, m: Materials, main: RoofProfile): void {
   const r = data.roof.main, d = r.rearDormer, dp = dormerProfile(r);
   if (!d || !dp) return;
-  addSlab(b, m, dp, d.roofXMin, d.roofXMax);
-  // Fascia across the dormer eave (down to the dormer cornice) with the same stepped crown as the main eave, wrapping both
-  // corners; rake fascia + crown up each side, dying onto the eave crown.
-  const fasciaY0 = data.trim.dormerCornice.bands[data.trim.dormerCornice.bands.length - 1][0];
-  const xa = d.roofXMin - FASCIA_T, xb = d.roofXMax + FASCIA_T;
-  b.box(m.trim, [xb - xa, d.tipY - fasciaY0, FASCIA_T], [(xa + xb) / 2, (d.tipY + fasciaY0) / 2, d.tipZ - FASCIA_T / 2]);
-  addCrownBands(b, m, d.tipY, 'x', xa, xb, d.tipZ - FASCIA_T, -1, [true, true]);
-  const crownTop = d.tipY + CROWN[CROWN.length - 1][1];
-  for (const [xo, side] of [[d.roofXMin, -1], [d.roofXMax, 1]] as const) addPlainRake(b, m, dp, xo, side, d.zJoin, d.tipZ - FASCIA_T - 3, d.tipZ, SOFFIT_T + 1.5, crownTop);
+  const f = DORMER_FASCIA, zr = r.zRear, zf = zr - f.proud;
+  // The roof edge sits on the fascia: the skin underside never drops below the fascia top at its face.
+  const fasciaTop = dp.under(zf);
+  addSlab(b, m, dp, d.roofXMin, d.roofXMax, ['full', 'full'], fasciaTop);
+  // Eave fascia: a solid board from the wall face out, up to the roof, wrapping both cheeks by the rake board's projection.
+  b.add(extrudeAlongX([[zr, f.y0], [zf, f.y0], [zf, fasciaTop], [zr, Math.max(dp.under(zr), fasciaTop)]], d.xMin - f.side, d.xMax + f.side), m.trim);
+  // Hidden fill over the dormer wall top.
+  b.add(extrudeAlongX([[zr + WALL_T, d.wallTopY], [zr, d.wallTopY], [zr, dp.under(zr)], [zr + WALL_T, dp.under(zr + WALL_T)]], d.xMin, d.xMax), m.trim, undefined, { lines: 'none' });
+  for (const [xc, side] of [[d.xMin, -1], [d.xMax, 1]] as const) addDormerRake(b, m, dp, main.top, xc, side, f.side, DORMER_RAKE_DROP, zr, d.zJoin);
 
   // Cheek walls: from where the dormer underside clears the main slope back to the rear wall plane.
-  let hi = d.zJoin, lo = r.zRear; // bisect for the z where dormer underside == main top surface
+  let hi = d.zJoin, lo = zr; // bisect for the z where dormer underside == main top surface
   for (let i = 0; i < 40; i++) {
     const mid = (hi + lo) / 2;
     if (dp.under(mid) > main.top(mid)) lo = mid; else hi = mid;
   }
-  const zi = lo, zr = r.zRear;
+  const zi = lo;
   const cheek: Vec2[] = [[zi, main.top(zi)], [zr, main.top(zr)], [zr, dp.under(zr)], [zi, dp.under(zi)]];
   for (const [xa, xb] of [[d.xMin, d.xMin + WALL_T], [d.xMax - WALL_T, d.xMax]]) b.add(extrudeAlongX(cheek, xa, xb), m.siding);
 }
 
-/** Main roof, dormer, cornice wedges. Lives in the `roof` level group. */
+/** How far the main rear eave (cornice and a stub of roof) carries on past each dormer cheek, across the dormer face. */
+export const EAVE_PAST_CHEEK = 14.2;
+
+/** Main roof, dormer and cornice. Lives in the `roof` level group. */
 export function buildMainRoof(data: HouseData, m: Materials): THREE.Group {
   const r = data.roof.main, d = r.rearDormer;
   const prof = roofProfile(r);
   const b = new GeometryBatch();
-  const x0 = r.xMin - r.overhangRake, x1 = r.xMax + r.overhangRake, xc = (x0 + x1) / 2;
-  const wallTop = data.roof.frieze?.topY ?? r.eaveY - r.thickness;
+  const x0 = r.xMin - r.overhangRake, x1 = r.xMax + r.overhangRake;
+  const wallTop = data.roof.frieze?.topY ?? data.trim.entablature.cornice.y0;
 
-  const soffitY = data.trim.entablature.cornice.y1; // soffit board sits on top of the bed moulding
-  const clampY = soffitY + SOFFIT_T;
-  if (d) {
-    addSlab(b, m, prof, x0, d.xMin, ['full', 'rear'], r.zRear + WALL_T / 2, clampY);
-    addSlab(b, m, prof, d.xMax, x1, ['rear', 'full'], r.zRear + WALL_T / 2, clampY);
-    // Between the cheeks the main slope stops just under the dormer roof (2" past the join): carried on to the rear wall it
-    // crossed the dormer windows behind the glass line.
-    addSlab(b, m, truncatedProfile(prof, d.zJoin - 2), d.xMin, d.xMax, ['none', 'none']);
-  } else {
-    addSlab(b, m, prof, x0, x1, ['full', 'full'], 0, clampY);
-  }
-  b.box(m.roof, [x1 - x0, 3, 3], [xc, r.ridgeY - 2.1, (r.zFront + r.zRear) / 2], [Math.PI / 4, 0, 0]); // ridge cap (top at ridgeY)
-
-  // Cornice: eave boxes with returns at the gable corners, rake trim on both gables (cut round the chimney).
   const ch = data.chimney?.outline ?? [];
   const leftCuts: [number, number][] = ch.length && Math.min(...ch.map((p) => p[0])) < r.xMin + 1
     ? [[Math.min(...ch.map((p) => p[1])) - 0.5, Math.max(...ch.map((p) => p[1])) + 0.5]] : [];
   const spec: CorniceSpec = {
-    prof, soffitY, wallTop, wallT: WALL_T, xL: r.xMin, xR: r.xMax, zF: r.zFront, zR: r.zRear, x0, x1,
-    returnLen: data.trim.entablature.corniceReturn, leftCuts,
+    prof, bedTop: data.trim.entablature.cornice.y1, wallTop, wallT: WALL_T, xL: r.xMin, xR: r.xMax, zF: r.zFront, zR: r.zRear, leftCuts,
   };
-  addEaveBox(b, m, spec, 1, x0, x1, true, true);
-  if (d) { addEaveBox(b, m, spec, -1, x0, d.xMin, true, false); addEaveBox(b, m, spec, -1, d.xMax, x1, false, true); }
-  else addEaveBox(b, m, spec, -1, x0, x1, true, true);
+  const clampY = capTop(spec); // the roof edge sits on the cornice cap
+
+  addEave(b, m, spec, 1, r.xMin, r.xMax, true, true);
+  if (d) {
+    addSlab(b, m, prof, x0, d.xMin, ['full', 'none'], clampY);
+    addSlab(b, m, prof, d.xMax, x1, ['none', 'full'], clampY);
+    // Between the cheeks the main slope stops just under the dormer roof (2" past the join): carried on to the rear wall it
+    // crossed the dormer windows behind the glass line.
+    addSlab(b, m, truncatedProfile(prof, d.zJoin - 2), d.xMin, d.xMax, ['none', 'none'], clampY);
+    // The rear eave carries on a little way past each cheek, across the dormer face: cornice below, a stub of roof on top.
+    const ztR = prof.path[prof.path.length - 1][0];
+    const stub = clippedProfile(prof, r.zRear, ztR);
+    const xa = d.xMin + EAVE_PAST_CHEEK, xb = d.xMax - EAVE_PAST_CHEEK;
+    addSlab(b, m, stub, d.xMin, xa, ['none', 'full'], clampY);
+    addSlab(b, m, stub, xb, d.xMax, ['full', 'none'], clampY);
+    addEave(b, m, spec, -1, r.xMin, xa, true, false, [r.xMin, d.xMin]);
+    addEave(b, m, spec, -1, xb, r.xMax, false, true, [d.xMax, r.xMax]);
+  } else {
+    addSlab(b, m, prof, x0, x1, ['full', 'full'], clampY);
+    addEave(b, m, spec, -1, r.xMin, r.xMax, true, true);
+  }
   addRake(b, m, spec, -1);
   addRake(b, m, spec, 1);
   addDormer(b, data, m, prof);
@@ -143,7 +151,7 @@ function secondFloorOpenings(data: HouseData, pred: (o: Opening) => boolean): { 
 export function buildGableInfill(data: HouseData, m: Materials): THREE.Group | null {
   const r = data.roof.main;
   const prof = roofProfile(r);
-  const base = data.roof.frieze?.topY ?? r.eaveY - r.thickness;
+  const base = data.roof.frieze?.topY ?? data.trim.entablature.cornice.y0;
   const b = new GeometryBatch();
   for (const [xa, xb] of [[r.xMin, r.xMin + WALL_T], [r.xMax - WALL_T, r.xMax]]) {
     const wins = secondFloorOpenings(data, (o) => Math.abs(Math.sin(o.angle)) > 0.5 && o.center[0] > xa - 4 && o.center[0] < xb + 4)

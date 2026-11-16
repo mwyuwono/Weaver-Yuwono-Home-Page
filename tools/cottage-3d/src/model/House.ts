@@ -170,14 +170,14 @@ export class House {
       // Chimney slice that passes through this level, from its slab up to the next level's slab.
       const top = level.id === 'basement' ? (first?.floorY ?? 0) : level.id === 'first' ? (second?.floorY ?? secondTop) : secondTop;
       const bottom = level.id === 'basement' ? -Infinity : level.floorY;
-      parts.push(buildChimneySlice(chimney, bottom, top, false, m));
+      parts.push(buildChimneySlice(chimney, bottom, top, m));
       this.levels.set(level.id, flatten(level.id, parts));
     }
 
     this.levels.set('roof', flatten('roof', [
       buildMainRoof(data, m),
       buildDormerTrim(data, m),
-      buildChimneySlice(chimney, secondTop, Infinity, true, m),
+      buildChimneySlice(chimney, secondTop, Infinity, m),
     ]));
 
     const siteStructures = flatten('site-structures', [buildSite(data, m)]);

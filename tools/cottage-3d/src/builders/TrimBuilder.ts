@@ -9,7 +9,9 @@
 import * as THREE from 'three';
 import type { HouseData, Level, Opening, Vec2 } from '../data/schema';
 import type { Materials } from '../materials';
-import { GeometryBatch, sweepProfile } from './geometry';
+import { GeometryBatch, extrudeAlongX, extrudeVertical, sweepProfile } from './geometry';
+import { roofProfile } from './roofProfile';
+import { BROW } from './WindowBuilder';
 
 type Band = [number, number, number];
 
@@ -48,14 +50,16 @@ function windowsOnFace(data: HouseData, faceZ: number): { wa: number; wb: number
   const { bands } = data.trim.entablature, lo = bands[0][0], hi = bands[bands.length - 1][1];
   const pick = (o: Opening) => o.exterior && o.kind === 'window' && Math.abs(Math.sin(o.angle)) < 0.5 && Math.abs(o.center[1] - faceZ) < 10;
   return (second?.openings ?? []).filter(pick)
-    .map((o) => ({ wa: o.center[0] - o.width / 2, wb: o.center[0] + o.width / 2, sill: second!.floorY + o.sill, head: second!.floorY + o.head }))
+    // the bands stop at the outside of the window's casing
+    .map((o) => ({ wa: o.center[0] - BROW.w / 2 - BROW.casing, wb: o.center[0] + BROW.w / 2 + BROW.casing, sill: second!.floorY + o.sill - BROW.casing, head: second!.floorY + o.sill + BROW.h + BROW.casing }))
     .filter((w) => w.sill < hi && w.head > lo) // only windows that cut into the entablature (the brow windows)
     .sort((a, c) => a.wa - c.wa);
 }
 
 /**
  * Entablature on the front or rear wall: the architrave/ovolo/frieze stack with the brow windows cut out, the
- * cornice, and the returns round both gable corners (bands 19.4", cornice 27.3"). Lives with the second floor.
+ * bed moulding, and the returns round both gable corners (bands to the pilaster's width, the bed moulding further).
+ * The corona and cap above belong to the roof (cornice.ts). Lives with the second floor.
  */
 function addEntablature(b: GeometryBatch, data: HouseData, m: Materials, face: 'front' | 'rear'): void {
   const { entablature: en } = data.trim;
@@ -70,25 +74,29 @@ function addEntablature(b: GeometryBatch, data: HouseData, m: Materials, face: '
   };
 
   // Spans of wall the entablature runs along. The rear shed dormer replaces the main wall between its cheeks (the
-  // dormer face is plain siding with its own cornice), so there the entablature exists only at the two outer corners.
+  // dormer face is plain siding with its own cornice): there the entablature exists only at the two outer corners, each
+  // part stopping square a step further across the dormer face than the one below (bands, ovolo, bed moulding; the
+  // corona and roof stub above them run furthest — RoofBuilder).
   const dormer = front ? undefined : r.rearDormer;
-  const spans: [number, number][] = dormer ? [[r.xMin, dormer.xMin], [dormer.xMax, r.xMax]] : [[r.xMin, r.xMax]];
   const c = en.cornice;
-  const cornice: Vec2[] = [[0, c.y0], [c.proud - 1.2, c.y0], [c.proud, c.y0 + 0.8], [c.proud, c.y1], [0, c.y1]];
+  const bed: Vec2[] = [[0, c.y0], [c.proud, c.y0], [c.proud, c.y1], [0, c.y1]];
+  const ovolo = Math.max(...en.bands.map((bd) => bd[2]));
+  /** Wall spans for a part that carries on `past` each dormer cheek. */
+  const spansFor = (past: number): [number, number][] => (dormer ? [[r.xMin, dormer.xMin + past], [dormer.xMax - past, r.xMax]] : [[r.xMin, r.xMax]]);
+  const withReturns = (sx0: number, sx1: number, ret: number): Vec2[] => [
+    ...(sx0 === r.xMin ? [[sx0, z - dir * ret] as Vec2] : []), [sx0, z], [sx1, z], ...(sx1 === r.xMax ? [[sx1, z - dir * ret] as Vec2] : []),
+  ];
 
-  for (const [sx0, sx1] of spans) {
-    // Gable returns only on the true corners (not at the dormer cheeks).
-    const retA = sx0 === r.xMin, retB = sx1 === r.xMax;
+  for (const [sx0, sx1] of spansFor(DORMER_STEP.bands)) {
     const wins = windowsOnFace(data, z).filter((w) => w.wa >= sx0 && w.wb <= sx1);
-
-    // Bands: full-height sweeps between windows, boards above/below each window.
+    // Bands: full-height sweeps between windows, boards above/below each window. Gable returns only on the true corners.
     const xs: number[] = [sx0, ...wins.flatMap((w) => [w.wa, w.wb]), sx1];
     for (let i = 0; i < xs.length; i += 2) {
       const a = xs[i], e = xs[i + 1];
       const path: Vec2[] = [];
-      if (i === 0 && retA) path.push([sx0, z - dir * en.bandReturn]);
+      if (i === 0 && sx0 === r.xMin) path.push([sx0, z - dir * en.bandReturn]);
       path.push([a, z], [e, z]);
-      if (i + 2 >= xs.length && retB) path.push([sx1, z - dir * en.bandReturn]);
+      if (i + 2 >= xs.length && sx1 === r.xMax) path.push([sx1, z - dir * en.bandReturn]);
       if (e - a > 0.01) sweep(path, profile, m.trim);
     }
     for (const w of wins) {
@@ -98,11 +106,19 @@ function addEntablature(b: GeometryBatch, data: HouseData, m: Materials, face: '
         }
       }
     }
-
-    // Cornice, wrapping the corners.
-    sweep([...(retA ? [[sx0, z - dir * en.corniceReturn] as Vec2] : []), [sx0, z], [sx1, z], ...(retB ? [[sx1, z - dir * en.corniceReturn] as Vec2] : [])], cornice, m.trim);
   }
+  if (dormer) { // the ovolo band alone runs a little past the flat bands
+    const [, o] = en.bands;
+    for (const [xa, xb] of [[dormer.xMin + DORMER_STEP.bands, dormer.xMin + DORMER_STEP.ovolo], [dormer.xMax - DORMER_STEP.ovolo, dormer.xMax - DORMER_STEP.bands]]) {
+      b.box(m.trim, [xb - xa, o[1] - o[0], ovolo], [(xa + xb) / 2, (o[0] + o[1]) / 2, z + dir * ovolo / 2]);
+    }
+  }
+  // Bed moulding, wrapping the corners.
+  for (const [sx0, sx1] of spansFor(DORMER_STEP.bed)) sweep(withReturns(sx0, sx1, en.corniceReturn), bed, m.trim);
 }
+
+/** How far each part of the rear entablature carries on past a dormer cheek before stopping square. */
+const DORMER_STEP = { bands: 4.3, ovolo: 5.5, bed: 11.4 };
 
 export function buildEntablature(data: HouseData, m: Materials): THREE.Group {
   const b = new GeometryBatch();
@@ -140,18 +156,28 @@ export function buildWingCornice(data: HouseData, m: Materials): THREE.Group | n
   return b.toGroup('wing-cornice');
 }
 
-/** Dormer cornice across the dormer rear wall and the corner boards on its cheeks. Lives with the roof. */
+/** Length of the dormer band's return along each cheek wall. */
+const DORMER_BAND_RETURN = 6.8;
+
+/** Dormer band under its eave fascia (returning onto the cheeks) and the corner boards on the rear face and the cheeks. Lives with the roof. */
 export function buildDormerTrim(data: HouseData, m: Materials): THREE.Group | null {
   const r = data.roof.main, d = r.rearDormer;
   if (!d) return null;
   const t = data.trim.dormerCornice;
   const b = new GeometryBatch();
-  const geo = sweepProfile([[d.xMax, r.zRear], [d.xMin, r.zRear]], steppedProfile(t.bands));
+  const zr = r.zRear;
+  const geo = sweepProfile([[d.xMax, zr + DORMER_BAND_RETURN], [d.xMax, zr], [d.xMin, zr], [d.xMin, zr + DORMER_BAND_RETURN]], steppedProfile(t.bands));
   b.add(geo, m.trim);
   geo.dispose();
-  const cb = t.cornerBoard;
-  for (const x of [d.xMin + cb.width / 2, d.xMax - cb.width / 2]) {
-    b.box(m.trim, [cb.width, cb.y1 - cb.y0, cb.proud], [x, (cb.y0 + cb.y1) / 2, r.zRear - cb.proud / 2]);
+  const cb = t.cornerBoard, main = roofProfile(r);
+  for (const [x, side] of [[d.xMin, 1], [d.xMax, -1]] as const) {
+    // One L-shaped corner post: the rear-face board and its return on the cheek, standing on the main roof.
+    const outline: Vec2[] = [[x, zr - cb.proud], [x + side * cb.width, zr - cb.proud], [x + side * cb.width, zr], [x, zr]];
+    const post = extrudeVertical(outline, undefined, cb.y0, cb.y1);
+    b.add(post, m.trim);
+    post.dispose();
+    const za = zr + cb.width, xo = x - side * cb.proud;
+    b.add(extrudeAlongX([[za, main.top(za)], [zr - cb.proud, main.top(zr - cb.proud)], [zr - cb.proud, cb.y1], [za, cb.y1]], Math.min(x, xo), Math.max(x, xo)), m.trim);
   }
   return b.toGroup('dormer-trim');
 }

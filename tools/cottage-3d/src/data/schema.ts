@@ -129,8 +129,8 @@ export interface Roof {
     ridgeY: number; // Y of the roof top surface at the ridge (mid-depth)
     pitch: number; // rise per 12 run (informational; geometry derives the slope from eaveY/ridgeY/depth)
     overhangEave: number; // horizontal projection of the eave tips past the front/rear wall planes
-    overhangRake: number; // horizontal projection past gable walls
-    thickness: number; // VERTICAL thickness of the slab
+    overhangRake: number; // horizontal projection of the roof edge past the gable walls (= the cornice cap's projection)
+    thickness: number; // vertical depth from the roof top to the rake fascia's lower edge (informational; the modelled skin is roofProfile SKIN)
     seamSpacing: number; // standing-seam spacing
     /**
      * Optional rear shed dormer, INSET from both gable ends: the main roof runs on to the normal rear eave outside the
@@ -167,7 +167,7 @@ export interface Roof {
   } | null;
   /** Frieze under the main eave: `topY` is the top of the second-floor front/rear walls (the entablature profiles are in `trim`). */
   frieze: {
-    /** Y of the top of the frieze (= front second-floor wall top). Defaults to eaveY − roof thickness. */
+    /** Y of the top of the frieze (= front second-floor wall top). Defaults to the bottom of the bed moulding. */
     topY?: number;
   } | null;
 }

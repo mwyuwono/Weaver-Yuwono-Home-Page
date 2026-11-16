@@ -4,7 +4,7 @@
  * It is a MeshLambertMaterial (so the sun's shadow map is available) whose fragment stage is rewritten:
  *  - colour is a pigment MULTIPLIER on the paper (1 = bare paper), mixed lit -> shade by a softly quantised sun term,
  *    with low-frequency pigment-density noise in WORLD space so it never swims while orbiting;
- *  - cast shadows only tint the result (weighted per material), they are never drawn as CG shadow;
+ *  - cast shadows lay a soft cool-grey veil over the wash (weighted per material), they are never drawn as CG shadow;
  *  - edges are NOT drawn here: geometry-derived vector linework (render/lines.ts) draws the ink in the same pass;
  *  - flat washes only: no hatching or stroke textures. The exceptions are a fine clapboard hairline on siding and standing-seam hairlines on roofs, analytically
  *    antialiased in world space and faded out completely before they could moire (sub-pixel geometry would break up into dotted lines).
@@ -25,7 +25,7 @@ export interface WashSpec {
   detail?: Detail;
   /** 0..1: how strongly the sun term darkens the surface (default 0.8). */
   shadeRange?: number;
-  /** 0..1: how strongly cast shadows tint the surface (default 0.3). */
+  /** 0..1: how much of the cast-shadow veil the surface takes (default 0.3). */
   shadowWeight?: number;
   /** Pigment-density mottling amplitude (default 0.08). */
   mottle?: number;
@@ -117,6 +117,7 @@ uniform vec4 uParams; // x shade range, y shadow weight, z mottle, w seam period
 uniform vec4 uFade;   // ground fade: centre xz, start, end
 ${NOISE}
 const vec3 INK_MUL = vec3(0.52, 0.53, 0.55); // a hairline darkens the wash towards graphite
+const vec3 SHADOW_VEIL = vec3(0.855, 0.868, 0.888); // full cast shadow, as a multiplier (scaled by the material's shadow weight)
 
 /** Anti-aliased line through every integer of x, w = width as a fraction of the period. */
 float stripe(float x, float w) {
@@ -146,10 +147,10 @@ const FRAGMENT_MAIN = /* glsl */ `
   float t3 = facing * 3.0;
   float banded = min((floor(t3) + smoothstep(0.3, 0.7, fract(t3))) / 3.0, 1.0); // three soft bands
   float tone = (1.0 - mix(facing, banded, 0.6)) * uParams.x;
-  float spill = (1.0 - smoothstep(0.2, 0.8, shadow)) * uParams.y;
-  float dark = 1.0 - (1.0 - tone) * (1.0 - spill);
+  // Cast shadow: a soft cool-grey veil laid over the wash (never a hard CG shadow), strongest where the surface is lit.
+  float veil = (1.0 - smoothstep(0.15, 0.85, shadow)) * uParams.y;
 
-  vec3 col = mix(uLit, uShade, dark);
+  vec3 col = mix(uLit, uShade, tone) * mix(vec3(1.0), SHADOW_VEIL, veil);
   col = 1.0 - (1.0 - col) * (1.0 + (fbm(p * 0.3) - 0.5) * uParams.z * 2.0); // pigment density
   float line = 0.0; // hairline opacity
 
