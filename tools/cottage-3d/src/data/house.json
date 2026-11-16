@@ -10,7 +10,7 @@
       "Rear wing: x 113.79..349.87, depth 89.01 (from the basement foundation S-FNDN; first-floor wing walls agree).",
       "Openings: window/door widths are the schedule rough openings (A 38.25, B/D 37, C 38.25, doors 38); the plan poche gap is only the glazing width, so the exterior wall pieces are cut back to the RO. The left-wall gap at the fireplace (z=-157.5) is the chimney breast, not a window. Schedule check: A 13, B 4, C 6, D 5, E 1, F 1 all match the drawings.",
       "Stairs: two straight 15-riser flights in one plan band (z -138..-183). Basement->first x 181.6..335.7; first->second x 212.5..350.4 (tread lines of the three plans; the S-turn note on the first plan is a handrail note).",
-      "Window sill/head (AFF) from the elevation window blocks (RO bottom = block origin -70.73 for A, -65.48 for C, -1.20 for D, +3.83 for B; RO height from the schedule): first A 25.7-93.7, first C 33.3-93.3, second A 20.2-88.2, second C 25.4-85.4, second D 31.6-50.2, basement B 42-96.6 (elevation block gives 42.2).",
+      "Window sill/head (AFF) from the elevation window blocks (RO bottom = block origin -70.73 for A, -62.73 for C, -1.20 for D, +3.83 for B; RO height from the schedule): first A 25.7-93.7, first C 36.1-96.1, second A 20.2-88.2, second C 28.2-88.2, second D 31.6-50.2, basement B 42-96.6 (elevation block gives 42.2).",
       "first: base cabinets/island = SOLID A-CASE-PATT hatches (touching a wall -> cabinet-base, free-standing -> island), 34.5\" tall + 1.5\" counter top.",
       "Roof: ridge top surface Y=286.72 (=25'-10\" above the front grade Y=-23.52, as the ridge mark says); measured slope 7.71/12 (front slope and the main rear slope). thickness is VERTICAL (6.9\" between top/underside lines). eaveY=185.46 is the roof TOP surface at the front wall plane; the front wall/frieze top is Y=167.23 (frieze band Y 146.10..167.23, crown above it up to the soffit). Eave tips project 14.4\" past the wall planes; the rake overhangs 12.6\" (measured from elevation faces, +~1.0\" vs the plan faces).",
       "Rear shed dormer (rear/side elevations): the dormer is INSET from both gable ends - cheek-wall outer faces at x=37.2 and 370.8 (37.2\" in from the gable walls), roof edges at x=31.1 / 376.9. Its roof (3.85/12) leaves the main rear slope at z=-175.7 (top Y=275.0) and ends at an eave tip z=-322.5, Y=227.9; its wall rises to Y=217.6 (C windows end at 202.7). Outside the cheeks the main roof (7.71/12) runs on to the normal rear eave and the rear wall stops at the frieze top like the front.",
@@ -2395,8 +2395,8 @@
           "angle": 0.0,
           "exterior": true,
           "sym": "C",
-          "sill": 33.32,
-          "head": 93.32,
+          "sill": 36.07,
+          "head": 96.07,
           "lites": [
             3,
             2
@@ -2414,8 +2414,8 @@
           "angle": 0.0,
           "exterior": true,
           "sym": "C",
-          "sill": 33.32,
-          "head": 93.32,
+          "sill": 36.07,
+          "head": 96.07,
           "lites": [
             3,
             2
@@ -4754,8 +4754,8 @@
           "angle": 0.0,
           "exterior": true,
           "sym": "C",
-          "sill": 25.43,
-          "head": 85.43,
+          "sill": 28.18,
+          "head": 88.18,
           "lites": [
             3,
             2
@@ -4773,8 +4773,8 @@
           "angle": 0.0,
           "exterior": true,
           "sym": "C",
-          "sill": 25.43,
-          "head": 85.43,
+          "sill": 28.18,
+          "head": 88.18,
           "lites": [
             3,
             2
@@ -4792,8 +4792,8 @@
           "angle": 0.0,
           "exterior": true,
           "sym": "C",
-          "sill": 25.43,
-          "head": 85.43,
+          "sill": 28.18,
+          "head": 88.18,
           "lites": [
             3,
             2
@@ -4811,8 +4811,8 @@
           "angle": 0.0,
           "exterior": true,
           "sym": "C",
-          "sill": 25.43,
-          "head": 85.43,
+          "sill": 28.18,
+          "head": 88.18,
           "lites": [
             3,
             2
@@ -5158,7 +5158,7 @@
       "ridgeY": 286.72,
       "pitch": 7.71,
       "overhangEave": 14.4,
-      "overhangRake": 13.0,
+      "overhangRake": 13.6,
       "thickness": 6.9,
       "seamSpacing": 31.25,
       "rearDormer": {
@@ -5257,8 +5257,8 @@
         "y1": 171.2,
         "proud": 5.6
       },
-      "bandReturn": 19.4,
-      "corniceReturn": 27.3
+      "bandReturn": 17.4,
+      "corniceReturn": 21.8
     },
     "dormerCornice": {
       "bands": [
@@ -5266,11 +5266,6 @@
           217.6,
           222.5,
           0.8
-        ],
-        [
-          222.5,
-          223.6,
-          4.2
         ]
       ],
       "cornerBoard": {

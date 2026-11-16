@@ -1,59 +1,48 @@
 /**
- * Cornice construction for the gabled main roof, following standard New England / Greek Revival practice (the drawings
- * give the frieze, bed moulding and return lengths; the rest is conventional carpentry):
+ * Cornice construction for the gabled main roof, as drawn on the elevations (Greek Revival, all flat boards):
  *
- *  EAVE (front and rear): a closed box — level soffit board on top of the bed moulding, a fascia that covers the roof edge
- *  and drips below the soffit, and a stepped crown moulding capping the fascia at the roof edge.
+ *  EAVE (front and rear): above the bed moulding (TrimBuilder) a deep CORONA whose underside is the soffit, a thin CAP
+ *  projecting a little further, and the roof edge sitting directly on the cap.
  *
- *  BOXED CORNICE RETURN at each gable corner: the eave box (soffit, fascia, crown) turns the corner and runs back along
- *  the gable wall for the drawn return length, closed by a flat end and capped by a small metal-roofed pent.
+ *  CORNICE RETURN at each gable corner: corona and cap mitre round the corner and run back along the gable wall, each
+ *  ending square a step past the one below. The return is flat-topped; nothing is built on it.
  *
- *  RAKE (gable edges): a rake fascia covering the slab edge with the same stepped crown, a sloped soffit under the
- *  overhang and a rake frieze board on the gable wall. Rake fascia and crown die onto the top of the eave crown at the
- *  corner, the rake soffit and frieze onto the return cap — the classic return detail.
+ *  RAKE (gable edges): the roof edge, a flat rake fascia set back under it (the corona carried up the slope), a soffit
+ *  closing the overhang and a rake frieze board on the gable wall. Fascia, soffit and frieze all die onto the flat top
+ *  of the return.
  *
- * All values are inches, house coordinates (plan [x, z], z = 0 front wall face, house toward −z).
+ * All values are inches, house coordinates (plan [x, z], z = 0 front wall face, house toward −z). Projections and
+ * heights are measured from the DXF elevations.
  */
 import type { Vec2 } from '../data/schema';
 import type { Materials } from '../materials';
-import { GeometryBatch, extrudeAlongX, extrudeAlongZ } from './geometry';
+import { GeometryBatch, extrudeAlongX, sweepProfile } from './geometry';
 import type { RoofProfile } from './roofProfile';
 
-/** Fascia board thickness. */
-export const FASCIA_T = 1.0;
-/** Fascia drip below the soffit board's underside. */
-const DRIP = 0.75;
-/** Soffit board thickness. */
-export const SOFFIT_T = 0.75;
-/** Crown moulding as stepped bands [dy0, dy1, proud] relative to the roof edge (slab top at the eave tip). */
-export const CROWN: [number, number, number][] = [
-  [-3.4, -2.3, 0.8],
-  [-2.3, -1.0, 1.7],
-  [-1.0, 0.35, 2.7],
-];
-const CROWN_TOP = CROWN[CROWN.length - 1][1];
-const CROWN_PROUD = Math.max(...CROWN.map((c) => c[2]));
-/** Rake frieze board on the gable wall below the rake soffit. */
-const RAKE_FRIEZE = { height: 7.0, proud: 1.0 };
-/** Return pent cap: thickness and overhang past the crown. */
-const CAP = { t: 0.5, over: 0.25 };
+export const CORNICE = {
+  /** Corona: height above the bed moulding, projection from the wall face, return length from the wall corner. */
+  corona: { h: 3.1, proud: 12.9, ret: 22.8 },
+  /** Cap on top of the corona. Its projection is also the rake overhang of the roof edge. */
+  cap: { h: 1.1, proud: 13.6, ret: 23.4 },
+  /** Rake boards, as vertical drops below the roof top surface. */
+  rake: { fasciaDrop: 6.9, fasciaT: 1.0, friezeDrop: 15.7, friezeProud: 1.0 },
+} as const;
 
 export interface CorniceSpec {
   prof: RoofProfile;
-  /** Underside of the eave soffit board (= top of the bed moulding). */
-  soffitY: number;
-  /** Top of the wall / frieze, where the eave fill starts. */
+  /** Top of the bed moulding (= underside of the corona, the eave soffit). */
+  bedTop: number;
+  /** Top of the wall / frieze, where the hidden eave fill starts. */
   wallTop: number;
   wallT: number;
   /** Main block wall faces. */
   xL: number; xR: number; zF: number; zR: number;
-  /** Slab ends (rake edges). */
-  x0: number; x1: number;
-  /** Length of the cornice return along the gable wall, from the corner. */
-  returnLen: number;
   /** z ranges where the rake trim on the LEFT gable is interrupted (a chimney rising through the rake). */
   leftCuts: [number, number][];
 }
+
+/** Top of the cap: the flat top of the cornice returns, and the level the roof edge sits on. */
+export const capTop = (s: CorniceSpec): number => s.bedTop + CORNICE.corona.h + CORNICE.cap.h;
 
 /**
  * Region between top(z)+b and top(z)+a, clipped below at `clip`, for z in [zLo, zHi], as a (z, y) polygon (or null).
@@ -90,137 +79,80 @@ function spans(zHi: number, zLo: number, cuts: [number, number][]): [number, num
   return out;
 }
 
-/** Slab-top height at the eave tips (the profile is symmetric). */
-function eaveEdge(prof: RoofProfile): { ztF: number; ztR: number; T: number } {
-  const p = prof.path;
-  return { ztF: p[0][0], ztR: p[p.length - 1][0], T: p[0][1] };
-}
+const rect = (proud: number, y0: number, y1: number): Vec2[] => [[0, y0], [proud, y0], [proud, y1], [0, y1]];
 
 /**
- * Eave box along one wall (front dir = +1, rear dir = −1) over the slab span [xa, xb]. `gableA` / `gableB` mark span ends
- * that are gable corners (fascia and crown wrap, a cornice return is added); other ends stop square (dormer cheeks).
+ * Eave cornice along one wall (front dir = +1, rear dir = −1) from x = xa to xb (xa < xb). `gableA` / `gableB` mark
+ * ends at a gable corner, where corona and cap return along the gable wall; other ends stop square (beside the dormer).
+ * `wall` is the x range over which the wall below stops at the frieze top and needs the hidden fill above it.
  */
-export function addEaveBox(b: GeometryBatch, m: Materials, s: CorniceSpec, dir: 1 | -1, xa: number, xb: number, gableA: boolean, gableB: boolean): void {
-  const { prof, soffitY: SY, wallT } = s;
-  const { ztF, ztR, T } = eaveEdge(prof);
-  const wallZ = dir === 1 ? s.zF : s.zR, zt = dir === 1 ? ztF : ztR, inner = wallZ - dir * wallT;
-  const sTop = SY + SOFFIT_T;
-  const under = (z: number) => Math.max(prof.under(z), sTop); // the slab underside is clamped to the soffit top (addSlab)
+export function addEave(b: GeometryBatch, m: Materials, s: CorniceSpec, dir: 1 | -1, xa: number, xb: number, gableA: boolean, gableB: boolean, wall: [number, number] = [xa, xb]): void {
+  const { prof, wallT } = s;
+  const wallZ = dir === 1 ? s.zF : s.zR, inner = wallZ - dir * wallT;
+  const y0 = s.bedTop, y1 = y0 + CORNICE.corona.h, y2 = y1 + CORNICE.cap.h;
+  const under = (z: number) => Math.max(prof.under(z), y2); // the skin underside never drops below the cap top (addSlab clamps it)
 
-  // Solid behind the trim: over the wall top (wall x-range only) and in the overhang above the soffit (full span), up to
-  // the slab underside. Hidden construction: no lines of its own.
-  const wx0 = Math.max(xa, s.xL), wx1 = Math.min(xb, s.xR);
-  b.add(extrudeAlongX([[inner, s.wallTop], [wallZ, s.wallTop], [wallZ, under(wallZ)], [inner, under(inner)]], wx0, wx1), m.trim, undefined, { lines: 'none' });
-  const uW = prof.under(wallZ), uT = prof.under(zt);
-  const fill: Vec2[] = uT < sTop
-    ? [[wallZ, sTop], [wallZ + (zt - wallZ) * (uW - sTop) / (uW - uT), sTop], [wallZ, uW]]
-    : [[wallZ, sTop], [zt, sTop], [zt, uT], [wallZ, uW]];
-  b.add(extrudeAlongX(dir === 1 ? fill : [...fill].reverse(), xa, xb), m.trim, undefined, { lines: 'none' });
-
-  // Soffit board, fascia, crown.
-  const zs0 = Math.min(wallZ, zt), zs1 = Math.max(wallZ, zt);
-  b.box(m.trim, [xb - xa, SOFFIT_T, zs1 - zs0], [(xa + xb) / 2, SY + SOFFIT_T / 2, (zs0 + zs1) / 2]);
-  const ea = gableA ? FASCIA_T : 0, eb = gableB ? FASCIA_T : 0;
-  const fy0 = SY - DRIP;
-  b.box(m.trim, [xb - xa + ea + eb, T - fy0, FASCIA_T], [(xa - ea + xb + eb) / 2, (fy0 + T) / 2, zt + dir * FASCIA_T / 2]);
-  for (const [dy0, dy1, p] of CROWN) {
-    const ca = gableA ? FASCIA_T + p : 0, cb = gableB ? FASCIA_T + p : 0;
-    b.box(m.trim, [xb - xa + ca + cb, dy1 - dy0, p], [(xa - ca + xb + cb) / 2, T + (dy0 + dy1) / 2, zt + dir * (FASCIA_T + p / 2)]);
+  // Corona and cap, mitred round the gable corners. The cap is a thin moulding: its lines fade unless it is large on screen.
+  const parts: [number, number, { proud: number; ret: number }, number | undefined][] = [[y0, y1, CORNICE.corona, undefined], [y1, y2, CORNICE.cap, 2.4]];
+  for (const [lo, hi, part, sizeIn] of parts) {
+    const pts: Vec2[] = [];
+    if (gableA) pts.push([xa, wallZ - dir * part.ret]);
+    pts.push([xa, wallZ], [xb, wallZ]);
+    if (gableB) pts.push([xb, wallZ - dir * part.ret]);
+    const geo = sweepProfile(dir === 1 ? pts : pts.reverse(), rect(part.proud, lo, hi));
+    b.add(geo, m.trim, undefined, sizeIn ? { sizeIn } : undefined);
+    geo.dispose();
   }
-  if (gableA) addReturn(b, m, s, dir, -1);
-  if (gableB) addReturn(b, m, s, dir, 1);
-}
 
-/** Top of the return pent cap at the wall: kept just under the rake soffit. */
-function returnCapTop(s: CorniceSpec, wallZ: number): { outer: number; wall: number } {
-  const { T } = eaveEdge(s.prof);
-  const outer = T + CROWN_TOP + CAP.t;
-  return { outer, wall: Math.max(outer, Math.min(outer + 2, s.prof.under(wallZ) - SOFFIT_T - 0.3)) };
-}
-
-/** Boxed cornice return at the gable corner on side `side` (−1 left, +1 right) of the eave on `dir`. */
-function addReturn(b: GeometryBatch, m: Materials, s: CorniceSpec, dir: 1 | -1, side: -1 | 1): void {
-  const { soffitY: SY } = s;
-  const { ztF, ztR, T } = eaveEdge(s.prof);
-  const wallZ = dir === 1 ? s.zF : s.zR, zt = dir === 1 ? ztF : ztR;
-  const xw = side === 1 ? s.xR : s.xL, xo = side === 1 ? s.x1 : s.x0;
-  const zEnd = wallZ - dir * s.returnLen;
-  const zMin = (p: number, q: number) => Math.min(p, q), zMax = (p: number, q: number) => Math.max(p, q);
-  const sTop = SY + SOFFIT_T;
-
-  // Soffit under the return (the eave soffit already covers the corner square out to the tip).
-  const xs0 = Math.min(xw, xo), xs1 = Math.max(xw, xo);
-  b.box(m.trim, [xs1 - xs0, SOFFIT_T, s.returnLen], [(xs0 + xs1) / 2, SY + SOFFIT_T / 2, (wallZ + zEnd) / 2]);
-  // Fascia along the gable side, from the return end to the eave fascia.
-  const fy0 = SY - DRIP;
-  const fz0 = zMin(zEnd, zt), fz1 = zMax(zEnd, zt);
-  b.box(m.trim, [FASCIA_T, T - fy0, fz1 - fz0], [xo + side * FASCIA_T / 2, (fy0 + T) / 2, (fz0 + fz1) / 2]);
-  // Crown along the gable side, up to the eave crown (which wraps the corner square).
-  const cz1 = zt + dir * FASCIA_T;
-  for (const [dy0, dy1, p] of CROWN) {
-    const z0 = zMin(zEnd, cz1), z1 = zMax(zEnd, cz1);
-    b.box(m.trim, [p, dy1 - dy0, z1 - z0], [xo + side * (FASCIA_T + p / 2), T + (dy0 + dy1) / 2, (z0 + z1) / 2]);
+  // Hidden construction: over the wall top up to the roof, and the wedge between the cap and the roof in the overhang.
+  if (wall[1] - wall[0] > 0.01) {
+    b.add(extrudeAlongX([[inner, s.wallTop], [wallZ, s.wallTop], [wallZ, under(wallZ)], [inner, under(inner)]], wall[0], wall[1]), m.trim, undefined, { lines: 'none' });
   }
-  // Pent cap over the return (roof metal), sloping from the wall down to just past the crown, and the solid under it.
-  const cap = returnCapTop(s, wallZ);
-  const xc = xo + side * (FASCIA_T + CROWN_PROUD + CAP.over);
-  const capPoly: Vec2[] = [[xw, cap.wall], [xc, cap.outer], [xc, cap.outer - CAP.t], [xw, cap.wall - CAP.t]];
-  const zz0 = zMin(zEnd - dir * CAP.over, wallZ), zz1 = zMax(zEnd - dir * CAP.over, wallZ);
-  const ccw = (poly: Vec2[]): Vec2[] => (side === 1 ? poly : [...poly].reverse());
-  b.add(extrudeAlongZ(ccw(capPoly), zz0, zz1), m.roof);
-  const capUnder = (x: number) => cap.wall - CAP.t + ((cap.outer - cap.wall) * (x - xw)) / (xc - xw);
-  const core: Vec2[] = [[xw, sTop], [xo, sTop], [xo, capUnder(xo)], [xw, capUnder(xw)]];
-  b.add(extrudeAlongZ(ccw(core), zMin(zEnd, wallZ), zMax(zEnd, wallZ)), m.trim);
+  const zt = wallZ + dir * CORNICE.cap.proud;
+  const wedge: Vec2[] = [[wallZ, y2], [zt, y2], [zt, under(zt)], [wallZ, under(wallZ)]];
+  // An end that stops square shows the wedge's end face (the cut end of the eave), so it keeps its outline there.
+  b.add(extrudeAlongX(wedge, xa, xb), m.trim, undefined, { lines: gableA && gableB ? 'none' : 'outline', sizeIn: 6 });
 }
 
-/** Rake trim on one gable (side −1 left / +1 right): fascia, crown, soffit and frieze. */
+/** Rake trim on one gable (side −1 left / +1 right): fascia, hidden body with the soffit, and frieze. */
 export function addRake(b: GeometryBatch, m: Materials, s: CorniceSpec, side: -1 | 1): void {
   const { prof } = s;
-  const { ztF, ztR, T } = eaveEdge(prof);
-  const t = prof.thickness;
-  const xw = side === 1 ? s.xR : s.xL, xo = side === 1 ? s.x1 : s.x0;
+  const p = prof.path, ztF = p[0][0], ztR = p[p.length - 1][0];
+  const t = prof.thickness, k = CORNICE.rake, clip = capTop(s);
+  const xw = side === 1 ? s.xR : s.xL;
   const cuts = side === -1 ? s.leftCuts : [];
-  const crownTop = T + CROWN_TOP;
-  const capTop = Math.max(returnCapTop(s, s.zF).wall, returnCapTop(s, s.zR).wall);
-  const reach = FASCIA_T + CROWN_PROUD;
-  const xr = (a: number, w: number): [number, number] => (side === 1 ? [a, a + w] : [a - w, a]);
+  const inner = CORNICE.corona.proud - k.fasciaT; // fascia back face, from the wall
+  const xr = (a: number, w: number): [number, number] => (side === 1 ? [xw + a, xw + a + w] : [xw - a - w, xw - a]);
 
-  const emit = (zHi: number, zLo: number, a: number, bb: number, clip: number, xa: number, xb: number) => {
+  const emit = (zHi: number, zLo: number, a: number, bb: number, x: [number, number], opts?: { lines: 'none' }) => {
     for (const [h, l] of spans(zHi, zLo, cuts)) {
       const poly = rakeBand(prof, h, l, a, bb, clip);
-      if (poly) b.add(extrudeAlongX(poly, xa, xb), m.trim);
+      if (poly) b.add(extrudeAlongX(poly, x[0], x[1]), m.trim, undefined, opts);
     }
   };
-  // Fascia: covers the slab edge, drips below the rake soffit; sits on the eave crown at both ends.
-  emit(ztF + reach, ztR - reach, 0, -(t + SOFFIT_T + DRIP), crownTop, ...xr(xo, FASCIA_T));
-  for (const [dy0, dy1, p] of CROWN) emit(ztF + reach, ztR - reach, dy1, dy0, crownTop, ...xr(xo + side * FASCIA_T, p));
-  // Sloped soffit under the overhang, wall to fascia; dies onto the return caps.
-  emit(s.zF, s.zR, -t, -(t + SOFFIT_T), capTop, ...(side === 1 ? [xw, xo] as [number, number] : [xo, xw] as [number, number]));
+  // Fascia: the corona carried up the rake, set back under the roof edge; dies onto the return cap.
+  emit(ztF, ztR, -t, -k.fasciaDrop, xr(inner, k.fasciaT));
+  // Body behind the fascia; its underside is the rake soffit, flush with the fascia's lower edge.
+  emit(ztF, ztR, -t, -k.fasciaDrop, xr(0, inner), { lines: 'none' });
   // Rake frieze on the gable wall under the soffit.
-  emit(s.zF, s.zR, -(t + SOFFIT_T), -(t + SOFFIT_T + RAKE_FRIEZE.height), capTop, ...xr(xw, RAKE_FRIEZE.proud));
-}
-
-/** Crown bands on the outer face of a straight fascia (dormer, wing hip), as boxes. `face`: outer face position and outward axis. */
-export function addCrownBands(b: GeometryBatch, m: Materials, edgeTop: number, along: 'x' | 'z', a0: number, a1: number, face: number, out: 1 | -1, wrap: [boolean, boolean] = [false, false]): void {
-  for (const [dy0, dy1, p] of CROWN) {
-    const lo = a0 - (wrap[0] ? p : 0), hi = a1 + (wrap[1] ? p : 0);
-    const c = face + out * p / 2, y = edgeTop + (dy0 + dy1) / 2, h = dy1 - dy0;
-    if (along === 'x') b.box(m.trim, [hi - lo, h, p], [(lo + hi) / 2, y, c]);
-    else b.box(m.trim, [p, h, hi - lo], [c, y, (lo + hi) / 2]);
-  }
+  emit(s.zF, s.zR, -k.fasciaDrop, -k.friezeDrop, xr(0, k.friezeProud));
 }
 
 /**
- * Rake fascia + crown only (the shed dormer's sides, whose cheek walls take the place of a soffit and frieze). The fascia
- * covers the slab edge and drops `drop` below the underside; both die onto `clip` (the dormer crown top) at the eave.
+ * Rake board for the shed dormer (side −1 left / +1 right of the dormer): one solid board against the cheek wall under
+ * the roof edge, from the dormer eave up the slope until it dies into the main roof (`floor` = main roof top surface).
  */
-export function addPlainRake(b: GeometryBatch, m: Materials, prof: RoofProfile, xo: number, side: -1 | 1, zHi: number, zLo: number, zEave: number, drop: number, clip: number): void {
-  const xr = (a: number, w: number): [number, number] => (side === 1 ? [a, a + w] : [a - w, a]);
-  // The fascia runs down to the eave fascia's back face (no clip: on a shallow shed slope a clipped fascia would bare the slab edge).
-  const fas = rakeBand(prof, zHi, zEave, 0, -(prof.thickness + drop), -Infinity);
-  if (fas) b.add(extrudeAlongX(fas, ...xr(xo, FASCIA_T)), m.trim);
-  for (const [dy0, dy1, p] of CROWN) {
-    const poly = rakeBand(prof, zHi, zLo, dy1, dy0, clip);
-    if (poly) b.add(extrudeAlongX(poly, ...xr(xo + side * FASCIA_T, p)), m.trim);
-  }
+export function addDormerRake(b: GeometryBatch, m: Materials, prof: RoofProfile, floor: (z: number) => number, xCheek: number, side: -1 | 1, proud: number, drop: number, zLo: number, zHi: number): void {
+  const up = (z: number) => prof.top(z) - prof.thickness, lo = (z: number) => prof.top(z) - drop;
+  // Both boundaries and the floor are straight over this range: bisect for where each meets the main roof.
+  const meet = (f: (z: number) => number): number => {
+    let a = zLo, c = zHi;
+    if (f(c) > floor(c)) return c;
+    for (let i = 0; i < 40; i++) { const mid = (a + c) / 2; if (f(mid) > floor(mid)) a = mid; else c = mid; }
+    return a;
+  };
+  const zUp = meet(up), zBot = meet(lo);
+  if (zUp - zLo < 0.01) return;
+  const poly: Vec2[] = [[zLo, lo(zLo)], [zLo, up(zLo)], [zUp, up(zUp)], [zBot, lo(zBot)]];
+  b.add(extrudeAlongX(poly, ...(side === 1 ? [xCheek, xCheek + proud] as [number, number] : [xCheek - proud, xCheek] as [number, number])), m.trim);
 }

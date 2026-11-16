@@ -698,8 +698,8 @@ TRIM = dict(
                   capital=[[133.2, 139.0, 0.5], [139.0, 140.8, 1.2], [140.8, 146.1, 3.3]],
                   panel=dict(y0=-1.2, y1=126.4, width=9.6, innerWidth=7.0, innerInset=1.2, proud=0.5)),
     entablature=dict(bands=[[146.1, 155.7, 2.0], [155.7, 157.6, 3.3], [157.6, 167.2, 2.0]],
-                     cornice=dict(y0=167.2, y1=171.2, proud=5.6), bandReturn=19.4, corniceReturn=27.3),
-    dormerCornice=dict(bands=[[217.6, 222.5, 0.8], [222.5, 223.6, 4.2]], cornerBoard=dict(width=6.0, y0=184.8, y1=217.6, proud=1.0)),
+                     cornice=dict(y0=167.2, y1=171.2, proud=5.6), bandReturn=17.4, corniceReturn=21.8),
+    dormerCornice=dict(bands=[[217.6, 222.5, 0.8]], cornerBoard=dict(width=6.0, y0=184.8, y1=217.6, proud=1.0)),
     wingCornice=dict(bands=[[110.1, 115.0, 1.9], [115.0, 119.4, 5.3]]),
     # outer / sillWider are per-SIDE distances beyond the rough opening: drawn casing 44.4" (= RO 38.25 + 2 x 3.075), drawn sill
     # 46.9" (= RO + 2 x 4.325, i.e. 1.25" past the casing each side), sill 2.75" deep.
@@ -962,7 +962,7 @@ def build(dxf_path, out_path):
     def mode(v):
         return collections.Counter(v).most_common(1)[0][0]
     # RO bottom offsets from the elevation block origin (see notes)
-    off = {'A': -70.73, 'C': -65.48, 'D': -1.2, 'B': 3.83}
+    off = {'A': -70.73, 'C': -62.73, 'D': -1.2, 'B': 3.83}  # C: the RO bottom is the TOP of the drawn sill board (as for A)
     sill_head = {}
     # first-floor A windows insert at ~-2556.9 ; second-floor A at ~-2445.2; D at -2503.2; C wing at -2554.5 ; C 2nd at -2445.2; B at -2732.3
     A_ins = sorted(set(wl['A']))
@@ -1191,7 +1191,7 @@ def build(dxf_path, out_path):
             wh['apexY'], DET['wingWallTopY']))
     roof = dict(
         main=dict(xMin=0.0, xMax=r2(W), zFront=0.0, zRear=r2(-D), eaveY=r2(eave_y), ridgeY=r2(ridge_y),
-                  pitch=r2(pitch), overhangEave=r2(oh_eave), overhangRake=13.0, thickness=r2(M['roof_thk']),
+                  pitch=r2(pitch), overhangEave=r2(oh_eave), overhangRake=13.6, thickness=r2(M['roof_thk']),
                   seamSpacing=31.25, rearDormer=dormer),
         wing=dict(xMin=r2(wing_x0), xMax=r2(wing_x1), zNear=r2(-D), zFar=r2(zfar), wallTopY=DET['wingWallTopY'],
                   hip=wh, thickness=6.0),

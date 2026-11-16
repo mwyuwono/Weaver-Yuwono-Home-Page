@@ -1,8 +1,8 @@
 /**
  * ChimneyBuilder — an extruded brick prism, built in vertical slices so each
  * slice can travel with the level group it passes through (the chimney would
- * otherwise stay behind when floors explode apart). The topmost slice gets a
- * corbelled cap and a flue pot.
+ * otherwise stay behind when floors explode apart). The shaft ends in a plain
+ * top, as on the elevations.
  */
 import * as THREE from 'three';
 import type { Chimney, Vec2 } from '../data/schema';
@@ -33,8 +33,8 @@ function addTaper(batch: GeometryBatch, wide: Vec2[], narrow: Vec2[], y0: number
   batch.add(solidFromTriangles(tris, false), m.brick);
 }
 
-/** Build the part of the chimney between y0 and y1 (inches); `cap` adds the top finish. Returns null when empty. */
-export function buildChimneySlice(chimney: Chimney, y0: number, y1: number, cap: boolean, m: Materials): THREE.Group | null {
+/** Build the part of the chimney between y0 and y1 (inches). Returns null when empty. */
+export function buildChimneySlice(chimney: Chimney, y0: number, y1: number, m: Materials): THREE.Group | null {
   const lo = Math.max(y0, chimney.baseY), hi = Math.min(y1, chimney.topY);
   if (hi - lo < 0.01) return null;
   const batch = new GeometryBatch();
@@ -48,13 +48,6 @@ export function buildChimneySlice(chimney: Chimney, y0: number, y1: number, cap:
     if (hi - shaftLo > 0.01) addPrism(batch, chimney.outline, shaftLo, hi, m);
   } else {
     addPrism(batch, chimney.outline, lo, hi, m);
-  }
-  if (cap && hi >= chimney.topY - 0.01) {
-    const b = bounds(chimney.outline);
-    const cx = (b.x0 + b.x1) / 2, cz = (b.z0 + b.z1) / 2, w = b.x1 - b.x0, d = b.z1 - b.z0;
-    batch.box(m.brick, [w + 3, 4, d + 3], [cx, hi + 2, cz]); // corbel
-    batch.box(m.concrete, [w + 6, 3, d + 6], [cx, hi + 5.5, cz]); // cap slab
-    batch.box(m.brick, [w * 0.45, 12, d * 0.45], [cx, hi + 13, cz]); // flue
   }
   return batch.toGroup('chimney');
 }

@@ -47,13 +47,28 @@ export function addCasing(b: GeometryBatch, m: Materials, c: Trim['casing'], w: 
   }
 }
 
+/** Brow windows (type D), from the front elevation: unit size (its sill is the opening's sill), casing width round it, the casing's projection from the wall face, and the frieze board's projection. */
+export const BROW = { w: 34.4, h: 15.6, casing: 0.8, proud: 3.5, frieze: 2.0 };
+
 function buildTemplate(op: Opening, m: Materials, c: Trim['casing']): GeometryBatch {
   const b = new GeometryBatch();
   const { width: w, depth: d, sill: y0 } = op;
   const h = op.head - op.sill;
   const half = d / 2;
 
-  if (op.kind === 'window') {
+  if (op.kind === 'window' && op.sym === 'D') {
+    // Brow window in the frieze: the unit sits out at the frieze board (not back in the wall like the others), in a
+    // narrow flat casing the frieze bands die into. The unit is drawn smaller than the scheduled rough opening.
+    const w = BROW.w, h = BROW.h;
+    const face = half + BROW.frieze, back = -1.75, fz = (face + back) / 2, fd = face - back;
+    for (const side of [-1, 1]) b.box(m.trim, [1.5, h, fd], [side * (w / 2 - 0.75), y0 + h / 2, fz]);
+    b.box(m.trim, [w - 3, 1.5, fd], [0, y0 + h - 0.75, fz]);
+    b.box(m.trim, [w - 3, 1.5, fd], [0, y0 + 0.75, fz]);
+    addSash(b, m, { cx: 0, y0: y0 + 1.5, w: w - 3, h: h - 3, z: face - 1.25, lites: op.lites ?? [3, 1], stile: 1.6, rail: 1.6 });
+    const c0 = BROW.casing, cz = half + BROW.proud / 2;
+    for (const side of [-1, 1]) b.box(m.trim, [c0, h + 2 * c0, BROW.proud], [side * (w / 2 + c0 / 2), y0 + h / 2, cz]);
+    for (const y of [y0 - c0 / 2, y0 + h + c0 / 2]) b.box(m.trim, [w, c0, BROW.proud], [0, y, cz]);
+  } else if (op.kind === 'window') {
     // Jamb frame
     for (const side of [-1, 1]) b.box(m.trim, [1.5, h, 3.5], [side * (w / 2 - 0.75), y0 + h / 2, 0]);
     b.box(m.trim, [w - 3, 1.5, 3.5], [0, y0 + h - 0.75, 0]);
@@ -67,7 +82,7 @@ function buildTemplate(op: Opening, m: Materials, c: Trim['casing']): GeometryBa
     } else {
       addSash(b, m, { cx: 0, y0: y0 + 1.5, w: iw, h: ih, z: 0, lites });
     }
-    if (op.sym !== 'D') addCasing(b, m, c, w, y0, h, half, 1, op.exterior); // brow windows sit in the frieze board, no casing
+    addCasing(b, m, c, w, y0, h, half, 1, op.exterior);
     if (!op.exterior) addCasing(b, m, c, w, y0, h, -half, -1, false);
   } else {
     // Cased opening: trim on both faces only.

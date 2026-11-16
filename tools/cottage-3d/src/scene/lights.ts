@@ -10,16 +10,16 @@ export function addLights(scene: THREE.Scene, target: THREE.Vector3): void {
   sun.position.copy(target).add(new THREE.Vector3(-45, 70, 60)); // front-left, high: lights the hero view
   sun.target.position.copy(target);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.mapSize.set(4096, 4096);
   const cam = sun.shadow.camera;
-  cam.left = cam.bottom = -55;
-  cam.right = cam.top = 55;
+  cam.left = cam.bottom = -48;
+  cam.right = cam.top = 48;
   cam.near = 10;
   cam.far = 220;
-  sun.shadow.bias = -0.0008;
-  sun.shadow.normalBias = 0.09; // generous: acne on the walls would read as stray hatch marks
-  sun.shadow.radius = 5;
-  sun.shadow.blurSamples = 16;
+  // About a quarter of an inch per texel: fine enough for the shadow of a casing or a pilaster to register as a thin,
+  // clean line of tone beside it. The biases stay just large enough to keep sloped and grazing faces free of acne.
+  sun.shadow.bias = -0.0004;
+  sun.shadow.normalBias = 0.035;
   scene.add(sun, sun.target);
   sunDirection.value.copy(sun.position).sub(target).normalize();
 }
