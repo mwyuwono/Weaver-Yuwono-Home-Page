@@ -126,7 +126,8 @@ async function start(root: HTMLElement): Promise<void> {
     const shown = (sel: string) => { const n = document.querySelector(sel); return n && n.getClientRects().length ? n.getBoundingClientRect() : null; };
     const header = shown('.site-header')?.bottom ?? rect.top;
     const bar = shown('.ctl-bar')?.top ?? rect.bottom;
-    return { top: Math.max(0, header - rect.top) + 8, bottom: Math.max(0, rect.bottom - bar) + 8, height: rect.height };
+    const overlay = EMBED && !document.body.classList.contains('full') ? 48 : 0; // the case page's buttons (inline)
+    return { top: Math.max(0, header - rect.top) + 8, bottom: Math.max(0, rect.bottom - bar) + 8 + overlay, height: rect.height };
   };
 
   if (EMBED) {
@@ -134,6 +135,8 @@ async function start(root: HTMLElement): Promise<void> {
     let swaying = !REDUCE_MOTION;
     const setMode = (full: boolean) => {
       document.body.classList.toggle('full', full);
+      ex.pad = full ? 1.12 : 0.78; // inline: fill the frame, less paper around the house
+      ex.insetAssembled = !full; // inline: keep the house clear of the case page's buttons along the bottom
       controls.enableZoom = full;
       canvas.style.touchAction = full ? 'none' : 'pan-y'; // inline: vertical swipes scroll the page, sideways ones orbit
       swaying = false;
@@ -142,10 +145,13 @@ async function start(root: HTMLElement): Promise<void> {
     };
     setMode(false);
     reframe = false;
+    ex.snapCamera(); // re-fit with the inline framing
     swaying = !REDUCE_MOTION;
     window.addEventListener('message', (e) => {
       if (e.origin !== location.origin || e.data?.type !== 'cottage:mode') return;
       setMode(e.data.mode === 'full');
+      if (e.data.explode) ex.explode(); // "Explore interior": open full screen with the floors separated
+      else if (e.data.mode !== 'full') ex.assemble();
     });
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('full')) toParent('cottage:close'); });
     controls.addEventListener('start', () => { swaying = false; });

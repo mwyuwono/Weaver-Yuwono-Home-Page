@@ -66,15 +66,20 @@
     const svg = icon();
     const glyph = svg.firstChild;
     toggle.append(svg, label);
-    box.append(poster, frame, hint, toggle);
+    const interior = el('button', 'case-model__expand case-model__interior', 'Explore interior');
+    interior.type = 'button';
+    interior.setAttribute('aria-label', 'Explore the interior: open the model full screen with the floors separated');
+    const actions = el('div', 'case-model__actions');
+    actions.append(interior, toggle);
+    box.append(poster, frame, hint, actions);
 
     let full = false;
-    const post = (mode) => frame.contentWindow && frame.contentWindow.postMessage({ type: 'cottage:mode', mode }, location.origin);
+    const post = (mode, explode) => frame.contentWindow && frame.contentWindow.postMessage({ type: 'cottage:mode', mode, explode: !!explode }, location.origin);
     const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
-    const set = (on) => {
+    const set = (on, explode) => {
       if (on === full) return;
       full = on;
-      post(on ? 'full' : 'inline'); // before the resize, so the model re-fits to the new size in one move
+      post(on ? 'full' : 'inline', explode); // before the resize, so the model re-fits to the new size in one move
       box.classList.toggle('is-full', on);
       document.documentElement.classList.toggle('model-open', on);
       label.textContent = on ? 'Close' : 'Full screen';
@@ -91,6 +96,7 @@
     };
     toggle.setAttribute('aria-label', 'View the model full screen');
     toggle.addEventListener('click', () => set(!full));
+    interior.addEventListener('click', () => set(true, true));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
     ['fullscreenchange', 'webkitfullscreenchange'].forEach((t) => document.addEventListener(t, () => { if (!fsEl()) set(false); }));
     window.addEventListener('message', (e) => {
