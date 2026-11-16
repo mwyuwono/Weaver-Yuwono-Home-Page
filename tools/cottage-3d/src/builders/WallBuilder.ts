@@ -53,7 +53,9 @@ function wallFaces(level: Level, op: Opening, frame: THREE.Matrix4): [number, nu
   const zs = wall.outline.map(([x, z]) => new THREE.Vector3(x, 0, z).applyMatrix4(inv)).filter((v) => Math.abs(Math.abs(v.x) - op.width / 2) < 0.5).map((v) => v.z);
   if (zs.length < 2) return [-op.depth / 2, op.depth / 2];
   const lo = Math.min(...zs), hi = Math.max(...zs);
-  return Math.abs(hi - lo - op.depth) < 0.5 ? [lo, hi] : [-op.depth / 2, op.depth / 2]; // only trust a piece about as thick as the opening
+  // Trust a piece no thicker than the opening says (partitions are often thinner than the nominal depth); a thicker span means
+  // the jamb vertices belong to different faces of an L-shaped piece.
+  return hi - lo > 3 && hi - lo < op.depth + 0.5 ? [lo, hi] : [-op.depth / 2, op.depth / 2];
 }
 
 /**
@@ -79,9 +81,25 @@ function dropTabs(outline: Vec2[]): Vec2[] {
 }
 
 /**
- * `ceiling(z0, z1)` optionally gives the highest Y an interior wall spanning plan z0..z1 may reach (inches): partitions on
- * the half-storey are authored flush with the roof underside, and near-coincident surfaces flicker in the ink pass.
+ * Highest Y an interior partition may reach at a plan point: the sloped ceiling of the half-storey, or the soffit of a stair
+ * flight for pieces marked `under: 'stair'`. Pieces are pre-split (extractor) wherever this surface bends, so each top is planar.
  */
+export type TopFn = (x: number, z: number, wall?: Wall) => number;
+
+/** Pull every vertex above `above` down onto the top surface (never below `floor`). */
+function cutTop(geo: THREE.BufferGeometry, above: number, floor: number, top: (x: number, z: number) => number): boolean {
+  const pos = geo.getAttribute('position');
+  let changed = false;
+  for (let i = 0; i < pos.count; i++) {
+    const y = pos.getY(i);
+    if (y <= above) continue;
+    const t = Math.max(floor, top(pos.getX(i), pos.getZ(i)));
+    if (t < y - 1e-4) { pos.setY(i, t); changed = true; }
+  }
+  if (changed) { pos.needsUpdate = true; geo.computeVertexNormals(); }
+  return changed;
+}
+
 /**
  * Exterior walls above the foundation reach down over the edge of their own floor slab (the band between storeys), so the slab
  * edge is never exposed: a slab edge flush with the wall face is a coincident face, and the joint between the two
@@ -89,17 +107,14 @@ function dropTabs(outline: Vec2[]): Vec2[] {
  */
 const SKIRT = (level: Level): number => (level.id === 'basement' ? 0 : level.floorThickness);
 
-export function buildWalls(level: Level, m: Materials, ceiling?: (z0: number, z1: number) => number): THREE.Group {
+export function buildWalls(level: Level, m: Materials, topAt?: TopFn): THREE.Group {
   const batch = new GeometryBatch();
 
   for (const wall of level.walls) {
-    let top = level.floorY + (wall.height ?? level.ceilingHeight);
-    if (ceiling && !wall.exterior) {
-      const zs = wall.outline.map((q) => q[1]);
-      top = Math.min(top, ceiling(Math.min(...zs), Math.max(...zs)));
-    }
+    const top = level.floorY + (wall.height ?? level.ceilingHeight);
     const skirt = wall.exterior ? SKIRT(level) : 0;
     const raw = extrudeVertical(wall.exterior ? dropTabs(wall.outline) : wall.outline, wall.holes, level.floorY - skirt, top);
+    if (topAt && !wall.exterior) cutTop(raw, top - 0.01, level.floorY + 1, (x, z) => topAt(x, z, wall));
     const geo = skirt ? withoutDownFaces(raw) : raw;
     batch.add(geo, wallMaterial(level, wall.exterior, m));
     geo.dispose();
@@ -109,11 +124,7 @@ export function buildWalls(level: Level, m: Materials, ceiling?: (z0: number, z1
   for (const op of level.openings) {
     const mat = wallMaterial(level, op.exterior, m);
     const frame = openingFrame(op, level);
-    let top = flankingWallHeight(level, op);
-    if (ceiling && !op.exterior) {
-      const reach = (Math.abs(Math.sin(op.angle)) * op.width + Math.abs(Math.cos(op.angle)) * op.depth) / 2;
-      top = Math.min(top, ceiling(op.center[1] - reach, op.center[1] + reach) - level.floorY);
-    }
+    const top = flankingWallHeight(level, op);
     // Boxes are authored in the opening's local frame, then placed with `frame`.
     // Infill strips sit flush with the wall faces, so their box edges are not
     // drawing lines (the reveal edges come from the wall extrusion itself).
@@ -121,8 +132,12 @@ export function buildWalls(level: Level, m: Materials, ceiling?: (z0: number, z1
     const strip = (y0: number, y1: number) => {
       if (y1 - y0 < 0.01) return;
       // 0.1" wider than the opening so the strip overlaps both jambs (jamb faces are skewed by ~0.01") instead of leaving a hairline between strip and wall.
-      const local = new GeometryBatch().box(mat, [op.width + 0.1, y1 - y0, zHi - zLo], [0, (y0 + y1) / 2, (zLo + zHi) / 2], [0, 0, 0], { lines: 'none' });
-      batch.addBatch(local, frame);
+      const geo = new THREE.BoxGeometry(op.width + 0.1, y1 - y0, zHi - zLo).toNonIndexed();
+      geo.translate(0, (y0 + y1) / 2, (zLo + zHi) / 2).applyMatrix4(frame);
+      // A header under the sloped ceiling follows it, like the partition it sits in.
+      if (topAt && !op.exterior) cutTop(geo, level.floorY + y1 - 0.01, level.floorY + y0 + 0.5, (x, z) => topAt(x, z));
+      batch.add(geo, mat, undefined, { lines: 'none' });
+      geo.dispose();
     };
     strip(op.exterior ? -SKIRT(level) : 0, op.sill); // sill infill
     strip(op.head, top); // header infill

@@ -23,15 +23,13 @@ import { buildPorch } from '../builders/PorchBuilder';
 import { buildSite } from '../builders/SiteBuilder';
 import { buildTerrain, type Grade } from '../builders/TerrainBuilder';
 import { buildCornerPilasters, buildDormerTrim, buildEntablature, buildWaterTable, buildWingCornice } from '../builders/TrimBuilder';
-import { buildStairs, stairwellHole } from '../builders/StairBuilder';
+import { buildStairs, soffitY, stairwellHole } from '../builders/StairBuilder';
 import { dormerProfile, roofProfile } from '../builders/roofProfile';
-import { buildWalls } from '../builders/WallBuilder';
+import { buildWalls, type TopFn } from '../builders/WallBuilder';
 import { buildWindows } from '../builders/WindowBuilder';
 
 export type LevelKey = LevelId | 'roof';
 
-/** Gap kept between interior partition tops and the roof underside, inches (nearer than this they show through the roof as dots). */
-const CLEARANCE = 12;
 
 /**
  * Merge all meshes under `parts` by material into a fresh group with
@@ -151,21 +149,31 @@ export class House {
     const secondTop = second ? second.floorY + second.ceilingHeight : Infinity;
     const chimney = data.chimney;
 
-    // Highest Y a second-floor partition may reach: a clear gap under the roof slab so nothing is near-coincident with it.
-    const main = roofProfile(data.roof.main), dormer = dormerProfile(data.roof.main), zJoin = data.roof.main.rearDormer?.zJoin ?? -Infinity;
-    const underRoof = (z0: number, z1: number) => Math.min(...[z0, z1].map((z) => (dormer && z < zJoin ? dormer : main).under(z))) - CLEARANCE;
+    // Second-floor ceiling: the roof's top surface less the rafter depth, flat at the ceiling height. Inside the dormer's
+    // width the dormer roof takes over behind its join with the main slope.
+    const rm = data.roof.main, rd = rm.rearDormer;
+    const main = roofProfile(rm), dormer = dormerProfile(rm);
+    const ceilingAt = (level: Level) => (x: number, z: number): number => {
+      const flat = level.floorY + level.ceilingHeight;
+      if (level.id !== 'second') return flat;
+      const inDormer = dormer && rd && z < rd.zJoin && x > rd.xMin && x < rd.xMax;
+      return Math.min(flat, (inDormer ? Math.max(dormer.top(z), main.top(z)) : main.top(z)) - rm.ceilingDrop);
+    };
 
     const flights = data.levels.flatMap((l) => l.stairs);
 
     for (const level of data.levels) {
       // A flight arriving at this floor opens a stairwell hole in it.
       const holes = flights.filter((s) => Math.abs(s.topY - level.floorY) < 1).map(stairwellHole);
+      const ceiling = ceilingAt(level);
+      // Partition tops: the ceiling, or the soffit of the flight a piece stands under.
+      const topAt: TopFn = (x, z, wall) => (wall?.under === 'stair' ? Math.min(ceiling(x, z), ...level.stairs.map((s) => soffitY(s, x, z) - 0.5)) : ceiling(x, z));
       const parts: (THREE.Object3D | null)[] = [
-        buildFloor(level, m, holes), buildWalls(level, m, level.id === 'second' ? underRoof : undefined), buildWindows(level, m, data.trim.casing), buildDoors(level, m, data.trim),
-        buildStairs(level, m), buildFixtures(level, m),
+        buildFloor(level, m, holes), buildWalls(level, m, topAt), buildWindows(level, m, data.trim.casing), buildDoors(level, m, data.trim),
+        buildStairs(level, m, flights), buildFixtures(level, m),
       ];
       if (level.id !== 'basement') parts.push(buildCornerPilasters(data, level, m));
-      if (level.id === 'first') parts.push(buildWaterTable(data, m), buildWingRoof(data, m), buildWingCornice(data, m), buildPorch(data, m));
+      if (level.id === 'first') parts.push(buildWaterTable(data, m), buildPorch(data, m));
       if (level.id === 'second') parts.push(buildEntablature(data, m), buildGableInfill(data, m));
       // Chimney slice that passes through this level, from its slab up to the next level's slab.
       const top = level.id === 'basement' ? (first?.floorY ?? 0) : level.id === 'first' ? (second?.floorY ?? secondTop) : secondTop;
@@ -177,6 +185,8 @@ export class House {
     this.levels.set('roof', flatten('roof', [
       buildMainRoof(data, m),
       buildDormerTrim(data, m),
+      // The wing's hip roof and its cornice lift off with the main roof, so the kitchen under it can be seen.
+      buildWingRoof(data, m), buildWingCornice(data, m),
       buildChimneySlice(chimney, secondTop, Infinity, m),
     ]));
 

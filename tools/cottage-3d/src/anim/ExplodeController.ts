@@ -29,8 +29,8 @@ const ORDER: LevelKey[] = ['basement', 'first', 'second', 'roof'];
 /** Moving parts: the levels plus the terrain group, which sinks away and fades whenever the model is not assembled. */
 type NodeKey = LevelKey | 'site';
 const SITE_SINK = 60; // feet
-/** Exploded lift per group, feet (clear gaps of ~7–8 ft between neighbours). */
-const EXPLODE_LIFT: Record<LevelKey, number> = { basement: 0, first: 7, second: 14, roof: 22 };
+/** Exploded lift per group, feet (clear gaps of ~10 ft between neighbours, so each floor's interior reads from the axon angle). */
+const EXPLODE_LIFT: Record<LevelKey, number> = { basement: 0, first: 10, second: 20, roof: 31 };
 /** How far hidden levels slide up while fading out, feet. */
 const HIDE_LIFT = 16;
 const DURATION = 1100;

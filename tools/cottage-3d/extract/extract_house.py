@@ -663,7 +663,8 @@ def find_openings_ext(extwall, U, tag_list, doors, t, label):
     return ops
 
 
-STAIR_RISERS = 15
+STAIR_RISERS = 16
+CEILING_DROP = 11.0             # roof top surface down to the sloped ceiling (rafters + sheathing + board), vertical
 STAIR_Z = (-138.0, -183.0)       # plan band (z) shared by both flights
 
 
@@ -684,9 +685,13 @@ def stair_flights(msp, XF, bsmt_floor, floor2):
     u0, _ = tread_x('first', 150, 260)            # first line of the UP flight
     _, d1 = tread_x('first', 260, 400)            # last line of the DOWN end = top of the basement flight
     _, s1 = tread_x('second', 150, 400)           # last line of the flight on the second plan
-    note('Stairs: two straight 15-riser flights in one plan band (z %.0f..%.0f). Basement->first x %.1f..%.1f; first->second '
-         'x %.1f..%.1f (tread lines of the three plans; the S-turn note on the first plan is a handrail note).'
-         % (STAIR_Z[0], STAIR_Z[1], b0, d1, u0, s1))
+    note('Stairs: two straight flights in one plan band (z %.0f..%.0f), both rising toward +x. Basement->first x %.1f..%.1f; '
+         'first->second x %.1f..%.1f including the starting step (tread lines of the three plans; the first and second plans draw 15 '
+         'treads at 9.8" = 16 risers of 7.33"; the basement flight is given the same 16 risers, its tread lines on the two plans do '
+         'not share one grid). The second-floor stairwell is open over the whole upper flight with a balustrade on the hall side.'
+         % (STAIR_Z[0], STAIR_Z[1], b0, d1, u0 - 9.8, s1))
+    # The first plan draws a wider starting step one tread before the first 45" tread line (x 202.7): the flight starts there.
+    u0 -= 9.8
     return {'basement': (b0, d1, bsmt_floor, 0.0), 'first': (u0, s1, 0.0, floor2)}
 
 
@@ -857,34 +862,7 @@ def build(dxf_path, out_path):
             else:
                 add_wall(p, True)
         for p in int_polys:
-            if k == 'second':
-                # step the top of interior partitions under the sloping roof (6" bands near each eave)
-                b = p.bounds
-                zs = [xf.pt(b[0], b[1])[1], xf.pt(b[0], b[3])[1]]
-                zmin, zmax = min(zs), max(zs)
-                lowest = min(roof_under_height(zmin), roof_under_height(zmax))
-                full = zlev + ceil_2
-                if lowest >= full - 0.5:
-                    add_wall(p, False)
-                else:
-                    # split into z bands (DXF y bands) of 6"
-                    y_lo, y_hi = b[1], b[3]
-                    ybands = []
-                    y = y_lo
-                    while y < y_hi - 1e-6:
-                        ybands.append((y, min(y + 6.0, y_hi)))
-                        y += 6.0
-                    for ya, yb in ybands:
-                        piece = p.intersection(box(b[0] - 1, ya, b[2] + 1, yb))
-                        for q in explode(piece):
-                            if q.area < 2:
-                                continue
-                            zc = xf.pt(0, (ya + yb) / 2)[1]
-                            zz = [xf.pt(0, ya)[1], xf.pt(0, yb)[1]]
-                            hgt = min(full, min(roof_under_height(zz[0]), roof_under_height(zz[1])) - 0.5) - zlev
-                            add_wall(q, False, max(hgt, 8.0) if hgt < ceil_2 - 0.5 else None)
-            else:
-                add_wall(p, False)
+            add_wall(p, False)   # second floor: split at the ceiling bend line below (split_walls)
 
         # ---------- floor outline ----------
         fl = footprint(k, has_wing)
@@ -956,6 +934,11 @@ def build(dxf_path, out_path):
     M['roof_thk'] = 6.9      # vertical thickness of the roof slab (measured between top and underside lines)
     built = {k: make_level(k) for k in ('basement', 'first', 'second')}
     flights = stair_flights(msp, XF, bsmt_floor, floor2)
+    # Second-floor ceiling: flat at ceil_2, sloping with the roof (CEILING_DROP below its top surface) in front of the bend line.
+    _eave_top = Yh(M['ridge_y']) - (M['pitch'] / 12.0) * (D / 2.0)
+    zbend = -((floor2 + ceil_2 + CEILING_DROP - _eave_top) / (M['pitch'] / 12.0))
+    note('Second-floor ceiling follows the roof %.0f" below its top surface and is flat at %.0f"; the bend line is z=%.1f in front '
+         '(plan: CEILING BEND LINE). Partitions are split there and the app slopes their tops.' % (CEILING_DROP, ceil_2, zbend))
 
     # ---------- window vertical extents (from the elevation window blocks) ----------
     wl = window_insert_levels(msp)
@@ -1094,8 +1077,16 @@ def build(dxf_path, out_path):
         if k in flights:
             x0, x1, bottom, top = flights[k]
             outline = ccw([[x0, STAIR_Z[0]], [x1, STAIR_Z[0]], [x1, STAIR_Z[1]], [x0, STAIR_Z[1]]])
-            stairs.append(dict(outline=outline, direction=[1.0, 0.0], bottomY=r2(bottom), topY=r2(top),
-                               risers=STAIR_RISERS, width=r2(STAIR_Z[0] - STAIR_Z[1])))
+            st = dict(outline=outline, direction=[1.0, 0.0], bottomY=r2(bottom), topY=r2(top),
+                      risers=STAIR_RISERS, width=r2(STAIR_Z[0] - STAIR_Z[1]))
+            if k == 'first':
+                st['well'] = outline            # open stairwell in the second floor over the whole flight
+                # balustrades (plan): first floor on the rear side from the newel to where the hall wall starts (x 261.5);
+                # second floor along the hall side of the well.
+                st['rails'] = [dict(level='first', side='rear', x0=r2(x0), x1=261.5), dict(level='second', side='front', x0=r2(x0), x1=r2(x1))]
+            stairs.append(st)
+        # partitions: pieces under a flight are cut to its soffit; second-floor pieces are split at the ceiling bend line
+        L['walls'] = split_walls(L['walls'], stairs, zbend if k == 'second' else None)
         lm['stairs'] = stairs
 
         # --- rooms ---
@@ -1127,13 +1118,19 @@ def build(dxf_path, out_path):
             Wu = L['_wall_union']
             for g in hatch_polys(msp, 'A-CASE-PATT', REG[k]):
                 for p in explode(g):
-                    if p.area < 600:
+                    if p.area < 400:
                         continue
                     touches = p.buffer(3.0).intersects(Wu)
                     kind = 'cabinet-base' if touches else 'island'
                     o, _ = xf.poly(p.simplify(0.05))
                     fx.append(dict(kind=kind, outline=o, baseY=0.0, height=34.5))
                     fx.append(dict(kind='counter', outline=o, baseY=34.5, height=1.5))
+            # Fireplace: the firebox void as drawn on the plan (splayed sides), clipped at the outer wall face where the
+            # chimney shaft begins. The app builds the brick surround and the breast above it around this void.
+            fx.append(dict(kind='fireplace', outline=[[13.95, -140.58], [10.18, -140.58], [0.0, -144.3], [0.0, -170.7],
+                                                      [10.18, -174.36], [13.95, -174.36]], baseY=0.0, height=30.0))
+            note('Fireplace: firebox void from the plan (33.8" wide at the face, splayed); opening height 30" and a 42" high brick '
+                 'surround are ASSUMED (no interior elevation). Hearth is the inset brick floor panel.')
             fx_note = ('first: base cabinets/island = SOLID A-CASE-PATT hatches (touching a wall -> cabinet-base, '
                        'free-standing -> island), 34.5" tall + 1.5" counter top.')
             note(fx_note)
@@ -1192,7 +1189,7 @@ def build(dxf_path, out_path):
     roof = dict(
         main=dict(xMin=0.0, xMax=r2(W), zFront=0.0, zRear=r2(-D), eaveY=r2(eave_y), ridgeY=r2(ridge_y),
                   pitch=r2(pitch), overhangEave=r2(oh_eave), overhangRake=13.6, thickness=r2(M['roof_thk']),
-                  seamSpacing=31.25, rearDormer=dormer),
+                  seamSpacing=31.25, ceilingDrop=CEILING_DROP, rearDormer=dormer),
         wing=dict(xMin=r2(wing_x0), xMax=r2(wing_x1), zNear=r2(-D), zFar=r2(zfar), wallTopY=DET['wingWallTopY'],
                   hip=wh, thickness=6.0),
         frieze=dict(topY=r2(Yh(M['frieze_top_y']))),
@@ -1266,7 +1263,7 @@ def build(dxf_path, out_path):
     # ---------- meta ----------
     for s in notes_open:
         note('WARNING ' + s)
-    note('Not extracted (no schema slot / ambiguous): stair guard rails, pantry shelves, shower doors, upper cabinets, '
+    note('Not extracted (no schema slot / ambiguous): pantry shelves, shower doors, upper cabinets, '
          'cased interior openings without a door block (the open-plan first floor has none), the basement Bilco door '
          '(text label only, no door block or wall gap in the DXF), the stair S-turn.')
     note('Stairwell holes are NOT cut from level.floor; each flight arrives at the floor of the level above, where the app cuts '
@@ -1331,6 +1328,49 @@ def cut_openings(walls, opens):
     return out
 
 
+def split_walls(walls, stairs, zbend):
+    """Split interior partitions (house coords) where their top changes: under a stair flight (`under: 'stair'`, the app cuts
+    them to the soffit) and at the second-floor ceiling bend line z = zbend."""
+    cutters = []
+    for st in stairs:
+        xs = [q[0] for q in st['outline']]
+        zs = [q[1] for q in st['outline']]
+        cutters.append(('stair', box(min(xs) + 1.0, min(zs) + 0.3, max(xs) - 1.0, max(zs) - 0.3)))
+    out = []
+    for w in walls:
+        if w['exterior']:
+            out.append(w)
+            continue
+        g = Polygon(w['outline'], w.get('holes', []))
+        parts = [(None, g)]
+        for tag, c in cutters:
+            nxt = []
+            for t, q in parts:
+                if q.intersection(c).area > 1.0:
+                    nxt.append((tag, q.intersection(c)))
+                    nxt.append((t, q.difference(c)))
+                else:
+                    nxt.append((t, q))
+            parts = nxt
+        if zbend is not None:
+            nxt = []
+            for t, q in parts:
+                nxt.append((t, q.intersection(box(-1e5, zbend, 1e5, 1e5))))
+                nxt.append((t, q.intersection(box(-1e5, -1e5, 1e5, zbend))))
+            parts = nxt
+        for t, q in parts:
+            for pc in clean(q, 1.0):
+                pc = orient(pc, 1.0)
+                piece = dict(w, outline=[[r2(x), r2(z)] for x, z in list(pc.exterior.coords)[:-1]])
+                piece.pop('holes', None)
+                if pc.interiors:
+                    piece['holes'] = [[[r2(x), r2(z)] for x, z in list(i.coords)[:-1]] for i in pc.interiors]
+                if t:
+                    piece['under'] = t
+                out.append(piece)
+    return out
+
+
 def ccw(poly):
     a = 0.0
     n = len(poly)
@@ -1353,12 +1393,12 @@ def fixture_defs():
             ('appliance', (4783, -3634, 4797, -3614), 0, 34),   # laundry sink
         ],
         'first': [
-            ('fireplace', (5497.0, -3649, 5535.0, -3601), 0, 117),
-            ('hearth', (5535, -3661, 5549, -3589), 0, 1.5),
+            ('hearth', (5534.7, -3660.5, 5548.7, -3588.5), 0, 0.4),   # inset brick hearth (A-FLOR brick hatch), flush with the floor
             ('shower', (5815, -3548, 5851, -3473), 0, 80),
             ('toilet', (5861, -3503, 5879, -3472), 0, 30),
             ('vanity', (5887, -3491, 5919, -3473), 0, 34),
-            ('appliance', (5779, -3417, 5811, -3385), 0, 36),     # range at rear wall
+            ('appliance', (5779, -3417, 5811, -3385), 0, 70),     # refrigerator at the rear wall
+            ('appliance', (5784.47, -3512.83, 5810.47, -3482.83), 0, 36),   # range in the gap of the pantry-side counter run
         ],
         'second': [
             ('shower', (6380, -3776, 6420, -3695), 0, 80),
