@@ -17,6 +17,7 @@ import { TweenSet } from './anim/tween';
 import { Controls } from './ui/Controls';
 import type { QaFace } from './scene/qaView';
 import { IN } from './units';
+import type { LevelId } from './data/schema';
 
 /** Camera stays this far above the terrain (feet). */
 const GROUND_CLEARANCE_FT = 1.5;
@@ -78,8 +79,13 @@ async function start(root: HTMLElement): Promise<void> {
   resize();
   ex.snapCamera();
   // QA: `?cam=px,py,pz,tx,ty,tz` (house inches) places the camera for close-up screenshots (qa/shots.mjs cam).
+  // `?state=exploded|basement|first|second` starts in that view state.
+  const st = new URLSearchParams(location.search).get('state');
+  if (st === 'exploded') ex.explode();
+  else if (data.levels.some((l) => l.id === st)) ex.isolate(st as LevelId);
   const cam = new URLSearchParams(location.search).get('cam')?.split(',').map(Number);
   if (cam?.length === 6 && cam.every(Number.isFinite)) {
+    tweens.cancel('camera');
     camera.position.set(cam[0] * IN, cam[1] * IN, cam[2] * IN);
     controls.target.set(cam[3] * IN, cam[4] * IN, cam[5] * IN);
     controls.update();
@@ -94,6 +100,7 @@ async function start(root: HTMLElement): Promise<void> {
     plate: (id) => ex.plate(id),
   }, data.levels.map((l) => l.id));
   ex.onState = (s) => ui.setState(s);
+  ui.setState(ex.state);
   ex.insets = () => { // header at the top, control bar at the bottom (plus a little air)
     const rect = root.getBoundingClientRect();
     const header = document.querySelector('.site-header')?.getBoundingClientRect().bottom ?? rect.top;

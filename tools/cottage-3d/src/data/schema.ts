@@ -65,6 +65,8 @@ export interface Wall {
   exterior: boolean;
   /** Override height (e.g. a knee wall or low partition). Defaults to level.ceilingHeight. */
   height?: number;
+  /** Partition piece standing under a stair flight of its level: its top is cut to the flight's soffit. */
+  under?: 'stair';
 }
 
 export type WindowSym = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
@@ -99,12 +101,19 @@ export interface Stair {
   /** Y at bottom and top of this run. */
   bottomY: number;
   topY: number;
+  /** Number of risers; the last riser stands at the far end of the outline (risers − 1 treads). */
   risers: number;
   width: number;
+  /** Explicit stairwell opening in the floor the flight arrives at (default: only where headroom requires it). */
+  well?: Vec2[];
+  /** Balustrades: on the flight itself (`level` = the flight's own level, follows the pitch from x0 to x1 along the run) or
+   *  a level guard on the arrival floor beside the well. `side` is the rear (low z) or front (high z) edge of the outline. */
+  rails?: { level: LevelId; side: 'front' | 'rear'; x0: number; x1: number }[];
 }
 
 export interface Fixture {
   kind: 'cabinet-base' | 'cabinet-upper' | 'island' | 'counter' | 'fireplace' | 'hearth' | 'tub' | 'shower' | 'vanity' | 'toilet' | 'appliance' | 'shelving';
+  /** Plan footprint. For a fireplace: the firebox VOID (open on its +x face); `height` is the opening height. */
   outline: Vec2[];
   /** Bottom of the fixture above level.floorY. */
   baseY: number;
@@ -132,6 +141,7 @@ export interface Roof {
     overhangRake: number; // horizontal projection of the roof edge past the gable walls (= the cornice cap's projection)
     thickness: number; // vertical depth from the roof top to the rake fascia's lower edge (informational; the modelled skin is roofProfile SKIN)
     seamSpacing: number; // standing-seam spacing
+    ceilingDrop: number; // vertical distance from the roof top surface down to the sloped ceiling of the half-storey
     /**
      * Optional rear shed dormer, INSET from both gable ends: the main roof runs on to the normal rear eave outside the
      * cheek walls. Its shallower roof starts on the main rear slope at `zJoin` and ends in an eave tip past the rear wall.

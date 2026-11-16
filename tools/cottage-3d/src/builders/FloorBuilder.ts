@@ -15,7 +15,7 @@ import { wallMaterial } from './WallBuilder';
 const EDGE_INSET = 0.5;
 
 /** Polygon offset inward by `d` (mitred corners; any winding). */
-function inset(poly: Vec2[], d: number): Vec2[] {
+export function inset(poly: Vec2[], d: number): Vec2[] {
   const n = poly.length;
   const area = poly.reduce((acc, a, i) => acc + (a[0] * poly[(i + 1) % n][1] - poly[(i + 1) % n][0] * a[1]), 0);
   const s = area > 0 ? 1 : -1; // left normal points inward for CCW

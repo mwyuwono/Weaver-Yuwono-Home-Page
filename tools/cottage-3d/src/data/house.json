@@ -2,15 +2,17 @@
   "meta": {
     "units": "in",
     "source": "cottage.dxf (AutoCAD 2018, inches)",
-    "generated": "2026-11-09T17:25:50Z",
+    "generated": "2026-11-16T21:26:48Z",
     "notes": [
       "Datum: elevation T-WALL line y=-2662.59; subfloor = T-WALL + 9 1/4\" => Y=0 at DXF y=-2653.34. Basement floor Y=-117.25 (9' below T-WALL; the drawn slab line is at -117.12), second floor Y=117.25 (9' + 9 1/4\").",
       "Main block outer rectangle per plan (DXF in): basement 408.00 x 315.01; first 408.00 x 315.00; second 408.00 x 315.00. Size residual vs first floor: basement dW=0.00 dD=0.01, first dW=0.00 dD=0.00, second dW=0.00 dD=0.00",
       "Plan alignment (offset of each plan from the first-floor plan, in): basement dx=-752.65, second dx=749.80; front-face y offset basement=0.00 second=0.00 (all three share the same front-wall y). Each plan is translated by its own left/front outer corner, so the three main blocks coincide exactly.",
       "Rear wing: x 113.79..349.87, depth 89.01 (from the basement foundation S-FNDN; first-floor wing walls agree).",
       "Openings: window/door widths are the schedule rough openings (A 38.25, B/D 37, C 38.25, doors 38); the plan poche gap is only the glazing width, so the exterior wall pieces are cut back to the RO. The left-wall gap at the fireplace (z=-157.5) is the chimney breast, not a window. Schedule check: A 13, B 4, C 6, D 5, E 1, F 1 all match the drawings.",
-      "Stairs: two straight 15-riser flights in one plan band (z -138..-183). Basement->first x 181.6..335.7; first->second x 212.5..350.4 (tread lines of the three plans; the S-turn note on the first plan is a handrail note).",
+      "Stairs: two straight flights in one plan band (z -138..-183), both rising toward +x. Basement->first x 181.6..335.7; first->second x 202.7..350.4 including the starting step (tread lines of the three plans; the first and second plans draw 15 treads at 9.8\" = 16 risers of 7.33\"; the basement flight is given the same 16 risers, its tread lines on the two plans do not share one grid). The second-floor stairwell is open over the whole upper flight with a balustrade on the hall side.",
+      "Second-floor ceiling follows the roof 11\" below its top surface and is flat at 100\"; the bend line is z=-66.6 in front (plan: CEILING BEND LINE). Partitions are split there and the app slopes their tops.",
       "Window sill/head (AFF) from the elevation window blocks (RO bottom = block origin -70.73 for A, -62.73 for C, -1.20 for D, +3.83 for B; RO height from the schedule): first A 25.7-93.7, first C 36.1-96.1, second A 20.2-88.2, second C 28.2-88.2, second D 31.6-50.2, basement B 42-96.6 (elevation block gives 42.2).",
+      "Fireplace: firebox void from the plan (33.8\" wide at the face, splayed); opening height 30\" and a 42\" high brick surround are ASSUMED (no interior elevation). Hearth is the inset brick floor panel.",
       "first: base cabinets/island = SOLID A-CASE-PATT hatches (touching a wall -> cabinet-base, free-standing -> island), 34.5\" tall + 1.5\" counter top.",
       "Roof: ridge top surface Y=286.72 (=25'-10\" above the front grade Y=-23.52, as the ridge mark says); measured slope 7.71/12 (front slope and the main rear slope). thickness is VERTICAL (6.9\" between top/underside lines). eaveY=185.46 is the roof TOP surface at the front wall plane; the front wall/frieze top is Y=167.23 (frieze band Y 146.10..167.23, crown above it up to the soffit). Eave tips project 14.4\" past the wall planes; the rake overhangs 12.6\" (measured from elevation faces, +~1.0\" vs the plan faces).",
       "Rear shed dormer (rear/side elevations): the dormer is INSET from both gable ends - cheek-wall outer faces at x=37.2 and 370.8 (37.2\" in from the gable walls), roof edges at x=31.1 / 376.9. Its roof (3.85/12) leaves the main rear slope at z=-175.7 (top Y=275.0) and ends at an eave tip z=-322.5, Y=227.9; its wall rises to Y=217.6 (C windows end at 202.7). Outside the cheeks the main roof (7.71/12) runs on to the normal rear eave and the rear wall stops at the frieze top like the front.",
@@ -22,7 +24,7 @@
       "Rear porch (outside back door F): deck platform x 57.4..113.3 / z -404.0..-313.0, top Y=0.1; 7-riser stair running -x to the terrace (Y=-48.2); one 9.5\" post at (64.6, -397.5) with a full capital up to the beam underside (Y=110.1) carrying the wing hip roof corner; rails run post-to-post (butting the column faces); baluster rails and a lattice skirt under the deck, built down to grade at render time. All measured on the rear/left elevations.",
       "Fenced storage (basement level, x 350..408 behind the wing): three 8\" posts with caps, three rails per side and a low curb, from the rear elevation.",
       "Terrain: grade profiles read from the V-layer grade splines of the left and right elevations ([z, Y] pairs). Left profile = x<=0 side and the rear-left terrace (stops at the retaining wall x=113.8), right profile = x>=408.0 side and the rear walk-out. In between (z>-D) grade is interpolated across x.",
-      "Not extracted (no schema slot / ambiguous): stair guard rails, pantry shelves, shower doors, upper cabinets, cased interior openings without a door block (the open-plan first floor has none), the basement Bilco door (text label only, no door block or wall gap in the DXF), the stair S-turn.",
+      "Not extracted (no schema slot / ambiguous): pantry shelves, shower doors, upper cabinets, cased interior openings without a door block (the open-plan first floor has none), the basement Bilco door (text label only, no door block or wall gap in the DXF), the stair S-turn.",
       "Stairwell holes are NOT cut from level.floor; each flight arrives at the floor of the level above, where the app cuts the opening from the stair outline.",
       "Second floor: front wall and gable walls stop at the frieze top (Y=167.23; the app adds the gable siding above them up to the roof); the rear dormer wall stops at its cornice (Y=217.58); interior partitions are stepped in 6\" z-bands under the front slope and full height behind the ridge.",
       "Level.floor is the exterior outline only (basement/first include the rear wing).",
@@ -224,32 +226,91 @@
         {
           "outline": [
             [
-              305.68,
-              -187.0
+              293.23,
+              -182.7
             ],
             [
-              305.68,
-              -200.0
+              293.23,
+              -138.3
             ],
             [
-              309.68,
-              -200.0
+              289.23,
+              -138.3
             ],
             [
-              309.68,
-              -187.0
-            ],
+              289.23,
+              -182.7
+            ]
+          ],
+          "exterior": false,
+          "under": "stair"
+        },
+        {
+          "outline": [
             [
-              339.87,
-              -187.0
-            ],
-            [
-              339.87,
+              293.23,
               -183.0
             ],
             [
               293.23,
+              -182.7
+            ],
+            [
+              289.23,
+              -182.7
+            ],
+            [
+              289.23,
               -183.0
+            ],
+            [
+              170.69,
+              -183.0
+            ],
+            [
+              170.69,
+              -187.0
+            ],
+            [
+              305.68,
+              -187.0
+            ],
+            [
+              305.68,
+              -200.0
+            ],
+            [
+              309.68,
+              -200.0
+            ],
+            [
+              309.68,
+              -187.0
+            ],
+            [
+              339.87,
+              -187.0
+            ],
+            [
+              339.87,
+              -183.0
+            ]
+          ],
+          "exterior": false
+        },
+        {
+          "outline": [
+            [
+              289.23,
+              -138.0
+            ],
+            [
+              289.23,
+              -138.3
+            ],
+            [
+              293.23,
+              -138.3
             ],
             [
               293.23,
@@ -294,22 +355,6 @@
             [
               170.69,
               -138.0
-            ],
-            [
-              289.23,
-              -138.0
-            ],
-            [
-              289.23,
-              -183.0
-            ],
-            [
-              170.69,
-              -183.0
-            ],
-            [
-              170.69,
-              -187.0
             ]
           ],
           "exterior": false
@@ -451,6 +496,14 @@
         {
           "outline": [
             [
+              309.68,
+              -241.01
+            ],
+            [
+              341.87,
+              -241.01
+            ],
+            [
               341.87,
               -237.01
             ],
@@ -489,10 +542,6 @@
             [
               339.47,
               -393.62
-            ],
-            [
-              339.47,
-              -305.01
             ],
             [
               339.49,
@@ -529,75 +578,9 @@
             [
               309.68,
               -301.01
-            ],
-            [
-              309.68,
-              -241.01
-            ],
-            [
-              341.87,
-              -241.01
             ]
           ],
-          "exterior": false,
-          "holes": [
-            [
-              [
-                309.68,
-                -271.01
-              ],
-              [
-                309.68,
-                -271.0
-              ],
-              [
-                309.68,
-                -271.01
-              ]
-            ],
-            [
-              [
-                309.68,
-                -271.01
-              ],
-              [
-                309.67,
-                -271.0
-              ],
-              [
-                309.68,
-                -271.0
-              ]
-            ],
-            [
-              [
-                309.67,
-                -271.0
-              ],
-              [
-                309.67,
-                -271.01
-              ],
-              [
-                309.67,
-                -271.0
-              ]
-            ],
-            [
-              [
-                309.67,
-                -271.0
-              ],
-              [
-                309.67,
-                -271.01
-              ],
-              [
-                309.67,
-                -271.01
-              ]
-            ]
-          ]
+          "exterior": false
         },
         {
           "outline": [
@@ -830,7 +813,7 @@
           ],
           "bottomY": -117.25,
           "topY": 0.0,
-          "risers": 15,
+          "risers": 16,
           "width": 45.0
         }
       ],
@@ -2511,7 +2494,7 @@
         {
           "outline": [
             [
-              212.5196935229951,
+              202.7196935229951,
               -183.0
             ],
             [
@@ -2523,7 +2506,7 @@
               -138.0
             ],
             [
-              212.5196935229951,
+              202.7196935229951,
               -138.0
             ]
           ],
@@ -2533,56 +2516,65 @@
           ],
           "bottomY": 0.0,
           "topY": 117.25,
-          "risers": 15,
-          "width": 45.0
+          "risers": 16,
+          "width": 45.0,
+          "well": [
+            [
+              202.7196935229951,
+              -183.0
+            ],
+            [
+              350.3831534292467,
+              -183.0
+            ],
+            [
+              350.3831534292467,
+              -138.0
+            ],
+            [
+              202.7196935229951,
+              -138.0
+            ]
+          ],
+          "rails": [
+            {
+              "level": "first",
+              "side": "rear",
+              "x0": 202.72,
+              "x1": 261.5
+            },
+            {
+              "level": "second",
+              "side": "front",
+              "x0": 202.72,
+              "x1": 350.38
+            }
+          ]
         }
       ],
       "fixtures": [
         {
-          "kind": "fireplace",
-          "outline": [
-            [
-              -23.7,
-              -133.0
-            ],
-            [
-              -23.7,
-              -181.0
-            ],
-            [
-              14.3,
-              -181.0
-            ],
-            [
-              14.3,
-              -133.0
-            ]
-          ],
-          "baseY": 0.0,
-          "height": 117.0
-        },
-        {
           "kind": "hearth",
           "outline": [
             [
-              14.3,
-              -121.0
+              14.0,
+              -121.5
             ],
             [
-              14.3,
-              -193.0
+              14.0,
+              -193.5
             ],
             [
-              28.3,
-              -193.0
+              28.0,
+              -193.5
             ],
             [
-              28.3,
-              -121.0
+              28.0,
+              -121.5
             ]
           ],
           "baseY": 0.0,
-          "height": 1.5
+          "height": 0.4
         },
         {
           "kind": "shower",
@@ -2674,7 +2666,76 @@
             ]
           ],
           "baseY": 0.0,
+          "height": 70.0
+        },
+        {
+          "kind": "appliance",
+          "outline": [
+            [
+              263.77,
+              -269.17
+            ],
+            [
+              263.77,
+              -299.17
+            ],
+            [
+              289.77,
+              -299.17
+            ],
+            [
+              289.77,
+              -269.17
+            ]
+          ],
+          "baseY": 0.0,
           "height": 36.0
+        },
+        {
+          "kind": "cabinet-base",
+          "outline": [
+            [
+              253.05,
+              -131.97
+            ],
+            [
+              253.04,
+              -109.96
+            ],
+            [
+              228.05,
+              -110.0
+            ],
+            [
+              228.07,
+              -131.97
+            ]
+          ],
+          "baseY": 0.0,
+          "height": 34.5
+        },
+        {
+          "kind": "counter",
+          "outline": [
+            [
+              253.05,
+              -131.97
+            ],
+            [
+              253.04,
+              -109.96
+            ],
+            [
+              228.05,
+              -110.0
+            ],
+            [
+              228.07,
+              -131.97
+            ]
+          ],
+          "baseY": 34.5,
+          "height": 1.5
         },
         {
           "kind": "island",
@@ -2923,6 +2984,37 @@
           ],
           "baseY": 34.5,
           "height": 1.5
+        },
+        {
+          "kind": "fireplace",
+          "outline": [
+            [
+              13.95,
+              -140.58
+            ],
+            [
+              10.18,
+              -140.58
+            ],
+            [
+              0.0,
+              -144.3
+            ],
+            [
+              0.0,
+              -170.7
+            ],
+            [
+              10.18,
+              -174.36
+            ],
+            [
+              13.95,
+              -174.36
+            ]
+          ],
+          "baseY": 0.0,
+          "height": 30.0
         }
       ],
       "rooms": [
@@ -3554,440 +3646,59 @@
         {
           "outline": [
             [
-              109.24,
-              -6.4
-            ],
-            [
               103.01,
               -6.4
             ],
             [
               103.01,
-              -12.4
+              -39.97
             ],
-            [
-              109.24,
-              -12.4
-            ]
-          ],
-          "exterior": false,
-          "height": 64.92
-        },
-        {
-          "outline": [
-            [
-              109.24,
-              -12.4
-            ],
-            [
-              103.01,
-              -12.4
-            ],
-            [
-              103.01,
-              -18.4
-            ],
-            [
-              109.24,
-              -18.4
-            ]
-          ],
-          "exterior": false,
-          "height": 68.78
-        },
-        {
-          "outline": [
-            [
-              109.24,
-              -18.4
-            ],
-            [
-              103.01,
-              -18.4
-            ],
-            [
-              103.01,
-              -24.4
-            ],
-            [
-              109.24,
-              -24.4
-            ]
-          ],
-          "exterior": false,
-          "height": 72.64
-        },
-        {
-          "outline": [
-            [
-              109.24,
-              -24.4
-            ],
-            [
-              103.01,
-              -24.4
-            ],
-            [
-              103.01,
-              -30.4
-            ],
-            [
-              109.24,
-              -30.4
-            ]
-          ],
-          "exterior": false,
-          "height": 76.5
-        },
-        {
-          "outline": [
-            [
-              109.24,
-              -30.4
-            ],
-            [
-              103.01,
-              -30.4
-            ],
-            [
-              103.01,
-              -36.4
-            ],
-            [
-              109.24,
-              -36.4
-            ]
-          ],
-          "exterior": false,
-          "height": 80.35
-        },
-        {
-          "outline": [
             [
               109.24,
               -39.97
             ],
             [
               109.24,
-              -36.4
-            ],
-            [
-              103.01,
-              -36.4
-            ],
-            [
-              103.01,
-              -39.97
+              -6.4
             ]
           ],
-          "exterior": false,
-          "height": 84.21
+          "exterior": false
         },
         {
           "outline": [
             [
               149.99,
-              -12.4
-            ],
-            [
-              152.85,
-              -12.4
-            ],
-            [
-              152.85,
               -6.4
             ],
             [
               149.99,
+              -66.56
+            ],
+            [
+              152.85,
+              -66.56
+            ],
+            [
+              152.85,
               -6.4
             ]
           ],
-          "exterior": false,
-          "height": 64.92
-        },
-        {
-          "outline": [
-            [
-              149.99,
-              -18.4
-            ],
-            [
-              152.85,
-              -18.4
-            ],
-            [
-              152.85,
-              -12.4
-            ],
-            [
-              149.99,
-              -12.4
-            ]
-          ],
-          "exterior": false,
-          "height": 68.78
-        },
-        {
-          "outline": [
-            [
-              149.99,
-              -24.4
-            ],
-            [
-              152.85,
-              -24.4
-            ],
-            [
-              152.85,
-              -18.4
-            ],
-            [
-              149.99,
-              -18.4
-            ]
-          ],
-          "exterior": false,
-          "height": 72.64
-        },
-        {
-          "outline": [
-            [
-              149.99,
-              -30.4
-            ],
-            [
-              152.85,
-              -30.4
-            ],
-            [
-              152.85,
-              -24.4
-            ],
-            [
-              149.99,
-              -24.4
-            ]
-          ],
-          "exterior": false,
-          "height": 76.5
-        },
-        {
-          "outline": [
-            [
-              149.99,
-              -36.4
-            ],
-            [
-              152.85,
-              -36.4
-            ],
-            [
-              152.85,
-              -30.4
-            ],
-            [
-              149.99,
-              -30.4
-            ]
-          ],
-          "exterior": false,
-          "height": 80.35
-        },
-        {
-          "outline": [
-            [
-              149.99,
-              -42.4
-            ],
-            [
-              152.85,
-              -42.4
-            ],
-            [
-              152.85,
-              -36.4
-            ],
-            [
-              149.99,
-              -36.4
-            ]
-          ],
-          "exterior": false,
-          "height": 84.21
-        },
-        {
-          "outline": [
-            [
-              149.99,
-              -48.4
-            ],
-            [
-              152.85,
-              -48.4
-            ],
-            [
-              152.85,
-              -42.4
-            ],
-            [
-              149.99,
-              -42.4
-            ]
-          ],
-          "exterior": false,
-          "height": 88.07
-        },
-        {
-          "outline": [
-            [
-              149.99,
-              -54.4
-            ],
-            [
-              152.85,
-              -54.4
-            ],
-            [
-              152.85,
-              -48.4
-            ],
-            [
-              149.99,
-              -48.4
-            ]
-          ],
-          "exterior": false,
-          "height": 91.93
-        },
-        {
-          "outline": [
-            [
-              149.99,
-              -60.4
-            ],
-            [
-              152.85,
-              -60.4
-            ],
-            [
-              152.85,
-              -54.4
-            ],
-            [
-              149.99,
-              -54.4
-            ]
-          ],
-          "exterior": false,
-          "height": 95.78
-        },
-        {
-          "outline": [
-            [
-              149.99,
-              -66.4
-            ],
-            [
-              152.85,
-              -66.4
-            ],
-            [
-              152.85,
-              -60.4
-            ],
-            [
-              149.99,
-              -60.4
-            ]
-          ],
           "exterior": false
         },
         {
           "outline": [
             [
-              149.99,
-              -72.4
+              152.85,
+              -92.97
             ],
             [
               152.85,
-              -72.4
-            ],
-            [
-              152.85,
-              -66.4
+              -66.56
             ],
             [
               149.99,
-              -66.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
-            [
-              149.99,
-              -78.4
+              -66.56
             ],
-            [
-              152.85,
-              -78.4
-            ],
-            [
-              152.85,
-              -72.4
-            ],
-            [
-              149.99,
-              -72.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
-            [
-              149.99,
-              -84.4
-            ],
-            [
-              152.85,
-              -84.4
-            ],
-            [
-              152.85,
-              -78.4
-            ],
-            [
-              149.99,
-              -78.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
-            [
-              109.24,
-              -83.72
-            ],
-            [
-              103.01,
-              -83.72
-            ],
-            [
-              103.01,
-              -84.4
-            ],
-            [
-              109.24,
-              -84.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
             [
               149.99,
               -86.97
@@ -3998,48 +3709,6 @@
             ],
             [
               121.24,
-              -90.4
-            ],
-            [
-              152.85,
-              -90.4
-            ],
-            [
-              152.85,
-              -84.4
-            ],
-            [
-              149.99,
-              -84.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
-            [
-              109.24,
-              -84.4
-            ],
-            [
-              103.01,
-              -84.4
-            ],
-            [
-              103.01,
-              -90.4
-            ],
-            [
-              109.24,
-              -90.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
-            [
-              121.24,
               -91.47
             ],
             [
@@ -4048,11 +3717,11 @@
             ],
             [
               109.24,
-              -90.4
+              -83.72
             ],
             [
               103.01,
-              -90.4
+              -83.72
             ],
             [
               103.01,
@@ -4062,35 +3731,6 @@
               132.8,
               -92.97
             ],
-            [
-              132.8,
-              -96.4
-            ],
-            [
-              136.8,
-              -96.4
-            ],
-            [
-              136.8,
-              -92.97
-            ],
-            [
-              152.85,
-              -92.97
-            ],
-            [
-              152.85,
-              -90.4
-            ],
-            [
-              121.24,
-              -90.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
             [
               132.8,
               -97.97
@@ -4101,17 +3741,17 @@
             ],
             [
               136.8,
-              -96.4
-            ],
-            [
-              132.8,
-              -96.4
+              -92.97
             ]
           ],
           "exterior": false
         },
         {
           "outline": [
+            [
+              6.4,
+              -140.97
+            ],
             [
               152.85,
               -140.97
@@ -4139,16 +3779,16 @@
             [
               6.4,
               -134.97
-            ],
-            [
-              6.4,
-              -140.97
             ]
           ],
           "exterior": false
         },
         {
           "outline": [
+            [
+              202.8,
+              -308.6
+            ],
             [
               202.8,
               -289.97
@@ -4160,229 +3800,27 @@
             [
               196.8,
               -308.6
-            ],
-            [
-              202.8,
-              -308.6
             ]
           ],
           "exterior": false
         },
         {
           "outline": [
-            [
-              255.05,
-              -6.4
-            ],
             [
               251.05,
               -6.4
             ],
             [
               251.05,
-              -12.4
+              -66.56
             ],
             [
               255.05,
-              -12.4
-            ]
-          ],
-          "exterior": false,
-          "height": 64.92
-        },
-        {
-          "outline": [
-            [
-              255.05,
-              -12.4
-            ],
-            [
-              251.05,
-              -12.4
-            ],
-            [
-              251.05,
-              -18.4
+              -66.56
             ],
             [
               255.05,
-              -18.4
-            ]
-          ],
-          "exterior": false,
-          "height": 68.78
-        },
-        {
-          "outline": [
-            [
-              255.05,
-              -18.4
-            ],
-            [
-              251.05,
-              -18.4
-            ],
-            [
-              251.05,
-              -24.4
-            ],
-            [
-              255.05,
-              -24.4
-            ]
-          ],
-          "exterior": false,
-          "height": 72.64
-        },
-        {
-          "outline": [
-            [
-              255.05,
-              -24.4
-            ],
-            [
-              251.05,
-              -24.4
-            ],
-            [
-              251.05,
-              -30.4
-            ],
-            [
-              255.05,
-              -30.4
-            ]
-          ],
-          "exterior": false,
-          "height": 76.5
-        },
-        {
-          "outline": [
-            [
-              255.05,
-              -30.4
-            ],
-            [
-              251.05,
-              -30.4
-            ],
-            [
-              251.05,
-              -36.4
-            ],
-            [
-              255.05,
-              -36.4
-            ]
-          ],
-          "exterior": false,
-          "height": 80.35
-        },
-        {
-          "outline": [
-            [
-              255.05,
-              -36.4
-            ],
-            [
-              251.05,
-              -36.4
-            ],
-            [
-              251.05,
-              -42.4
-            ],
-            [
-              255.05,
-              -42.4
-            ]
-          ],
-          "exterior": false,
-          "height": 84.21
-        },
-        {
-          "outline": [
-            [
-              255.05,
-              -42.4
-            ],
-            [
-              251.05,
-              -42.4
-            ],
-            [
-              251.05,
-              -48.4
-            ],
-            [
-              255.05,
-              -48.4
-            ]
-          ],
-          "exterior": false,
-          "height": 88.07
-        },
-        {
-          "outline": [
-            [
-              255.05,
-              -48.4
-            ],
-            [
-              251.05,
-              -48.4
-            ],
-            [
-              251.05,
-              -54.4
-            ],
-            [
-              255.05,
-              -54.4
-            ]
-          ],
-          "exterior": false,
-          "height": 91.93
-        },
-        {
-          "outline": [
-            [
-              255.05,
-              -54.4
-            ],
-            [
-              251.05,
-              -54.4
-            ],
-            [
-              251.05,
-              -60.4
-            ],
-            [
-              255.05,
-              -60.4
-            ]
-          ],
-          "exterior": false,
-          "height": 95.78
-        },
-        {
-          "outline": [
-            [
-              255.05,
-              -60.4
-            ],
-            [
-              251.05,
-              -60.4
-            ],
-            [
-              251.05,
-              -66.4
-            ],
-            [
-              255.05,
-              -66.4
+              -6.4
             ]
           ],
           "exterior": false
@@ -4390,113 +3828,25 @@
         {
           "outline": [
             [
-              219.05,
+              255.05,
+              -88.97
+            ],
+            [
+              255.05,
+              -66.56
+            ],
+            [
+              251.05,
+              -66.56
+            ],
+            [
+              251.05,
               -69.92
             ],
             [
               219.05,
-              -72.4
-            ],
-            [
-              255.05,
-              -72.4
-            ],
-            [
-              255.05,
-              -66.4
-            ],
-            [
-              251.05,
-              -66.4
-            ],
-            [
-              251.05,
               -69.92
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
-            [
-              219.05,
-              -78.4
             ],
-            [
-              223.05,
-              -78.4
-            ],
-            [
-              223.05,
-              -73.92
-            ],
-            [
-              251.05,
-              -73.92
-            ],
-            [
-              251.05,
-              -78.4
-            ],
-            [
-              255.05,
-              -78.4
-            ],
-            [
-              255.05,
-              -72.4
-            ],
-            [
-              219.05,
-              -72.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
-            [
-              219.05,
-              -84.4
-            ],
-            [
-              223.05,
-              -84.4
-            ],
-            [
-              223.05,
-              -78.4
-            ],
-            [
-              219.05,
-              -78.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
-            [
-              251.05,
-              -84.4
-            ],
-            [
-              255.05,
-              -84.4
-            ],
-            [
-              255.05,
-              -78.4
-            ],
-            [
-              251.05,
-              -78.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
             [
               219.05,
               -88.97
@@ -4513,56 +3863,6 @@
               212.85,
               -89.97
             ],
-            [
-              212.85,
-              -90.4
-            ],
-            [
-              223.05,
-              -90.4
-            ],
-            [
-              223.05,
-              -84.4
-            ],
-            [
-              219.05,
-              -84.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
-            [
-              251.05,
-              -90.4
-            ],
-            [
-              298.54,
-              -90.4
-            ],
-            [
-              298.54,
-              -88.97
-            ],
-            [
-              255.05,
-              -88.97
-            ],
-            [
-              255.05,
-              -84.4
-            ],
-            [
-              251.05,
-              -84.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
             [
               212.85,
               -91.97
@@ -4597,17 +3897,12 @@
             ],
             [
               223.05,
-              -90.4
+              -73.92
             ],
             [
-              212.85,
-              -90.4
-            ]
-          ],
-          "exterior": false
-        },
-        {
-          "outline": [
+              251.05,
+              -73.92
+            ],
             [
               251.05,
               -92.97
@@ -4618,17 +3913,17 @@
             ],
             [
               298.54,
-              -90.4
-            ],
-            [
-              251.05,
-              -90.4
+              -88.97
             ]
           ],
           "exterior": false
         },
         {
           "outline": [
+            [
+              401.6,
+              -88.97
+            ],
             [
               330.54,
               -88.97
@@ -4640,16 +3935,16 @@
             [
               401.6,
               -92.97
-            ],
-            [
-              401.6,
-              -88.97
             ]
           ],
           "exterior": false
         },
         {
           "outline": [
+            [
+              196.8,
+              -140.97
+            ],
             [
               196.8,
               -205.97
@@ -4693,10 +3988,6 @@
             [
               182.85,
               -140.97
-            ],
-            [
-              196.8,
-              -140.97
             ]
           ],
           "exterior": false
@@ -4704,6 +3995,10 @@
         {
           "outline": [
             [
+              394.03,
+              -186.97
+            ],
+            [
               401.6,
               -186.97
             ],
@@ -4714,10 +4009,6 @@
             [
               394.03,
               -182.97
-            ],
-            [
-              394.03,
-              -186.97
             ]
           ],
           "exterior": false
@@ -5161,6 +4452,7 @@
       "overhangRake": 13.6,
       "thickness": 6.9,
       "seamSpacing": 31.25,
+      "ceilingDrop": 11.0,
       "rearDormer": {
         "zJoin": -175.68,
         "joinY": 275.03,
