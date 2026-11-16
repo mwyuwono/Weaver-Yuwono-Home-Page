@@ -55,11 +55,11 @@ export function tierForInk(ink: number): LineTierName {
 }
 
 /** Graphite ink authored in sRGB — must stay identical to render/glsl INK. */
-export const INK_SRGB: [number, number, number] = [0.286, 0.278, 0.247]; // warm charcoal (#49473F)
+export const INK_SRGB: [number, number, number] = [0.247, 0.259, 0.224]; // olive charcoal (#3F4239)
 /** Ink density over the tier opacities: the ivory-on-taupe palette wants a crisper charcoal line than bare paper did. */
 const INK_STRENGTH = 1.2;
-/** What the ink is premixed against: the warm ivory of the siding. */
-export const INK_BASE: [number, number, number] = [0.953, 0.894, 0.824];
+/** What the ink is premixed against: the limewash of the siding. */
+export const INK_BASE: [number, number, number] = [0.945, 0.925, 0.882];
 
 function replaceOrThrow(src: string, find: string | RegExp, replace: string, what: string): string {
   if (typeof find === 'string' ? !src.includes(find) : !find.test(src)) {

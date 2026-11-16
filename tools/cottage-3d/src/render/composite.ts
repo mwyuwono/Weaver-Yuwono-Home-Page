@@ -1,5 +1,5 @@
 /**
- * Paper pass: the model's washes are laid over a deep warm-taupe ground (a soft
+ * Paper pass: the model's washes are laid over a deep lichen-olive ground (a soft
  * radial gradient), with fine grain, faint mottling and wash granulation that
  * settles into the grain like real pigment. The scene pass writes coverage in
  * alpha, so the ground shows wherever nothing was drawn.
@@ -24,10 +24,10 @@ uniform float uDpr;
 varying vec2 vUv;
 ${NOISE}
 
-// Deep warm taupe ground: #756457 light (centre) -> #65574A base -> #615347 dark (edges).
-const vec3 BG_LIGHT = vec3(0.459, 0.392, 0.341);
-const vec3 BG_BASE = vec3(0.396, 0.341, 0.290);
-const vec3 BG_DARK = vec3(0.380, 0.325, 0.278);
+// Deep lichen-olive ground (warm green-grey, no brown): #5B6252 light (centre) -> #4E5546 base -> #454B3E dark (edges).
+const vec3 BG_LIGHT = vec3(0.357, 0.384, 0.322);
+const vec3 BG_BASE = vec3(0.306, 0.333, 0.275);
+const vec3 BG_DARK = vec3(0.271, 0.294, 0.243);
 
 void main() {
   vec2 uv = vUv;

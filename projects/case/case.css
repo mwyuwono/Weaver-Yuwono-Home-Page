@@ -168,7 +168,7 @@ body.case-page {
 .case-model:hover .case-model__cta { border-color: var(--case-accent); color: var(--case-accent); }
 
 /* Live model: the iframe sits over the preview image and fades in once it has drawn. */
-.case-model--live { aspect-ratio: 8 / 5; overflow: hidden; background: #65574a; }
+.case-model--live { aspect-ratio: 8 / 5; overflow: hidden; background: #4e5546; }
 .case-model .case-model__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .case-model__frame {
   position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block;

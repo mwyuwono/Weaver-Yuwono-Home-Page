@@ -19,4 +19,4 @@ float fbm(vec3 p) { return 0.5 * vnoise(p) + 0.3 * vnoise(p * 2.1 + 7.0) + 0.2 *
 `;
 
 /** Graphite ink colour (sRGB), shared by surface hairlines and the post-pass outlines. */
-export const INK = 'vec3(0.286, 0.278, 0.247)';
+export const INK = 'vec3(0.247, 0.259, 0.224)';
