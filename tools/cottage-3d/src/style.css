@@ -85,3 +85,7 @@ a { color: inherit; }
 
 /* QA elevations (?qa=...): chrome off so the capture is just the model. */
 body.qa .site-header, body.qa .overlay { display: none; }
+
+/* Embedded on the case page (?embed=1): no page chrome; the control bar only once the visitor expands the model. */
+body.embed .site-header, body.embed:not(.full) .ctl-bar { display: none; }
+body.embed #cottage-loading { font-size: 12px; }

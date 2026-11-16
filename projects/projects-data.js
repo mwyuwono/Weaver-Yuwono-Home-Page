@@ -45,9 +45,10 @@ window.WY_PROJECTS = [
     },
     model: {
       href: 'model/',
+      embed: true,
       image: '../assets/images/sharon-model-exploded.jpg',
       alt: 'Exploded 3D model of the house showing basement, first floor, second floor and roof separated',
-      caption: 'A 3D model built from the drawings. Separate the floors, view one level at a time, and rotate or zoom.'
+      caption: 'A 3D model built from the drawings. Drag to rotate it here, or open it full screen to separate the floors, view one level at a time, and zoom.'
     },
     moves: [
       { title: 'Fits the historic district', body: 'Proportions, trim and materials follow the Greek Revival houses around it: corner pilasters, frieze windows and a pedimented entry.' },
