@@ -30,6 +30,97 @@
     return i;
   };
 
+  function webgl() {
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Static preview that opens the model page (no WebGL, or no embed configured).
+  function modelLink(m) {
+    const a = el('a', 'case-model');
+    a.href = m.href;
+    a.append(img(m.image, m.alt));
+    a.append(el('span', 'case-model__cta', 'Open the interactive model'));
+    return a;
+  }
+
+  // The model itself, inline: a lazy iframe over the preview image, which it replaces once its first frame is drawn.
+  // "Full screen" expands it to the viewport (and real fullscreen where the browser allows it on an element).
+  function liveModel(m) {
+    const box = el('div', 'case-model case-model--live');
+    const poster = img(m.image, '');
+    poster.className = 'case-model__poster';
+    const frame = el('iframe', 'case-model__frame');
+    frame.src = m.href + '?embed=1';
+    frame.title = 'Interactive 3D model of the house';
+    frame.loading = 'lazy';
+    frame.allow = 'fullscreen';
+    const hint = el('span', 'case-model__hint', 'Drag to rotate');
+    const toggle = el('button', 'case-model__expand');
+    toggle.type = 'button';
+    const label = el('span', null, 'Full screen');
+    const svg = icon();
+    const glyph = svg.firstChild;
+    toggle.append(svg, label);
+    const interior = el('button', 'case-model__expand case-model__interior', 'Explore interior');
+    interior.type = 'button';
+    interior.setAttribute('aria-label', 'Explore the interior: open the model full screen with the floors separated');
+    const actions = el('div', 'case-model__actions');
+    actions.append(interior, toggle);
+    box.append(poster, frame, hint, actions);
+
+    let full = false;
+    const post = (mode, explode) => frame.contentWindow && frame.contentWindow.postMessage({ type: 'cottage:mode', mode, explode: !!explode }, location.origin);
+    const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+    const set = (on, explode) => {
+      if (on === full) return;
+      full = on;
+      post(on ? 'full' : 'inline', explode); // before the resize, so the model re-fits to the new size in one move
+      box.classList.toggle('is-full', on);
+      document.documentElement.classList.toggle('model-open', on);
+      label.textContent = on ? 'Close' : 'Full screen';
+      glyph.setAttribute('d', on ? CLOSE : EXPAND);
+      toggle.setAttribute('aria-label', on ? 'Close full screen model' : 'View the model full screen');
+      if (on) {
+        const req = box.requestFullscreen || box.webkitRequestFullscreen;
+        if (req) { try { const r = req.call(box); if (r && r.catch) r.catch(() => {}); } catch (e) { /* CSS expansion still applies */ } }
+        frame.focus();
+      } else {
+        if (fsEl() === box) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        toggle.focus();
+      }
+    };
+    toggle.setAttribute('aria-label', 'View the model full screen');
+    toggle.addEventListener('click', () => set(!full));
+    interior.addEventListener('click', () => set(true, true));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
+    ['fullscreenchange', 'webkitfullscreenchange'].forEach((t) => document.addEventListener(t, () => { if (!fsEl()) set(false); }));
+    window.addEventListener('message', (e) => {
+      if (e.origin !== location.origin || e.source !== frame.contentWindow || !e.data) return;
+      if (e.data.type === 'cottage:ready') box.classList.add('is-ready');
+      else if (e.data.type === 'cottage:close') set(false);
+      else if (e.data.type === 'cottage:unavailable') box.replaceWith(modelLink(m));
+    });
+    return box;
+  }
+
+  const EXPAND = 'M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4';
+  const CLOSE = 'M3.5 3.5l9 9M12.5 3.5l-9 9';
+  function icon() {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 16 16');
+    svg.setAttribute('aria-hidden', 'true');
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', EXPAND);
+    svg.append(path);
+    return svg;
+  }
+
   // Intro
   const intro = el('header', 'case-intro');
   intro.append(el('p', 'case-eyebrow', [p.location, p.year, p.type].filter(Boolean).join(' · ')));
@@ -97,11 +188,7 @@
   if (p.model) {
     const sec = el('section', 'case-section');
     sec.append(el('h2', 'case-heading', '3D model'));
-    const a = el('a', 'case-model');
-    a.href = p.model.href;
-    a.append(img(p.model.image, p.model.alt));
-    a.append(el('span', 'case-model__cta', 'Open the interactive model'));
-    sec.append(a);
+    sec.append(p.model.embed && webgl() ? liveModel(p.model) : modelLink(p.model));
     if (p.model.caption) sec.append(el('p', 'case-note', p.model.caption));
     root.append(sec);
   }

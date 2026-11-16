@@ -55,7 +55,7 @@ export function tierForInk(ink: number): LineTierName {
 }
 
 /** Graphite ink authored in sRGB — must stay identical to render/glsl INK. */
-export const INK_SRGB: [number, number, number] = [0.184, 0.196, 0.212];
+export const INK_SRGB: [number, number, number] = [0.196, 0.198, 0.176]; // warm graphite, after the case page's ink
 
 function replaceOrThrow(src: string, find: string | RegExp, replace: string, what: string): string {
   if (typeof find === 'string' ? !src.includes(find) : !find.test(src)) {

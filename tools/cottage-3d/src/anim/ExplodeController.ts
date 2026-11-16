@@ -65,6 +65,10 @@ export class ExplodeController {
   onState: ((s: ViewState) => void) | null = null;
   /** Reports how much of the canvas the UI covers; separated floors are framed between the header and the control bar. */
   insets: (() => Insets) | null = null;
+  /** Framing breathing room (>1 = looser). The case-page embed frames tighter while inline. */
+  pad = 1.12;
+  /** Fit the assembled house between the UI insets too (the inline embed, whose buttons overlay the bottom edge). */
+  insetAssembled = false;
 
   constructor(
     private readonly house: House,
@@ -243,7 +247,7 @@ export class ExplodeController {
       if (horizontal < 1e-6) look.copy(HERO_DIR);
       else if (state.kind !== 'assembled') look.y = Math.max(look.y, horizontal * Math.tan(MIN_ELEVATION));
     }
-    return frameBox(box, look, this.camera, 1.12, state.kind === 'assembled' ? undefined : this.insets?.());
+    return frameBox(box, look, this.camera, this.pad, state.kind === 'assembled' && !this.insetAssembled ? undefined : this.insets?.());
   }
 
   private moveCamera(target: View): void {

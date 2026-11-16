@@ -167,6 +167,44 @@ body.case-page {
 }
 .case-model:hover .case-model__cta { border-color: var(--case-accent); color: var(--case-accent); }
 
+/* Live model: the iframe sits over the preview image and fades in once it has drawn. */
+.case-model--live { aspect-ratio: 8 / 5; overflow: hidden; background: #f0eee7; }
+.case-model .case-model__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.case-model__frame {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block;
+  opacity: 0; transition: opacity 0.6s ease;
+}
+.case-model--live.is-ready .case-model__frame { opacity: 1; }
+.case-model__hint,
+.case-model__expand {
+  padding: 10px 16px;
+  border: 1px solid var(--case-rule);
+  border-radius: 999px;
+  background: rgba(248, 247, 243, 0.92);
+  color: var(--case-ink);
+  font: 400 0.75rem/1 var(--case-label);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.case-model__hint { position: absolute; bottom: 20px; z-index: 1; left: 20px; pointer-events: none; opacity: 0; transition: opacity 0.6s ease 0.4s; }
+.case-model--live.is-ready .case-model__hint { opacity: 1; }
+.case-model__actions { position: absolute; right: 20px; bottom: 20px; z-index: 1; display: flex; gap: 8px; }
+.case-model__expand {
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.case-model__expand:hover { border-color: var(--case-accent); color: var(--case-accent); }
+.case-model__expand:focus-visible { outline: 2px solid var(--case-accent); outline-offset: 3px; }
+.case-model__expand svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.4; }
+.case-model--live.is-full {
+  position: fixed; inset: 0; z-index: 100;
+  aspect-ratio: auto; border-radius: 0;
+}
+.case-model--live.is-full .case-model__hint,
+.case-model--live.is-full .case-model__interior { display: none; }
+.case-model--live.is-full .case-model__actions { top: 16px; bottom: auto; right: 16px; }
+.model-open, .model-open body { overflow: hidden; }
+
 .case-sheets {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -228,6 +266,11 @@ body.case-page {
   .case-section { padding-top: 48px; }
   .case-sheets { grid-template-columns: 1fr; gap: 28px; }
   .case-model__cta { left: 12px; bottom: 12px; }
+  .case-model__hint { left: 12px; bottom: 12px; }
+  .case-model__actions { right: 12px; bottom: 12px; }
+  .case-model__hint { display: none; }
+  .case-model__expand { padding: 10px 14px; }
+  .case-model--live:not(.is-full) { aspect-ratio: 4 / 3; }
 }
 
 /* Sheet viewer */

@@ -23,7 +23,7 @@ uniform float uDpr;
 varying vec2 vUv;
 ${NOISE}
 
-const vec3 PAPER = vec3(0.966, 0.960, 0.948);
+const vec3 PAPER = vec3(0.941, 0.933, 0.906); // #f0eee7, between the case page's paper and background
 
 void main() {
   vec2 uv = vUv;

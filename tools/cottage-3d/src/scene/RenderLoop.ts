@@ -20,6 +20,8 @@ export class RenderLoop {
   private refine = 0;
   /** Fired after the first frame has been drawn (loading overlay, diagnostics). */
   onFirstFrame: (() => void) | null = null;
+  /** Ambient camera motion (the embed's idle sway): called every frame, returns true while it moved the camera. */
+  ambient: ((now: number) => boolean) | null = null;
 
   constructor(
     private readonly pipeline: Pipeline,
@@ -56,10 +58,11 @@ export class RenderLoop {
     this.raf = 0;
     if (!this.onScreen || document.hidden) return;
     const tweening = this.tweens.update(now);
+    const swaying = this.ambient?.(now) ?? false;
     const moved = this.controls.update();
-    if (tweening || moved || this.dirty) {
+    if (tweening || swaying || moved || this.dirty) {
       this.dirty = false;
-      this.pipeline.render(this.scene, this.camera, tweening || moved || now - this.lastMotion < IDLE_MS);
+      this.pipeline.render(this.scene, this.camera, tweening || swaying || moved || now - this.lastMotion < IDLE_MS);
       if (++this.frames === 1) this.onFirstFrame?.();
       // controls.update() may already have re-armed the loop through its 'change' event
       if (!this.raf) this.raf = requestAnimationFrame((t) => this.frame(t));

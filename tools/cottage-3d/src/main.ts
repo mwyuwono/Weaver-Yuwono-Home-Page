@@ -22,6 +22,22 @@ import type { LevelId } from './data/schema';
 /** Camera stays this far above the terrain (feet). */
 const GROUND_CLEARANCE_FT = 1.5;
 
+/**
+ * `?embed=1`: the model runs inside an iframe on the case page. Inline it has no chrome, no wheel/pinch zoom and
+ * lets vertical swipes scroll the page; the parent posts `cottage:mode` = 'full' when the visitor expands it, which
+ * brings back the control bar and full orbit/zoom. On load it sways gently to show it is a live 3D object.
+ */
+const EMBED = new URLSearchParams(location.search).get('embed') === '1';
+const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SWAY_AMPLITUDE = THREE.MathUtils.degToRad(10); // each way, about the vertical axis
+const SWAY_PERIOD_MS = 9000;
+const SWAY_CYCLES = 3; // then it settles back to the hero angle and the loop sleeps
+const SWAY_RAMP_MS = 2500;
+
+function toParent(type: string): void {
+  if (EMBED && window.parent !== window) window.parent.postMessage({ type }, location.origin);
+}
+
 function webglAvailable(): boolean {
   try {
     const c = document.createElement('canvas');
@@ -33,9 +49,11 @@ function webglAvailable(): boolean {
 
 async function start(root: HTMLElement): Promise<void> {
   const loading = document.getElementById('cottage-loading');
+  if (EMBED) document.body.classList.add('embed');
   if (!webglAvailable()) {
     loading?.setAttribute('hidden', '');
     document.getElementById('cottage-fallback')?.removeAttribute('hidden');
+    toParent('cottage:unavailable');
     return;
   }
 
@@ -69,11 +87,13 @@ async function start(root: HTMLElement): Promise<void> {
   explode = new ExplodeController(house, camera, controls, tweens);
   const ex = explode;
 
+  let reframe = false; // set when the embed changes mode: re-fit the model once the new size lands
   const resize = () => {
     const { clientWidth: w, clientHeight: h } = root;
     pipeline.setSize(w, h);
     camera.aspect = w / Math.max(h, 1);
     camera.updateProjectionMatrix();
+    if (reframe) { reframe = false; ex.resetView(); }
     loop.invalidate();
   };
   resize();
@@ -101,17 +121,65 @@ async function start(root: HTMLElement): Promise<void> {
   }, data.levels.map((l) => l.id));
   ex.onState = (s) => ui.setState(s);
   ui.setState(ex.state);
-  ex.insets = () => { // header at the top, control bar at the bottom (plus a little air)
+  ex.insets = () => { // header at the top, control bar at the bottom (plus a little air); hidden ones take no room
     const rect = root.getBoundingClientRect();
-    const header = document.querySelector('.site-header')?.getBoundingClientRect().bottom ?? rect.top;
-    const bar = document.querySelector('.ctl-bar')?.getBoundingClientRect().top ?? rect.bottom;
-    return { top: Math.max(0, header - rect.top) + 8, bottom: Math.max(0, rect.bottom - bar) + 8, height: rect.height };
+    const shown = (sel: string) => { const n = document.querySelector(sel); return n && n.getClientRects().length ? n.getBoundingClientRect() : null; };
+    const header = shown('.site-header')?.bottom ?? rect.top;
+    const bar = shown('.ctl-bar')?.top ?? rect.bottom;
+    const overlay = EMBED && !document.body.classList.contains('full') ? 48 : 0; // the case page's buttons (inline)
+    return { top: Math.max(0, header - rect.top) + 8, bottom: Math.max(0, rect.bottom - bar) + 8 + overlay, height: rect.height };
   };
+
+  if (EMBED) {
+    const canvas = renderer.domElement;
+    let swaying = !REDUCE_MOTION;
+    const setMode = (full: boolean) => {
+      document.body.classList.toggle('full', full);
+      ex.pad = full ? 1.12 : 0.78; // inline: fill the frame, less paper around the house
+      ex.insetAssembled = !full; // inline: keep the house clear of the case page's buttons along the bottom
+      controls.enableZoom = full;
+      canvas.style.touchAction = full ? 'none' : 'pan-y'; // inline: vertical swipes scroll the page, sideways ones orbit
+      swaying = false;
+      reframe = true;
+      window.setTimeout(() => { if (reframe) { reframe = false; ex.resetView(); } }, 300); // in case the size did not change
+    };
+    setMode(false);
+    reframe = false;
+    ex.snapCamera(); // re-fit with the inline framing
+    swaying = !REDUCE_MOTION;
+    window.addEventListener('message', (e) => {
+      if (e.origin !== location.origin || e.data?.type !== 'cottage:mode') return;
+      setMode(e.data.mode === 'full');
+      if (e.data.explode) ex.explode(); // "Explore interior": open full screen with the floors separated
+      else if (e.data.mode !== 'full') ex.assemble();
+    });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('full')) toParent('cottage:close'); });
+    controls.addEventListener('start', () => { swaying = false; });
+
+    // Idle sway: swing the camera about the orbit pivot, easing in and back out to the hero angle. Elapsed time is
+    // accumulated per drawn frame (capped), so the motion resumes smoothly after the canvas was off screen.
+    const axis = new THREE.Vector3(0, 1, 0), offset = new THREE.Vector3();
+    const total = SWAY_PERIOD_MS * SWAY_CYCLES;
+    const smooth = (x: number) => { const t = Math.min(Math.max(x, 0), 1); return t * t * (3 - 2 * t); };
+    let elapsed = 0, last = -1, applied = 0;
+    loop.ambient = (now) => {
+      if (!swaying || elapsed >= total) { last = -1; return false; }
+      if (last >= 0) elapsed = Math.min(total, elapsed + Math.min(now - last, 50));
+      last = now;
+      const env = smooth(elapsed / SWAY_RAMP_MS) * (1 - smooth((elapsed - (total - SWAY_RAMP_MS * 1.5)) / (SWAY_RAMP_MS * 1.5)));
+      const angle = SWAY_AMPLITUDE * env * Math.sin((2 * Math.PI * elapsed) / SWAY_PERIOD_MS);
+      offset.subVectors(camera.position, controls.target).applyAxisAngle(axis, angle - applied);
+      camera.position.copy(controls.target).add(offset);
+      applied = angle;
+      return true;
+    };
+  }
 
   loop.onFirstFrame = () => {
     console.info(`[cottage-3d] draw calls (first frame, all passes): ${pipeline.stats.calls}, triangles: ${pipeline.stats.triangles}, segments: ${house.lineSegments}`);
     root.setAttribute('aria-busy', 'false');
     loading?.classList.add('done');
+    toParent('cottage:ready');
   };
   loop.invalidate();
 }
