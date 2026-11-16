@@ -116,8 +116,8 @@ uniform float uInk, uPoche;
 uniform vec4 uParams; // x shade range, y shadow weight, z mottle, w seam period (ft)
 uniform vec4 uFade;   // ground fade: centre xz, start, end
 ${NOISE}
-const vec3 INK_MUL = vec3(0.52, 0.53, 0.55); // a hairline darkens the wash towards graphite
-const vec3 SHADOW_VEIL = vec3(0.855, 0.868, 0.888); // full cast shadow, as a multiplier (scaled by the material's shadow weight)
+const vec3 INK_MUL = vec3(0.56, 0.54, 0.49); // a hairline darkens the wash towards warm charcoal
+const vec3 SHADOW_VEIL = vec3(0.87, 0.85, 0.82); // full cast shadow, a warm multiplier (scaled by the material's shadow weight)
 
 /** Anti-aliased line through every integer of x, w = width as a fraction of the period. */
 float stripe(float x, float w) {
@@ -147,7 +147,7 @@ const FRAGMENT_MAIN = /* glsl */ `
   float t3 = facing * 3.0;
   float banded = min((floor(t3) + smoothstep(0.3, 0.7, fract(t3))) / 3.0, 1.0); // three soft bands
   float tone = (1.0 - mix(facing, banded, 0.6)) * uParams.x;
-  // Cast shadow: a soft cool-grey veil laid over the wash (never a hard CG shadow), strongest where the surface is lit.
+  // Cast shadow: a soft warm veil laid over the wash (never a hard CG shadow), strongest where the surface is lit.
   float veil = (1.0 - smoothstep(0.15, 0.85, shadow)) * uParams.y;
 
   vec3 col = mix(uLit, uShade, tone) * mix(vec3(1.0), SHADOW_VEIL, veil);
@@ -158,7 +158,7 @@ const FRAGMENT_MAIN = /* glsl */ `
   if (abs(wn.y) < 0.5) {
     // 4.5" laps as one fine, even hairline; fades out completely well before the laps get close enough to moire
     float c = p.y / 0.375;
-    line = stripe(c, 0.05) * smoothstep(5.0, 11.0, 1.0 / max(fwidth(c), 1e-5)) * 0.2;
+    line = stripe(c, 0.05) * smoothstep(5.0, 11.0, 1.0 / max(fwidth(c), 1e-5)) * 0.3;
   }
   #endif
 
@@ -173,13 +173,16 @@ const FRAGMENT_MAIN = /* glsl */ `
 
   col = mix(col, col * INK_MUL, line);
   if (uPoche > 0.0 && wn.y > 0.85) { // wall cut by the section plane
-    col = mix(col, vec3(0.62, 0.63, 0.64), uPoche);
+    col = mix(col, vec3(0.60, 0.55, 0.49), uPoche);
   }
 
   float a = diffuseColor.a;
   #ifdef FADE
+  // The ground is the backdrop itself: it draws only the house's soft cast shadow (as coverage over the taupe), fading
+  // out with distance. It still writes depth, so nothing below grade can show through it.
   float away = smoothstep(uFade.z, uFade.w, distance(p.xz, uFade.xy));
-  col = mix(col, vec3(1.0), away); // fade in pigment, not alpha: the ground stays opaque
+  col = vec3(0.24, 0.20, 0.17);
+  a *= veil * 0.55 * (1.0 - away);
   #endif
   gl_FragColor = vec4(col, a);
 }

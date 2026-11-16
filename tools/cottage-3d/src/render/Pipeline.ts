@@ -79,7 +79,7 @@ export class Pipeline {
 
     r.info.reset();
     r.setRenderTarget(this.target);
-    r.setClearColor(0xffffff, 1); // bare paper: the wash is a multiplier on this
+    r.setClearColor(0xffffff, 0); // alpha 0 = backdrop; the paper pass lays the taupe ground there
     r.clear();
     r.render(scene, camera);
     this.uniforms.tWash.value = this.target.texture;

@@ -1,7 +1,8 @@
 /**
- * Paper pass: the wash (a pigment multiplier over bare paper) is laid on the
- * paper, with fine grain, faint mottling, wash granulation that settles into
- * the grain like real pigment, and a soft vignette.
+ * Paper pass: the model's washes are laid over a deep warm-taupe ground (a soft
+ * radial gradient), with fine grain, faint mottling and wash granulation that
+ * settles into the grain like real pigment. The scene pass writes coverage in
+ * alpha, so the ground shows wherever nothing was drawn.
  *
  * Ink is NOT drawn here: geometry-derived vector linework (render/lines.ts)
  * already draws the outlines in the main pass, so this shader never does
@@ -23,23 +24,30 @@ uniform float uDpr;
 varying vec2 vUv;
 ${NOISE}
 
-const vec3 PAPER = vec3(0.941, 0.933, 0.906); // #f0eee7, between the case page's paper and background
+// Deep warm taupe ground: #756457 light (centre) -> #65574A base -> #615347 dark (edges).
+const vec3 BG_LIGHT = vec3(0.459, 0.392, 0.341);
+const vec3 BG_BASE = vec3(0.396, 0.341, 0.290);
+const vec3 BG_DARK = vec3(0.380, 0.325, 0.278);
 
 void main() {
   vec2 uv = vUv;
-  vec3 wash = texture2D(tWash, uv).rgb; // pigment multiplier over bare paper
+  vec4 drawn = texture2D(tWash, uv); // the model's colours; alpha = coverage (0 where only the backdrop shows)
+  vec3 wash = drawn.rgb;
   vec2 css = gl_FragCoord.xy / uDpr;
 
   // paper: grain (screen space, fixed), mottling and granulation
   float grain = 0.55 * vnoise2(css * 1.1) + 0.3 * vnoise2(css * 2.7 + 11.0) + 0.15 * hash12(floor(gl_FragCoord.xy));
   float mottle = vnoise2(css * 0.006 + 3.0) * 0.6 + vnoise2(css * 0.02) * 0.4;
-  vec3 paper = PAPER * (1.0 + (grain - 0.5) * 0.016 + (mottle - 0.5) * 0.04);
+  float tooth = 1.0 + (grain - 0.5) * 0.016 + (mottle - 0.5) * 0.03;
   wash = 1.0 - (1.0 - wash) * (0.93 + 0.14 * grain);
 
-  vec3 col = paper * wash;
-
   vec2 q = (uv - 0.5) * vec2(1.0, 0.92);
-  col *= 1.0 - 0.07 * smoothstep(0.3, 0.85, length(q));
+  float r = length(q);
+  vec3 bg = mix(BG_LIGHT, BG_BASE, smoothstep(0.0, 0.55, r));
+  bg = mix(bg, BG_DARK, smoothstep(0.5, 0.9, r));
+
+  vec3 col = mix(bg, wash, drawn.a) * tooth;
+  col *= 1.0 - 0.03 * smoothstep(0.35, 0.85, r) * drawn.a;
   gl_FragColor = vec4(col, 1.0);
 }
 `;

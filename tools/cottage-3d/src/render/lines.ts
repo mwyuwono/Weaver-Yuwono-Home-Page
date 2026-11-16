@@ -55,7 +55,11 @@ export function tierForInk(ink: number): LineTierName {
 }
 
 /** Graphite ink authored in sRGB — must stay identical to render/glsl INK. */
-export const INK_SRGB: [number, number, number] = [0.196, 0.198, 0.176]; // warm graphite, after the case page's ink
+export const INK_SRGB: [number, number, number] = [0.286, 0.278, 0.247]; // warm charcoal (#49473F)
+/** Ink density over the tier opacities: the ivory-on-taupe palette wants a crisper charcoal line than bare paper did. */
+const INK_STRENGTH = 1.2;
+/** What the ink is premixed against: the warm ivory of the siding. */
+export const INK_BASE: [number, number, number] = [0.953, 0.894, 0.824];
 
 function replaceOrThrow(src: string, find: string | RegExp, replace: string, what: string): string {
   if (typeof find === 'string' ? !src.includes(find) : !find.test(src)) {
@@ -131,6 +135,12 @@ function patchFragmentShader(src: string): string {
 			float alpha = opacity * vLod;`,
     'alpha',
   );
+  out = replaceOrThrow(
+    out,
+    'gl_FragColor = vec4( diffuseColor.rgb, alpha );',
+    'gl_FragColor = vec4( mix( vec3( 1.0 ), diffuseColor.rgb, alpha ), alpha ); // MIN blending: fade towards no mark',
+    'min-fade',
+  );
   // Square caps: keep the overrun extension visible (round caps would clip it
   // back to the segment end, hiding the drafting overshoot).
   out = replaceOrThrow(
@@ -154,10 +164,15 @@ export class CottageLineMaterial extends LineMaterial {
     super({
       // Ink is premixed with bare paper (white in the wash target, which the paper pass multiplies) and drawn at full
       // opacity: where segments meet at a corner they no longer double-blend into a dark knot. Alpha is only used for fades.
-      color: new THREE.Color(...INK_SRGB.map((c) => 1 - (1 - c) * LINE_TIERS[tier].opacity) as [number, number, number]),
+      color: new THREE.Color(...INK_SRGB.map((c, i) => INK_BASE[i] + (c - INK_BASE[i]) * Math.min(0.95, LINE_TIERS[tier].opacity * INK_STRENGTH)) as [number, number, number]),
       linewidth: 1,
       transparent: true,
       depthWrite: false,
+      blending: THREE.CustomBlending,
+      blendEquation: THREE.MinEquation,
+      blendEquationAlpha: THREE.AddEquation,
+      blendSrcAlpha: THREE.ZeroFactor,
+      blendDstAlpha: THREE.OneFactor,
     });
     this.vertexShader = patchVertexShader(this.vertexShader);
     this.fragmentShader = patchFragmentShader(this.fragmentShader);
