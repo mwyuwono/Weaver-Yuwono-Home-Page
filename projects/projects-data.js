@@ -20,7 +20,7 @@ window.WY_PROJECTS = [
   {
     slug: 'connecticut-cottage',
     category: 'architecture',
-    title: 'Greek Revival House',
+    title: 'Friday Cottage',
     location: 'Sharon, Connecticut',
     year: '2021',
     type: 'New house · Built',
