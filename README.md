@@ -3,8 +3,7 @@
 This repository contains the Weaver-Yuwono family website with two pages:
 
 1. **Main Landing Page** ([weaver-yuwono.com](https://weaver-yuwono.com))
-   - Animated landing page with video background and gradient effects
-   - Avatar tiles linking to LinkedIn profiles
+   - Static page: portraits and links, sharing `projects/case/case.css`
 
 2. **Projects Portfolio** ([weaver-yuwono.com/projects/](https://weaver-yuwono.com/projects/))
    - Portfolio page showcasing architectural drawings and renderings
@@ -14,36 +13,15 @@ This repository contains the Weaver-Yuwono family website with two pages:
 
 ### Deployment
 
-This project is deployed to Vercel with **auto-deployment enabled**. Every push to the `main` branch automatically triggers a deployment.
-
-To manually deploy:
-```bash
-vercel --prod
-```
-
-### Design System (Projects Portfolio Only)
-
-The projects portfolio uses the Material Design 3 design system. To set up:
-
-```bash
-# Add design system as git submodule
-git submodule add https://github.com/mwyuwono/m3-guidelines.git design-system
-
-# Initialize submodules
-git submodule update --init --recursive
-```
-
-Once the design system is installed, design tokens will be automatically loaded from `design-system/tokens/material3.web.css`.
+This project is deployed to Vercel with **auto-deployment enabled**. Every push to `main` triggers a production deployment; pushes to other branches do not deploy (`git.deploymentEnabled` in `vercel.json`). Never run `vercel --prod` (it duplicates the Git deployment). Batch commits so one push = one deployment.
 
 ## Project Structure
 
 ```
 /
 ├── index.html              # Main landing page
-├── styles.css              # Landing page styles (video, gradients, avatars)
+├── styles.css              # Landing page layout
 ├── landing-assets/         # Landing page assets
-│   ├── flow_loop.mp4      # Background video (active)
-│   ├── bloom_loop.mp4     # Alternative background video
 │   ├── logo.svg           # Main logo
 │   ├── stanton-headshot.jpg
 │   └── matt-headshot.jpg
@@ -58,7 +36,6 @@ Once the design system is installed, design tokens will be automatically loaded 
 │   │   ├── project-card.css
 │   │   └── project-card.js
 │   └── README.md          # Component architecture guidelines
-├── design-system/         # Material Design 3 design system (git submodule)
 ├── vercel.json            # Vercel auto-deployment configuration
 └── .vercel/               # Vercel project settings (gitignored)
 ```
@@ -68,7 +45,6 @@ Once the design system is installed, design tokens will be automatically loaded 
 All assets are organized by page ownership:
 
 **Landing Page** (`landing-assets/`):
-- Videos: `flow_loop.mp4` (active), `bloom_loop.mp4` (alternative)
 - Logo: `logo.svg`
 - Headshots: `stanton-headshot.jpg`, `matt-headshot.jpg`
 

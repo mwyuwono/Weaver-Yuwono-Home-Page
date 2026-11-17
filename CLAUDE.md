@@ -22,7 +22,7 @@ This repository contains the Weaver-Yuwono family website with two pages:
 ## Pages
 
 1. **Main Landing Page** (`/index.html`) at [weaver-yuwono.com](https://weaver-yuwono.com):
-   - Dynamic video background with bloom effect
+   - Static portraits and links (shares `projects/case/case.css`)
    - Animated gradient overlays
    - Avatar tiles linking to LinkedIn profiles (Stanton and Matt)
    - Custom fonts (Playfair Display, Inter)
@@ -57,13 +57,9 @@ This is a static website with no build process. **Auto-deployment is enabled** -
 3. Push to GitHub: `git push origin main`
 4. Vercel automatically deploys the changes to production
 
-### Manual Deployment (if needed)
+### Manual Deployment
 
-If you need to manually trigger a deployment:
-
-```bash
-vercel --prod
-```
+Never run `vercel --prod`: the project is Git-linked, so it duplicates the Git deployment of the same commit. Push to `main` instead.
 
 ### Domain Configuration
 
@@ -192,10 +188,6 @@ Local token names are mapped to design system tokens for backward compatibility:
 - `--md-sys-spacing-lg` → `var(--spacing-lg)` (24px)
 - `--md-sys-spacing-xl` → `var(--spacing-xl)` (32px)
 - `--md-sys-spacing-xxl` → `var(--spacing-2xl)` (48px)
-
-### Legacy Design System
-
-The local `design-system/` directory is legacy and no longer used. The project now relies entirely on m3-design-v2 via CDN.
 
 ### React Components vs Web Components Architecture
 
@@ -351,8 +343,6 @@ See `components/README.md` for detailed guidelines and examples.
 ├── index.html              # Main landing page
 ├── styles.css              # Landing page styles (Material Design 3 background)
 ├── landing-assets/         # Landing page assets
-│   ├── flow_loop.mp4      # Background video (active)
-│   ├── bloom_loop.mp4     # Alternative background video
 │   ├── logo.svg           # Main logo
 │   ├── stanton-headshot.jpg
 │   └── matt-headshot.jpg
@@ -375,13 +365,17 @@ See `components/README.md` for detailed guidelines and examples.
 │   │   ├── profile-card.css
 │   │   └── profile-card.js
 │   └── README.md          # Component architecture guidelines
-├── design-system/         # Legacy design system (no longer used - replaced by m3-design-v2)
 ├── vercel.json            # Vercel auto-deployment configuration
 ├── .vercel/               # Vercel project settings (gitignored)
 ├── CLAUDE.md              # Project instructions for Claude Code
 ├── README.md              # Project documentation
 └── .gitignore             # Git ignore rules (iCloud-safe)
 ```
+
+### Deployment storage rule
+
+Only `main` deploys (`git.deploymentEnabled` in `vercel.json`); other branches, including cloud `claude/*`
+branches, build no previews. Every deployment stores the whole committed tree, so keep unused media out of Git.
 
 ### Public-content rule
 
@@ -401,6 +395,5 @@ they are committed.
   - Landing: `styles.css` (Material Design 3 background) + card-base + profile-card
   - Projects: `projects/case/case.css` (shared tokens, case pages) + `projects/hub.css` (hub); no CDN dependency
 - **Asset ownership**: Clear separation between landing and projects assets
-- **Video files**: Both `flow_loop.mp4` and `bloom_loop.mp4` kept for easy swapping
 - **File naming**: Consistent kebab-case for all new/renamed files
 - **iCloud safe**: .gitignore excludes `.icloud` and `.DS_Store*` files
