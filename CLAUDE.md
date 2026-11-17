@@ -21,199 +21,40 @@ This repository contains the Weaver-Yuwono family website with two pages:
 
 ## Pages
 
-1. **Main Landing Page** (`/index.html`) at [weaver-yuwono.com](https://weaver-yuwono.com):
-   - Static portraits and links (shares `projects/case/case.css`)
-   - Animated gradient overlays
-   - Avatar tiles linking to LinkedIn profiles (Stanton and Matt)
-   - Custom fonts (Playfair Display, Inter)
+1. **Landing** (`/index.html`): static portraits and links for Stanton and Matt. Uses the `projects/case/case.css` tokens and top bar; `styles.css` adds the landing layout only.
+2. **Projects hub** (`/projects/`) and case pages (`/projects/<slug>/`): rendered from `projects/projects-data.js` by `projects/hub.js` and `projects/case/case.js`.
 
-2. **Projects Portfolio** (`/projects/index.html`) at [weaver-yuwono.com/projects/](https://weaver-yuwono.com/projects/):
-   - Material Design 3 design system
-   - Project card grid for architectural drawings and renderings
-   - Modular component architecture (project-card component)
+Static HTML/CSS/JS: no build step, no CDN design system. GitHub: https://github.com/mwyuwono/Weaver-Yuwono-Home-Page.
+The working copy lives on Google Drive, where git is slow (`git diff`/`merge` can exceed 120 s): use long timeouts.
+Preview locally with `python3 -m http.server 8765` from the repo root.
 
-Deployed via Vercel with auto-deployment enabled. Repository stored in iCloud Drive for sync across devices.
+## Deploying (Vercel): few, small deployments
 
-## Important Setup Notes
+Vercel team `weaver-yuwono` is on Hobby: 10 GB of Deployment Storage shared by every project. Each deployment stores
+the whole committed tree (about 38 MB here, Nov 2026) from creation until about 30 days after it is deleted
+(retention is 7 days), so storage ≈ deploys per month × 1.25 × tree size. Deleting deployments gives no quick relief;
+deploying less often and smaller does. When the `vercel-deployment-guardrails` skill is available, invoke it before any Vercel work.
 
-- **iCloud Integration**: This project is stored in iCloud Drive. The .gitignore is configured to exclude iCloud-specific files (`.icloud`, `*.icloud`, `.DS_Store*`).
-- **Deployment**: Project is deployed to Vercel with GitHub auto-deployment enabled
-- **GitHub Repository**: https://github.com/mwyuwono/Weaver-Yuwono-Home-Page
-- **Technology Stack**:
-  - Main site: Vanilla HTML/CSS/JavaScript with Google Fonts (Playfair Display, Inter)
-  - Projects site: HTML/CSS/JavaScript with m3-design-v2 design system (via CDN)
-  - Design System: m3-design-v2 imported from jsDelivr CDN (`@main` branch)
-
-## Development Workflow
-
-This is a static website with no build process. **Auto-deployment is enabled** - any push to the `main` branch automatically triggers a Vercel deployment.
-
-**CRITICAL CDN Cache Management:** After pushing changes to m3-design-v2, always wait 2-3 minutes before purging jsDelivr CDN (purges are throttled to max 10/hour per file), and if throttled, temporarily pin consuming projects to the commit hash (e.g., `@abc1234`) with a TODO to revert to `@main` within 24 hours, rather than repeatedly purging which will fail.
-
-### Standard Workflow
-
-1. Make changes to HTML/CSS/JS files
-2. Commit changes to git
-3. Push to GitHub: `git push origin main`
-4. Vercel automatically deploys the changes to production
-
-### Manual Deployment
-
-Never run `vercel --prod`: the project is Git-linked, so it duplicates the Git deployment of the same commit. Push to `main` instead.
-
-### Domain Configuration
-
-The project uses a single domain:
-- **weaver-yuwono.com** → main landing page
-- **weaver-yuwono.com/projects/** → portfolio page
-
-No special Vercel configuration is needed - standard static file serving handles both pages.
-
-## Default Change Locus (Important)
-
-**Unless the user explicitly asks otherwise, all component and styling changes must be made in the shared design system repo (`m3-design-v2`) so updates propagate to all consuming projects.**
-
-- Do **not** implement per-page or per-app overrides in consuming projects unless explicitly requested.
-- If a local override is unavoidable, call it out and confirm before proceeding.
-- If a request mentions a UI or component change, first verify whether the component is sourced from the design system and update it there.
-
-## Design System Integration
-
-This project uses the **m3-design-v2** design system via CDN imports.
-
-**Authoritative Documentation:** For complete design system details, see [m3-design-v2/DESIGN-SYSTEM.md](https://github.com/mwyuwono/m3-design-v2/blob/main/DESIGN-SYSTEM.md)
-
-### CDN Import Details
-
-**CSS tokens** (in `projects/projects.css`):
-```css
-/* Using @main with cache-busting parameter - update ?v= after design system changes */
-@import url('https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/tokens.css?v=20260130');
-@import url('https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/main.css?v=20260130');
-```
-
-### Import Pinning Policy (3-Tier Hierarchy)
-
-**Preferred import strategies (in order of preference):**
-
-| Priority | Method | Use Case |
-|----------|--------|----------|
-| **Primary** | Semantic version tags (`@v1.2.3`) | Production stability, immutable |
-| **Secondary** | `@main` with cache-busting (`?v=YYYYMMDD`) | Development iteration |
-| **Emergency** | Commit hash (`@abc1234`) | CDN staleness fallback only |
-
-**Default: Use `@main` with cache-busting parameters.**
-
-**NEVER pin to a commit hash without:**
-- A comment explaining the specific issue
-- A TODO with target date to revert (24-48 hours max)
-
-### CRITICAL: Audit Local Overrides Before Design System Changes
-
-**ALWAYS verify `projects/projects.css` has no conflicting token overrides before making design system changes.**
-
-Token precedence chain (highest to lowest):
-1. This project's CSS files (`projects/projects.css`)
-2. Design system `m3-design-v2/src/styles/tokens.css`
-3. Component defaults in design system components
-
-**Audit for problematic overrides:**
-
-```bash
-# Check for component-specific token overrides
-grep -n "wy-filter-chip\|wy-controls\|wy-modal\|wy-button\|--md-sys-color" projects/projects.css
-
-# If found, verify they are:
-# ✅ ALLOWED: Layout configuration, app-specific spacing
-# ❌ FORBIDDEN: Color/border/shadow overrides that duplicate design system
-```
-
-**Red flags (remove these):**
-- Hardcoded colors instead of tokens (e.g., `#E8F5E9`)
-- Comments like "Override for..." or "Workaround for..."
-- Duplicate tokens that already exist in design system
-
-**When local overrides ARE appropriate:**
-- App-specific layout adjustments
-- Custom spacing for this project only
-- Tokens genuinely unique to this project
-
-**When local overrides are FORBIDDEN:**
-- Colors, borders, shadows (use design system tokens)
-- Component appearance (update design system)
-- Fixes for design system bugs (fix at source, not locally)
-
-### Browser Cache Management
-
-**Safari-Specific Caching:**
-Safari aggressively caches CSS/JS even with proper `Cache-Control` headers. Always use cache-busting:
-
-- Add `?v=YYYYMMDD` to CDN imports
-- Update version parameter after design system changes
-- Hard refresh (Cmd+Shift+R) after updates
-- **CRITICAL:** Update cache-busting EVERY TIME design system tokens change
-
-### After Design System Changes
-
-**ALWAYS follow this complete workflow checklist - skipping cache-busting will cause stale styles:**
-
-**Complete Workflow Checklist:**
-1. Purge jsDelivr CDN cache:
-```bash
-for f in src/styles/tokens.css src/styles/main.css dist/web-components.js; do
-  for v in @main "" @latest; do
-    curl -s "https://purge.jsdelivr.net/gh/mwyuwono/m3-design-v2${v}/${f}"
-  done
-done
-```
-2. **Update cache-busting parameters** (CRITICAL for browser reload):
-```bash
-# Check current parameters
-grep -r "?v=" projects/projects.css
-
-# Update to current date (e.g., ?v=20260203)
-# Edit: projects/projects.css lines with @import url(...)
-```
-3. Commit version changes
-4. Hard refresh browser (Cmd+Shift+R)
-
-**Why This Matters:** Browsers cache CSS/JS files aggressively. Without updating `?v=` parameters, users will see old styles even after CDN purge and git push. Always update cache-busting parameters when design system changes affect this project.
-
-### Token Mapping
-
-Local token names are mapped to design system tokens for backward compatibility:
-- `--md-sys-spacing-xs` → `var(--spacing-xs)` (4px)
-- `--md-sys-spacing-sm` → `var(--spacing-sm)` (8px)
-- `--md-sys-spacing-md` → `var(--spacing-md)` (16px)
-- `--md-sys-spacing-lg` → `var(--spacing-lg)` (24px)
-- `--md-sys-spacing-xl` → `var(--spacing-xl)` (32px)
-- `--md-sys-spacing-xxl` → `var(--spacing-2xl)` (48px)
-
-### React Components vs Web Components Architecture
-
-**CRITICAL:** This project uses vanilla HTML/JavaScript with design system tokens. When making UI changes:
-
-**This project uses:**
-- **Design System Tokens** (CSS variables) - Loaded via CDN from `m3-design-v2`
-- **Vanilla HTML/JS** - No React, no Web Components (currently)
-
-**When to update design system vs project:**
-- **Update Design System (`m3-design-v2`) when:** Changes to shared tokens (colors, spacing, typography) that should affect all projects
-- **Update Project when:** Project-specific styling or components
-
-**How to identify which to edit:**
-1. Check if change affects design tokens (colors, spacing, typography scale)
-2. If yes, edit the design system (`m3-design-v2/src/styles/tokens.css` or `main.css`)
-3. If no, it's project-specific (edit local CSS files)
-
-**Example:**
-- Changing primary color → Edit `m3-design-v2/src/styles/tokens.css`
-- Changing project card layout → Edit `projects/projects.css` (project-specific)
-
-**Verification Checklist:**
-- [ ] Determine if change is token-related (shared) or project-specific
-- [ ] If token-related, verify it should propagate to all projects
-- [ ] After design system changes, purge CDN cache and hard refresh
+- **A push to `main` is a production deploy; nothing else deploys.** `git.deploymentEnabled` in `vercel.json`
+  (`"**": false, "main": true`) blocks every other branch, including cloud `claude/*` branches. Keep it. A branch cut
+  before commit `01c7c7d` still has the old `vercel.json` and will deploy previews when pushed.
+- **Pushes that change only `*.md` or `tools/` skip the build** (`ignoreCommand` in `vercel.json`; it shows as a
+  canceled deployment and stores almost nothing). Keep repo-only material in those paths or extend the exclusions.
+- **One push per finished change.** Batch commits and preview locally instead of pushing to look. Push only when Matt
+  approves that push. Work done on a branch is merged into `main` and pushed once.
+- **Never run `vercel --prod` or `vercel deploy`.** The project is Git-linked, so either duplicates the Git deployment.
+  The installed CLI (v48) has no `vercel api` subcommand and parses `vercel api …` as a deploy. When the Vercel MCP
+  lacks an operation (for example domain redirects), ask Matt to make the change in the dashboard.
+- **Every committed byte is stored with every deployment.** `.vercelignore` only hides files from the public site; it
+  does not reduce storage. Before committing media, confirm a page references it, export it at the sizes actually
+  served, compress PDFs, and delete the files it replaces in the same commit. Do not commit videos, QA screenshots,
+  unused renders, working/source files (PSD, CAD, raw scans) or build intermediates. Only the built 3D model in
+  `projects/connecticut-cottage/model/` ships; its `tools/cottage-3d` source stays small.
+- **Size check:** `git ls-files -z | xargs -0 du -ck | tail -1`. If the tree passes about 60 MB, move
+  `projects/assets/sheets/` and `projects/assets/pdfs/` (most of the bytes) to the object store rather than growing the repo.
+- **Browser caching:** `vercel.json` caches `projects/assets/` and `landing-assets/` for a day; the hashed files in
+  `model/assets/` are immutable. Give a replacement asset a new filename, or returning visitors see the old one for up to a day.
+- **Domain:** the canonical host is `weaver-yuwono.com` (the pages' canonical tags); `www` should redirect to it.
 
 ## CSS Modification Policy
 
@@ -341,7 +182,7 @@ See `components/README.md` for detailed guidelines and examples.
 ```
 /
 ├── index.html              # Main landing page
-├── styles.css              # Landing page styles (Material Design 3 background)
+├── styles.css              # Landing layout (on top of projects/case/case.css)
 ├── landing-assets/         # Landing page assets
 │   ├── logo.svg           # Main logo
 │   ├── stanton-headshot.jpg
@@ -372,11 +213,6 @@ See `components/README.md` for detailed guidelines and examples.
 └── .gitignore             # Git ignore rules (iCloud-safe)
 ```
 
-### Deployment storage rule
-
-Only `main` deploys (`git.deploymentEnabled` in `vercel.json`); other branches, including cloud `claude/*`
-branches, build no previews. Every deployment stores the whole committed tree, so keep unused media out of Git.
-
 ### Public-content rule
 
 Every committed file is publicly served unless listed in `.vercelignore`. Plan sets must have owner names,
@@ -387,12 +223,9 @@ they are committed.
 
 - **Landing page**: Root directory with assets in `landing-assets/`
 - **Projects portfolio**: `/projects/` directory with self-contained `assets/` subdirectory
-- **Component architecture**: Component Composition Pattern (base + variants)
-  - Base components define shared structure (`card-base/`)
-  - Variant components extend base with specific modifications
-  - Both pages load appropriate base + variant combinations
+- **components/**: legacy; no page loads `card-base` or `profile-card` any more
 - **CSS separation**:
-  - Landing: `styles.css` (Material Design 3 background) + card-base + profile-card
+  - Landing: `projects/case/case.css` + `styles.css`
   - Projects: `projects/case/case.css` (shared tokens, case pages) + `projects/hub.css` (hub); no CDN dependency
 - **Asset ownership**: Clear separation between landing and projects assets
 - **File naming**: Consistent kebab-case for all new/renamed files
