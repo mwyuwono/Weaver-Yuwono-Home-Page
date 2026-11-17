@@ -5,37 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weaver-Yuwono</title>
     <meta name="description" content="Matt and Stanton Weaver-Yuwono.">
+    <link rel="canonical" href="https://weaver-yuwono.com/">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Weaver-Yuwono">
     <meta property="og:url" content="https://weaver-yuwono.com/">
     <meta property="og:image" content="https://weaver-yuwono.com/projects/assets/social/projects.jpg">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <!-- Design System Tokens (m3-design-v2) - Update ?v= after design system changes -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/tokens.css?v=20260130">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mwyuwono/m3-design-v2@main/src/styles/main.css?v=20260130">
-    <!-- Page Styles -->
-    <link rel="stylesheet" href="styles.css">
-    <!-- Component Styles: Base card must load before variants -->
-    <link rel="stylesheet" href="components/card-base/card-base.css">
-    <link rel="stylesheet" href="components/profile-card/profile-card.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600&family=Noto+Sans:wght@100;400&family=Noto+Serif:wght@400;600;800&family=Noto+Serif:ital,wght@1,300;1,600;1,800&display=swap" rel="stylesheet">
-    <!-- Component Scripts -->
-    <script src="components/profile-card/profile-card.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500&family=Noto+Sans:wght@400&family=Noto+Serif:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Shared tokens, type and top bar come from the projects pages; styles.css adds the landing layout. -->
+    <link rel="stylesheet" href="projects/case/case.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="page-container" data-element="main-container">
-        <header class="site-header" data-element="site-header">
-            <img src="landing-assets/logo.svg" alt="Weaver-Yuwono" class="site-logo" data-element="site-logo">
-            <div class="site-title" data-element="site-title">Weaver - Yuwono</div>
-        </header>
-        <main class="cards-container" data-element="cards-container">
-            <div class="profile-grid">
-                <!-- Profile cards are rendered dynamically by profile-card.js -->
-            </div>
-        </main>
+<body class="case-page home-page">
+    <div class="case-topbar">
+        <a class="case-brand" href="/" aria-label="Weaver-Yuwono home"><img src="landing-assets/logo.svg" alt="" width="47" height="30"></a>
     </div>
+    <main id="home-root">
+        <header class="home-intro">
+            <h1 class="home-title">Weaver-Yuwono</h1>
+            <p class="case-summary">The home page of Matt and Stanton Weaver-Yuwono.</p>
+        </header>
+
+        <div class="home-people">
+            <section class="person" aria-labelledby="person-stanton">
+                <div class="person__media">
+                    <img src="landing-assets/stanton-headshot.jpg" alt="Stanton Yuwono" width="1000" height="1339">
+                </div>
+                <header class="person__head">
+                    <p class="case-eyebrow">Mercer</p>
+                    <h2 class="person__name" id="person-stanton">Stanton</h2>
+                </header>
+                <ul class="person__links">
+                    <li>
+                        <a class="person__link" href="https://www.linkedin.com/in/stantonyuwono/" target="_blank" rel="noopener noreferrer">
+                            <span class="person__link-title">LinkedIn<span class="person__arrow" aria-hidden="true"> ↗</span></span>
+                            <span class="person__link-meta">linkedin.com/in/stantonyuwono</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="person" aria-labelledby="person-matt">
+                <div class="person__media">
+                    <img src="landing-assets/matt-headshot.jpg" alt="Matt Weaver-Yuwono" width="896" height="1200">
+                </div>
+                <header class="person__head">
+                    <p class="case-eyebrow">Principal Product Designer</p>
+                    <h2 class="person__name" id="person-matt">Matt</h2>
+                </header>
+                <ul class="person__links">
+                    <li>
+                        <a class="person__link" href="https://work.weaver-yuwono.com/">
+                            <span class="person__link-title">Product design work<span class="person__arrow" aria-hidden="true"> ↗</span></span>
+                            <span class="person__link-meta">work.weaver-yuwono.com</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="person__link" href="/projects/">
+                            <span class="person__link-title">Personal projects<span class="person__arrow" aria-hidden="true"> →</span></span>
+                            <span class="person__link-meta">Architecture, artworks, software tools and built projects</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="person__link" href="https://www.linkedin.com/in/mattweaveryuwono/" target="_blank" rel="noopener noreferrer">
+                            <span class="person__link-title">LinkedIn<span class="person__arrow" aria-hidden="true"> ↗</span></span>
+                            <span class="person__link-meta">linkedin.com/in/mattweaveryuwono</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </main>
 </body>
 </html>
