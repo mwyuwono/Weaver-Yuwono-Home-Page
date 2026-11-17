@@ -21,12 +21,14 @@
   };
   const img = (src, alt, srcset, sizes) => {
     const i = el('img');
-    i.src = src;
-    i.alt = alt || '';
-    if (srcset) i.srcset = srcset;
-    if (sizes) i.sizes = sizes;
+    // loading, sizes and srcset must be set before src, or the browser
+    // starts fetching src immediately (ignoring lazy and the srcset choice).
     i.loading = 'lazy';
     i.decoding = 'async';
+    if (sizes) i.sizes = sizes;
+    if (srcset) i.srcset = srcset;
+    i.src = src;
+    i.alt = alt || '';
     return i;
   };
 
@@ -55,9 +57,9 @@
     const poster = img(m.image, '');
     poster.className = 'case-model__poster';
     const frame = el('iframe', 'case-model__frame');
+    frame.loading = 'lazy'; // before src, or the model loads eagerly
     frame.src = m.href + '?embed=1';
     frame.title = 'Interactive 3D model of the house';
-    frame.loading = 'lazy';
     frame.allow = 'fullscreen';
     const hint = el('span', 'case-model__hint', 'Drag to rotate');
     const toggle = el('button', 'case-model__expand');

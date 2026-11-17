@@ -43,12 +43,14 @@
 
       const media = el('div', 'hub-item__media');
       const im = el('img');
-      im.src = p.card.src;
-      if (p.card.srcset) im.srcset = p.card.srcset;
-      im.sizes = '(max-width: 760px) 100vw, 560px';
-      im.alt = p.card.alt || '';
-      im.decoding = 'async';
+      // loading, sizes and srcset must be set before src, or the browser
+      // starts fetching src immediately (ignoring lazy and the srcset choice).
       im.loading = ci === 0 && i < 2 ? 'eager' : 'lazy';
+      im.decoding = 'async';
+      im.sizes = '(max-width: 760px) 100vw, 560px';
+      if (p.card.srcset) im.srcset = p.card.srcset;
+      im.src = p.card.src;
+      im.alt = p.card.alt || '';
       media.append(im);
 
       const text = el('div', 'hub-item__text');
