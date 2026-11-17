@@ -24,12 +24,13 @@ window.WY_PROJECTS = [
     location: 'Sharon, Connecticut',
     year: '2021',
     type: 'New house · Built',
-    headline: 'A new house I designed for the Sharon historic district. Approved and built.',
+    headline: 'A weekend house designed for the Sharon historic district.',
     summary: [
-      'Friday Cottage was our weekend house in Sharon, Connecticut, the place we went to leave New York behind, until we sold it. I designed it from scratch to replace a non-historic building in the town’s historic district.',
-      'The new house could not extend beyond the old footprint, so it rises across three levels, with retaining walls taking up the change in grade. Wetlands on the site, and a replacement septic system designed by others, set the limits on where everything could go.',
-      'I wanted the house to look as though it had always stood among the older houses of Litchfield County. It is Greek Revival in the plain, local way: a symmetrical front, corner pilasters, frieze windows under the eaves and a detailed entry. The materials are natural throughout: cedar siding and trim, wood windows, a tumbled brick chimney rising from the living room’s wood-burning fireplace, and soapstone counters on custom kitchen cabinets.',
-      'I drafted the complete set of design documents in AutoCAD: plans; exterior and interior elevations; trim and entry details; kitchen drawings; and schedules for windows, doors, finishes, power and lighting. I submitted the set to a licensed building engineer for stamping as part of building approval.'
+      'Friday Cottage is a house in Litchfield County, Connecticut, that I designed as our weekend retreat. My knowledge of architecture is self-taught, built on a lifelong interest in historic houses. This project gave me the chance to design a house from scratch and to take responsibility for making every part fit together and work.',
+      'The design covered the whole house: the layout of three floors, the fireplace and chimney, and the selection of every window, door, floor finish, outlet and light fixture. It had to meet the requirements of the Sharon Historic District Commission and the Wetlands Commission, and the drawings required a licensed building engineer’s stamp.',
+      'The site set the main constraints. The house would replace a non-historic building in Sharon’s historic district, and regulations required it to stay within the existing footprint. The design therefore rises across three levels, with retaining walls to handle the change in grade. Wetlands on the site and a replacement septic system, designed by a third party, further shaped the plan.',
+      'The design uses a vernacular Greek Revival style, the plain version of the style that spread through rural New England in the nineteenth century, much of it built by local carpenters working from pattern books such as Asher Benjamin’s. The style suited the project for two reasons: it is achievable within budget, and its proportions and details give a compact house a sense of occasion. The front is symmetrical, with corner pilasters, frieze windows under the eaves and a detailed entry. The design specifies natural materials: cedar siding and trim, wood windows, a tumbled brick chimney on the living room’s outside wall serving a wood-burning fireplace, and soapstone counters on custom kitchen cabinets. The aim was a house that fits into the historic fabric of Litchfield County.',
+      'I drafted the complete set of design documents in AutoCAD: plans, exterior and interior elevations, trim and entry details, kitchen drawings, and window, door, finish, power and lighting schedules. Both commissions approved the design, and the engineer stamped the drawings as part of building approval.'
     ],
     facts: [
       { label: 'Role', value: 'Designer' },
@@ -56,9 +57,9 @@ window.WY_PROJECTS = [
       caption: 'A 3D model built from the drawings. Drag to rotate it here, or open it full screen to separate the floors, view one level at a time, and zoom.'
     },
     moves: [
-      { title: 'Fits the historic district', body: 'Proportions, trim and materials follow the Greek Revival houses around it: corner pilasters, frieze windows and a detailed entry.' },
-      { title: 'Detailed for the builder', body: 'Trim, the front entry, the kitchen and the living room are drawn at construction scale.' },
-      { title: 'Every system scheduled', body: 'Windows and doors, flooring, power and lighting each have their own schedule.' }
+      { title: 'Fits the historic district', body: 'Vernacular Greek Revival proportions, trim and materials that match the older houses of Litchfield County: corner pilasters, frieze windows and a detailed entry.' },
+      { title: 'Three levels on the original footprint', body: 'Regulations limited the house to the existing footprint, so the plan rises across three levels, with retaining walls for the change in grade.' },
+      { title: 'Drawn for construction', body: 'A complete AutoCAD set covers plans, elevations, trim and entry details and the kitchen, with schedules for windows, doors, finishes, power and lighting.' }
     ],
     sheets: [
       { src: '../assets/sheets/connecticut-cottage-07.jpg', full: '../assets/sheets/connecticut-cottage-07-full.jpg', label: 'Renderings', title: 'Four elevations, rendered' },
