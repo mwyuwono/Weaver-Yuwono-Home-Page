@@ -125,7 +125,7 @@
   const intro = el('header', 'case-intro');
   intro.append(el('p', 'case-eyebrow', [p.location, p.year, p.type].filter(Boolean).join(' · ')));
   intro.append(el('h1', 'case-title', p.headline));
-  intro.append(el('p', 'case-summary', p.summary));
+  [].concat(p.summary || []).forEach((para) => intro.append(el('p', 'case-summary', para)));
   const facts = el('dl', 'case-facts');
   (p.facts || []).forEach((f) => {
     const d = el('div', 'case-fact');

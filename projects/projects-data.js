@@ -25,7 +25,12 @@ window.WY_PROJECTS = [
     year: '2021',
     type: 'New house · Built',
     headline: 'A new house I designed for the Sharon historic district. Approved and built.',
-    summary: 'I designed this house from scratch to replace an existing non-historic building in the Sharon historic district. The design was approved by the historic district commission and the wetlands commission and received an engineer’s stamp. The house now stands in downtown Sharon.',
+    summary: [
+      'Friday Cottage was our weekend house in Sharon, Connecticut, the place we went to leave New York behind, until we sold it. I designed it from scratch to replace a non-historic building in the town’s historic district.',
+      'The new house could not extend beyond the old footprint, so it rises across three levels, with retaining walls taking up the change in grade. Wetlands on the site, and a replacement septic system designed by others, set the limits on where everything could go.',
+      'I wanted the house to look as though it had always stood among the older houses of Litchfield County. It is Greek Revival in the plain, local way: a symmetrical front, corner pilasters, frieze windows under the eaves and a detailed entry. The materials are natural throughout: cedar siding and trim, wood windows, a tumbled brick chimney rising from the living room’s wood-burning fireplace, and soapstone counters on custom kitchen cabinets.',
+      'I drafted the complete set of design documents in AutoCAD: plans; exterior and interior elevations; trim and entry details; kitchen drawings; and schedules for windows, doors, finishes, power and lighting. I submitted the set to a licensed building engineer for stamping as part of building approval.'
+    ],
     facts: [
       { label: 'Role', value: 'Designer' },
       { label: 'Approvals', value: 'Historic district commission, wetlands commission, engineer’s stamp' },
@@ -51,7 +56,7 @@ window.WY_PROJECTS = [
       caption: 'A 3D model built from the drawings. Drag to rotate it here, or open it full screen to separate the floors, view one level at a time, and zoom.'
     },
     moves: [
-      { title: 'Fits the historic district', body: 'Proportions, trim and materials follow the Greek Revival houses around it: corner pilasters, frieze windows and a pedimented entry.' },
+      { title: 'Fits the historic district', body: 'Proportions, trim and materials follow the Greek Revival houses around it: corner pilasters, frieze windows and a detailed entry.' },
       { title: 'Detailed for the builder', body: 'Trim, the front entry, the kitchen and the living room are drawn at construction scale.' },
       { title: 'Every system scheduled', body: 'Windows and doors, flooring, power and lighting each have their own schedule.' }
     ],
