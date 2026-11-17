@@ -36,15 +36,15 @@ the whole committed tree (about 38 MB here, Nov 2026) from creation until about 
 deploying less often and smaller does. When the `vercel-deployment-guardrails` skill is available, invoke it before any Vercel work.
 
 - **A push to `main` is a production deploy; nothing else deploys.** `git.deploymentEnabled` in `vercel.json`
-  (`"**": false, "main": true`) blocks every other branch, including cloud `claude/*` branches. Keep it. A branch cut
-  before commit `01c7c7d` still has the old `vercel.json` and will deploy previews when pushed.
+  (`"**": false, "main": true`) and the project's Preview Branch Tracking (off) both block every other branch,
+  including cloud `claude/*` branches. Keep both.
 - **Pushes that change only `*.md` or `tools/` skip the build** (`ignoreCommand` in `vercel.json`; it shows as a
   canceled deployment and stores almost nothing). Keep repo-only material in those paths or extend the exclusions.
 - **One push per finished change.** Batch commits and preview locally instead of pushing to look. Push only when Matt
   approves that push. Work done on a branch is merged into `main` and pushed once.
 - **Never run `vercel --prod` or `vercel deploy`.** The project is Git-linked, so either duplicates the Git deployment.
   The installed CLI (v48) has no `vercel api` subcommand and parses `vercel api …` as a deploy. When the Vercel MCP
-  lacks an operation (for example domain redirects), ask Matt to make the change in the dashboard.
+  lacks an operation (for example domain redirects or project settings), make it in the dashboard with Matt's OK.
 - **Every committed byte is stored with every deployment.** `.vercelignore` only hides files from the public site; it
   does not reduce storage. Before committing media, confirm a page references it, export it at the sizes actually
   served, compress PDFs, and delete the files it replaces in the same commit. Do not commit videos, QA screenshots,
