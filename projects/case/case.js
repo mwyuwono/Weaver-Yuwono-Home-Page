@@ -147,35 +147,11 @@
     root.append(fig);
   }
 
-  // Feature (optional): a heading with one or more large images, each opening in the viewer
-  if (p.feature) {
-    const f = p.feature;
-    const shots = f.images || [f];
-    const viewerItems = shots.map((x) => ({ src: x.src, full: x.full, label: f.heading, title: x.caption || '' }));
-    const sec = el('section', 'case-section');
-    sec.append(el('h2', 'case-heading', f.heading));
-    shots.forEach((x, i) => {
-      const fig = el('figure', 'case-feature');
-      const a = el('a');
-      a.href = x.full || x.src;
-      a.setAttribute('aria-label', `Open ${x.caption || f.heading} full size`);
-      a.addEventListener('click', (e) => {
-        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
-        e.preventDefault();
-        openViewer(viewerItems, i, a);
-      });
-      a.append(img(x.src, x.alt, null, '(max-width: 1100px) 100vw, 1040px'));
-      fig.append(a);
-      if (x.caption) fig.append(el('figcaption', null, x.caption));
-      sec.append(fig);
-    });
-    root.append(sec);
-  }
-
-  // Approach
-  if (p.moves && p.moves.length) {
-    const sec = el('section', 'case-section');
-    sec.append(el('h2', 'case-heading', 'Approach'));
+  // Approach (or a project's own heading for it); `movesFirst` places it before the galleries.
+  function renderMoves() {
+    if (!p.moves || !p.moves.length) return;
+    const sec = el('section', 'case-section case-section--moves');
+    sec.append(el('h2', 'case-heading', p.movesHeading || 'Approach'));
     const ol = el('ol', 'case-moves');
     p.moves.forEach((m) => {
       const li = el('li');
@@ -185,6 +161,66 @@
     sec.append(ol);
     root.append(sec);
   }
+  if (p.movesFirst) renderMoves();
+
+  // Sections: a heading, optional text (body paragraphs, a quote, a facts list) and an optional gallery.
+  // Galleries open their images in the same viewer as the drawing sets.
+  // Optional: `variant` adds a section class; an image's `shape` adds an is-<shape> class;
+  // an image's `label` is shown before its caption, as on drawing sheets.
+  const features = p.features || (p.feature ? [p.feature] : []);
+  features.forEach((f) => {
+    const shots = f.images || (f.src ? [f] : []);
+    const viewerItems = shots.map((x) => ({ src: x.src, full: x.full, alt: x.alt, label: x.label || f.heading, title: x.caption || '' }));
+    const sec = el('section', 'case-section');
+    if (f.variant) sec.classList.add(`case-section--${f.variant}`);
+    const gallery = f.grid ? el('div', 'case-sheets') : sec;
+    const figureClass = f.grid ? 'case-sheet' : 'case-feature';
+    sec.append(el('h2', 'case-heading', f.heading));
+    if (f.body || f.quote || f.facts) {
+      const text = el('div', 'case-section__text');
+      [].concat(f.body || []).forEach((para) => text.append(el('p', 'case-summary', para)));
+      if (f.quote) {
+        const q = el('blockquote', 'case-quote');
+        q.append(el('p', null, f.quote.text));
+        if (f.quote.cite) q.append(el('footer', null, f.quote.cite));
+        text.append(q);
+      }
+      if (f.facts) {
+        const dl = el('dl', 'case-facts');
+        f.facts.forEach((x) => {
+          const d = el('div', 'case-fact');
+          d.append(el('dt', null, x.label), el('dd', null, x.value));
+          dl.append(d);
+        });
+        text.append(dl);
+      }
+      sec.append(text);
+    }
+    shots.forEach((x, i) => {
+      const fig = el('figure', figureClass);
+      if (x.shape) fig.classList.add(`is-${x.shape}`);
+      const a = el('a');
+      a.href = x.full || x.src;
+      a.setAttribute('aria-label', `Open ${x.caption || f.heading} full size`);
+      a.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        openViewer(viewerItems, i, a, 'image');
+      });
+      a.append(img(x.src, x.alt));
+      fig.append(a);
+      if (x.label) {
+        const cap = el('figcaption');
+        cap.append(el('span', 'case-sheet__label', x.label), document.createTextNode(x.caption || ''));
+        fig.append(cap);
+      } else if (x.caption) fig.append(el('figcaption', null, x.caption));
+      gallery.append(fig);
+    });
+    if (f.grid && shots.length) sec.append(gallery);
+    root.append(sec);
+  });
+
+  if (!p.movesFirst) renderMoves();
 
   // 3D model
   if (p.model) {
@@ -229,11 +265,11 @@
     root.append(sec);
   }
 
-  // Outcome (optional)
+  // Outcome (optional): one paragraph or several, under a project's own heading if it has one
   if (p.outcome) {
-    const sec = el('section', 'case-section');
-    sec.append(el('h2', 'case-heading', 'Outcome'));
-    sec.append(el('p', 'case-summary', p.outcome));
+    const sec = el('section', 'case-section case-section--outcome');
+    sec.append(el('h2', 'case-heading', p.outcomeHeading || 'Outcome'));
+    [].concat(p.outcome).forEach((para) => sec.append(el('p', 'case-summary', para)));
     root.append(sec);
   }
 
@@ -252,7 +288,7 @@
   root.append(nav);
 
   // Sheet viewer: full-resolution (vector where available), zoom by resizing the image so SVGs re-render crisply.
-  function openViewer(sheets, start, opener) {
+  function openViewer(sheets, start, opener, itemName = 'sheet') {
     let i = start;
     let zoom = 1; // 1 = fit
     const box = el('div', 'viewer');
@@ -270,8 +306,8 @@
     const zoomLabel = el('span', 'viewer__zoom', 'Fit');
     const controls = el('div', 'viewer__controls');
     controls.append(
-      btn('Previous sheet', '‹', () => go(-1)),
-      btn('Next sheet', '›', () => go(1)),
+      btn(`Previous ${itemName}`, '‹', () => go(-1)),
+      btn(`Next ${itemName}`, '›', () => go(1)),
       btn('Zoom out', '−', () => setZoom(zoom / 1.6)),
       zoomLabel,
       btn('Zoom in', '+', () => setZoom(zoom * 1.6)),
@@ -309,7 +345,7 @@
       const s = sheets[i];
       cap.textContent = '';
       cap.append(el('span', 'case-sheet__label', s.label), document.createTextNode(s.title));
-      pic.alt = `${s.label}: ${s.title}`;
+      pic.alt = s.alt || `${s.label}: ${s.title}`;
       zoom = 1;
       pic.style.width = '';
       pic.onload = () => {

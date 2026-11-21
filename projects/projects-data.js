@@ -3,7 +3,7 @@
  *
  * To add a project: append an entry here, create projects/<slug>/index.html from an existing
  * case page shell (it only sets data-project="<slug>"), and put images under projects/assets/.
- * Optional fields (model, outcome, notes) render only when present.
+ * Optional fields such as galleries, drawings, model, and outcome render when present.
  * Entries with `href` instead of a case page (e.g. the art site) link out and need no shell.
  * `category` must match an id in WY_CATEGORIES; categories with no entries are hidden.
  *
@@ -145,5 +145,211 @@ window.WY_PROJECTS = [
       srcset: '../projects/assets/images/art-ionic-capital-800.jpg 800w, ../projects/assets/images/art-ionic-capital-1370.jpg 1370w',
       alt: 'Framed ink and wash drawing of an Ionic capital with its volute and egg-and-dart moulding'
     }
+  },
+  {
+    slug: 'andover-trask',
+    category: 'built',
+    title: 'Andover Trask',
+    location: 'Atlanta, Georgia',
+    year: '2010–2015',
+    headline: 'Andover Trask',
+    summary: [
+      'I taught myself to sew from library books and turned the hobby into Andover Trask, a company that made canvas and leather bags in Atlanta for five years.',
+      'Andover Trask made handsome, functional bags from American canvas and leather, built to be carried every day rather than kept for best. I designed every product and the brand around it, made the bags with a small team in our own studio, and ran the business, from purchasing and bookkeeping to wholesale and press. West Elm stocked our bags, Ledbury collaborated with us, and the brand drew more than 25 press features, including an interview on WABE, Atlanta’s NPR station.'
+    ],
+    facts: [
+      { label: 'Role', value: 'Founder and designer' },
+      { label: 'Team', value: 'One full-time employee and part-time help' },
+      { label: 'Stocked by', value: 'West Elm, Avalon and Ponce City Market' },
+      { label: 'Press', value: 'More than 25 features, 2012–2015' }
+    ],
+    card: {
+      src: 'assets/images/andover-trask-lineup-900.jpg',
+      srcset: 'assets/images/andover-trask-lineup-900.jpg 900w, assets/images/andover-trask-lineup-1536.jpg 1536w',
+      alt: 'Andover Trask canvas totes with leather handles and contrasting bases'
+    },
+    hero: {
+      src: '../assets/images/andover-trask-bench-1536.jpg',
+      srcset: '../assets/images/andover-trask-bench-900.jpg 900w, ../assets/images/andover-trask-bench-1536.jpg 1536w',
+      alt: 'A man setting a dark green canvas tote with leather handles on a weathered wooden bench in front of a brick wall',
+      caption: 'From a 2015 product shoot'
+    },
+    features: [
+      {
+        heading: 'The Standard Bag',
+        variant: 'split',
+        body: [
+          'It started with one bag. I spent about three years on the Standard Bag before I sold one: a canvas tote with leather handles and copper rivets, made from materials that were as durable as they were good-looking. I worked by a line of Arthur Ashe’s: “Start where you are. Use what you have. Do what you can.”',
+          'I shared my progress online, friends asked for bags of their own, and a feature in The Atlanta Journal-Constitution turned the hobby into a business. The Standard Bag stayed one of our best sellers.'
+        ],
+        images: [
+          {
+            src: '../assets/images/andover-trask-standard-bag-960.jpg',
+            alt: 'A man carrying a Standard Bag over his shoulder: natural canvas body, olive canvas base and dark brown leather handles',
+            caption: 'The Standard Bag in olive'
+          }
+        ]
+      },
+      {
+        heading: 'Building the line',
+        variant: 'catalog',
+        grid: true,
+        body: 'From the Standard Bag I built a line of totes, tool bags, coal bags, beach bags, aprons and smaller accessories. Many took their names from American literature, like the Harper, the Faulkner and the Huck; others were named for Southern places. The leather came from Pennsylvania, the canvas from New England, and the machinery and sewing supplies from Georgia.',
+        images: [
+          {
+            src: '../assets/images/andover-trask-leather-base-tote-960.jpg',
+            alt: 'Dark canvas tote with tan leather handles and base, a stitched front pocket and a leather label',
+            caption: 'The Finch: canvas with a leather base and an exterior pocket'
+          },
+          {
+            src: '../assets/images/andover-trask-harper-960.jpg',
+            alt: 'Olive and natural canvas bag with a zip top, tan leather handles and open exterior pockets',
+            caption: 'The Harper, based on a tool bag'
+          },
+          {
+            src: '../assets/images/andover-trask-athens-960.jpg',
+            alt: 'Gray and white canvas tote with a front pocket, tan leather handles and a leather label',
+            caption: 'The Athens, in two-tone canvas'
+          },
+          {
+            src: '../assets/images/andover-trask-faulkner-960.jpg',
+            alt: 'Natural canvas tote with an orange canvas base, cotton webbing handles and a leather label',
+            caption: 'The Faulkner, one of three Coal Bag colorways'
+          },
+          {
+            src: '../assets/images/andover-trask-tool-bag-960.jpg',
+            alt: 'Navy canvas tool bag with a khaki zip top, dark leather handles, exterior pockets and a leather label',
+            caption: 'The Tool Bag in navy and khaki'
+          },
+          {
+            src: '../assets/images/andover-trask-hatteras-960.jpg',
+            alt: 'Gray and white striped tote with natural webbing straps, tan leather handles and a leather label',
+            caption: 'The Hatteras beach bag'
+          }
+        ]
+      },
+      {
+        heading: 'From drawing to production',
+        variant: 'drawings',
+        grid: true,
+        body: 'I drew each design in Illustrator, with every panel, pocket and strap measured and the construction noted, then made a prototype and refined it before it went into production.',
+        images: [
+          {
+            src: '../assets/sheets/andover-trask-finch-900.png',
+            full: '../assets/sheets/andover-trask-finch-2000.png',
+            alt: 'Finch drawing: the finished bag, its outline and its three pattern pieces with measurements',
+            label: 'Finch',
+            caption: 'Exterior panels, leather base and mitered pocket corners'
+          },
+          {
+            src: '../assets/sheets/andover-trask-coal-bag-900.png',
+            full: '../assets/sheets/andover-trask-coal-bag-2000.png',
+            alt: 'Coal Bag drawing: a table of colorways, the bag in elevation and plan, and its pattern pieces with measurements',
+            label: 'Coal Bag',
+            caption: 'Colorways, measurements and the inside hanging pocket'
+          },
+          {
+            src: '../assets/sheets/andover-trask-apron-schematic-900.png',
+            full: '../assets/sheets/andover-trask-apron-schematic-2000.png',
+            alt: 'Apron drawing: outline with two chest pockets, a divided front pocket and a leather neck strap',
+            label: 'Apron',
+            caption: 'Pockets, stitching and the leather neck strap'
+          },
+          {
+            src: '../assets/sheets/andover-trask-harper-drawing-900.png',
+            full: '../assets/sheets/andover-trask-harper-drawing-2000.png',
+            alt: 'Harper rendering: a gray and natural canvas bag with tan leather handles and a leather label',
+            label: 'Harper',
+            caption: 'Product rendering'
+          }
+        ]
+      },
+      {
+        heading: 'The brand',
+        variant: 'brand',
+        grid: true,
+        body: 'I designed the identity myself: the monogram and wordmark, the debossed leather labels and brass branding stamp, the stationery and the website. I also photographed the products for the site.',
+        images: [
+          {
+            src: '../assets/images/andover-trask-logo-1536.png',
+            alt: 'The Andover Trask monogram, an ampersand and T in a black circle, above the wordmark',
+            caption: 'Monogram and wordmark'
+          },
+          {
+            src: '../assets/images/andover-trask-stationery-1536.jpg',
+            alt: 'Andover Trask letterhead reading Atl, GA, beside a pen',
+            caption: 'Letterhead'
+          },
+          {
+            src: '../assets/images/andover-trask-brand-details-1536.jpg',
+            alt: 'Canvas tote with riveted leather handles beside Andover Trask stationery, a brass stamp and hand tools',
+            caption: 'Stationery, branding stamp and hardware beside a finished tote. Photograph by Sawyer Baird.',
+            shape: 'wide'
+          }
+        ]
+      },
+      {
+        heading: 'In the studio',
+        variant: 'studio',
+        grid: true,
+        body: 'We made everything in our own studio in Atlanta. I ran it with one full-time employee and part-time help, and handled the purchasing, bookkeeping and production alongside the design.',
+        images: [
+          {
+            src: '../assets/images/andover-trask-studio-1536.jpg',
+            alt: 'Matt Weaver at a sewing machine in the Andover Trask studio',
+            caption: 'At work in the Atlanta studio. Photograph by Sawyer Baird.',
+            shape: 'wide'
+          },
+          {
+            src: '../assets/images/andover-trask-workbench-1536.jpg',
+            alt: 'Hand tools and a dish of brass hardware on a notebook page of measurements headed Finch, on a dark workbench',
+            caption: 'Working notes for the Finch, February 2014'
+          },
+          {
+            src: '../assets/images/andover-trask-sewing-1536.jpg',
+            alt: 'Hands guiding material through an industrial sewing machine',
+            caption: 'Sewing in the studio'
+          },
+          {
+            src: '../assets/images/andover-trask-handle-punch-1536.jpg',
+            alt: 'Hands using a rotary punch on a leather handle beside a canvas tote',
+            caption: 'Punching holes in a leather handle. Photograph by Sawyer Baird.',
+            shape: 'tall'
+          },
+          {
+            src: '../assets/images/andover-trask-apron-960.jpg',
+            alt: 'Detail of a natural canvas apron hanging by its leather neck strap, with two small stitched pockets',
+            caption: 'Canvas apron with a leather neck strap',
+            shape: 'tall'
+          }
+        ]
+      },
+      {
+        heading: 'Partners, press and giving back',
+        variant: 'reach',
+        grid: true,
+        body: [
+          'West Elm chose Andover Trask for the local makers’ collections at its Avalon store in Alpharetta, which opened in 2014, and at its Ponce City Market store in Atlanta in 2015. Ledbury, the Richmond shirtmaker, collaborated with us in 2015.',
+          'Through A Book for Every Bag, each bag bought on our website paid for a new book for a child or young adult with little access to books: a fitting return for a business that began with library books.',
+          'Between 2012 and 2015 the brand appeared in more than 25 publications, from The Atlanta Journal-Constitution and Southern Living’s Hot List to Atlanta magazine, UrbanDaddy and Jezebel, and I talked about the business on WABE’s City Lights.'
+        ],
+        quote: { text: 'Take everything to go with the all-American totes of Andover Trask.', cite: 'Atlanta Homes & Lifestyles, 2013' },
+        images: [
+          {
+            src: '../assets/images/andover-trask-shoot-chair-960.jpg',
+            alt: 'A man in a straw hat seated on a red chair, with a natural and orange canvas tote at his side'
+          },
+          {
+            src: '../assets/images/andover-trask-shoot-street-960.jpg',
+            alt: 'A woman sitting on a curb in front of a brick wall, with a dark canvas tote with leather handles beside her'
+          }
+        ]
+      }
+    ],
+    outcomeHeading: 'What it taught me',
+    outcome: [
+      'I sold Andover Trask in 2015. Building it from a hobby was the broadest education I have had in making things and bringing them to market.',
+      'It took craft: sewing, patterning and leatherwork, learned by hand. It took product design: drawing each bag for production and refining it through prototypes. It took brand building, from the identity to the photography and website, and business management: purchasing, bookkeeping, managing a team and selling wholesale to a national retailer. The results came in the same range, from West Elm’s local makers’ collections and a collaboration with Ledbury to an interview on Atlanta’s NPR station and more than 25 features in three years.'
+    ]
   }
 ];
