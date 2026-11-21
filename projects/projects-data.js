@@ -161,7 +161,7 @@ window.WY_PROJECTS = [
     ],
     facts: [
       { label: 'Role', value: 'Founder and designer' },
-      { label: 'Team', value: 'One full-time employee and part-time help' },
+      { label: 'Line', value: 'About ten designs in more than 20 colorways' },
       { label: 'Stocked by', value: 'West Elm, Avalon and Ponce City Market' },
       { label: 'Press', value: 'More than 25 features, 2012–2015' }
     ],
@@ -181,8 +181,8 @@ window.WY_PROJECTS = [
         heading: 'The Standard Bag',
         variant: 'split',
         body: [
-          'It started with one bag. I spent about three years on the Standard Bag before I sold one: a canvas tote with leather handles and copper rivets, made from materials that were as durable as they were good-looking. I worked by a line of Arthur Ashe’s: “Start where you are. Use what you have. Do what you can.”',
-          'I shared my progress online, friends asked for bags of their own, and a feature in The Atlanta Journal-Constitution turned the hobby into a business. The Standard Bag stayed one of our best sellers.'
+          'It started with one bag. I spent about three years on the Standard Bag before I sold one: a canvas tote with leather handles and copper rivets, made from materials that were as durable as they were good-looking. I worked by a line of Arthur Ashe’s: “Start where you are. Use what you have. Do what you can.” Part of the inspiration was my grandfather, a cobbler in Cedartown, Georgia; a photograph of him at work hung in our studio.',
+          'I shared my progress online, friends asked for bags of their own, and a feature in The Atlanta Journal-Constitution turned the hobby into a business. By 2015 it had become the Waxed Standard, in 20-ounce waxed canvas.'
         ],
         images: [
           {
@@ -196,37 +196,55 @@ window.WY_PROJECTS = [
         heading: 'Building the line',
         variant: 'catalog',
         grid: true,
-        body: 'From the Standard Bag I built a line of totes, tool bags, coal bags, beach bags, aprons and smaller accessories. Many took their names from American literature, like the Harper, the Faulkner and the Huck; others were named for Southern places. The leather came from Pennsylvania, the canvas from New England, and the machinery and sewing supplies from Georgia.',
+        body: [
+          'From the Standard Bag I built a wholesale line. By 2015 it had about ten designs in more than 20 colorways, from the Huck, a smaller everyday tote, to the Harper, a take on the classic tool bag and our most popular product with florists, stylists, artists and bartenders. Many took their names from American literature; others, like the Beaufort and the Hatteras, from Southern places.',
+          'The materials were specified as closely as the shapes: #10 cotton duck and canvas from 14 to 22 ounces, vegetable-tanned and bridle leather, solid brass rivets and double-needle stitching. The leather came from Pennsylvania, the canvas from New England, and the machinery and sewing supplies from Georgia. Every piece carried the stamp “Andover Trask / Made in Atlanta.”'
+        ],
         images: [
           {
-            src: '../assets/images/andover-trask-leather-base-tote-960.jpg',
-            alt: 'Dark canvas tote with tan leather handles and base, a stitched front pocket and a leather label',
-            caption: 'The Finch: canvas with a leather base and an exterior pocket'
+            src: '../assets/images/andover-trask-harper-line-960.jpg',
+            alt: 'Harper tool tote: natural canvas lower with eight exterior pockets, olive canvas upper, zip closure and tan leather straps',
+            caption: 'Harper, our most popular design'
           },
           {
-            src: '../assets/images/andover-trask-harper-960.jpg',
-            alt: 'Olive and natural canvas bag with a zip top, tan leather handles and open exterior pockets',
-            caption: 'The Harper, based on a tool bag'
+            src: '../assets/images/andover-trask-waxed-standard-960.jpg',
+            alt: 'Waxed Standard tote in natural waxed canvas with a charcoal waxed base and natural leather straps',
+            caption: 'Waxed Standard, in 20-ounce waxed canvas'
           },
           {
-            src: '../assets/images/andover-trask-athens-960.jpg',
-            alt: 'Gray and white canvas tote with a front pocket, tan leather handles and a leather label',
-            caption: 'The Athens, in two-tone canvas'
+            src: '../assets/images/andover-trask-huck-960.jpg',
+            alt: 'Huck tote with a natural canvas upper, orange base and natural leather handles with washer details',
+            caption: 'Huck, a smaller tote with a contrasting base'
           },
           {
-            src: '../assets/images/andover-trask-faulkner-960.jpg',
-            alt: 'Natural canvas tote with an orange canvas base, cotton webbing handles and a leather label',
-            caption: 'The Faulkner, one of three Coal Bag colorways'
+            src: '../assets/images/andover-trask-beaufort-960.jpg',
+            alt: 'Beaufort tote in forest green canvas with leather shoulder straps and riveted tone-on-tone reinforcements',
+            caption: 'Beaufort, in 18-ounce canvas'
           },
           {
-            src: '../assets/images/andover-trask-tool-bag-960.jpg',
-            alt: 'Navy canvas tool bag with a khaki zip top, dark leather handles, exterior pockets and a leather label',
-            caption: 'The Tool Bag in navy and khaki'
+            src: '../assets/images/andover-trask-faulkner-line-960.jpg',
+            alt: 'Faulkner bag in natural canvas with a navy base and natural webbing handles',
+            caption: 'Faulkner, in 22-ounce canvas with a double bottom'
           },
           {
-            src: '../assets/images/andover-trask-hatteras-960.jpg',
-            alt: 'Gray and white striped tote with natural webbing straps, tan leather handles and a leather label',
-            caption: 'The Hatteras beach bag'
+            src: '../assets/images/andover-trask-hatteras-line-960.jpg',
+            alt: 'Hatteras tote in gray and natural hand-woven cotton stripe with natural leather handles',
+            caption: 'Hatteras, in hand-woven cotton stripe'
+          },
+          {
+            src: '../assets/images/andover-trask-sawyer-960.jpg',
+            alt: 'Sawyer tote with a gray canvas upper, natural canvas lower, front pocket and natural leather straps',
+            caption: 'Sawyer, in 18-ounce American canvas'
+          },
+          {
+            src: '../assets/images/andover-trask-knox-960.jpg',
+            alt: 'Knox tote in navy canvas with four exterior pockets and brown bridle leather handles',
+            caption: 'Knox, with four exterior pockets'
+          },
+          {
+            src: '../assets/images/andover-trask-apron-line-960.jpg',
+            alt: 'Natural canvas apron with vegetable-tanned leather straps, brass hardware and four pockets',
+            caption: 'Canvas and leather apron, designed for creative work'
           }
         ]
       },
@@ -270,7 +288,10 @@ window.WY_PROJECTS = [
         heading: 'The brand',
         variant: 'brand',
         grid: true,
-        body: 'I designed the identity myself: the monogram and wordmark, the debossed leather labels and brass branding stamp, the stationery and the website. I also photographed the products for the site.',
+        body: [
+          'I designed the identity myself: the monogram and wordmark, the debossed leather labels and brass branding stamp, the stationery and the website. I also photographed the products for the site.',
+          'The brand’s line was “Carry it with you.” The copy promised goods made by hand from natural materials that wear in, each taking on its own character, with proportions drawn from storied Southern architecture. The wholesale line sheet set out each design for buyers, with its materials, dimensions and colorways.'
+        ],
         images: [
           {
             src: '../assets/images/andover-trask-logo-1536.png',
@@ -287,6 +308,16 @@ window.WY_PROJECTS = [
             alt: 'Canvas tote with riveted leather handles beside Andover Trask stationery, a brass stamp and hand tools',
             caption: 'Stationery, branding stamp and hardware beside a finished tote. Photograph by Sawyer Baird.',
             shape: 'wide'
+          },
+          {
+            src: '../assets/images/andover-trask-line-sheet-cover-960.jpg',
+            alt: 'Cover of the Andover Trask wholesale line sheet: canvas and leather totes on a stone step in front of a carved wooden door',
+            caption: 'Wholesale line sheet, 2015: cover'
+          },
+          {
+            src: '../assets/images/andover-trask-line-sheet-harper-960.jpg',
+            alt: 'Line sheet page for the Harper tool tote, with a product photograph, description and specifications',
+            caption: 'Line sheet page for the Harper'
           }
         ]
       },
