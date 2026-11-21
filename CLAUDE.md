@@ -28,6 +28,26 @@ Static HTML/CSS/JS: no build step, no CDN design system. GitHub: https://github.
 The working copy lives on Google Drive, where git is slow (`git diff`/`merge` can exceed 120 s): use long timeouts.
 Preview locally with `python3 -m http.server 8765` from the repo root.
 
+## Adding a case page
+
+Hold every new project to the standard set by Andover Trask (Nov 2026):
+
+- **Evidence first.** Inventory the Drive sources and public coverage before writing. Every fact needs a source
+  (a Drive file, press, or Matt's word). When sources conflict (dates, names, sale wording), ask Matt rather than
+  choosing. Never infer product names, materials or credits from how something looks. Copy is first person and
+  restrained; Matt approves it.
+- **A portfolio story, not a bio.** Open with the strongest true hook (origin and result). Then, as the material
+  allows: the signature piece, the full range, the design process (drawings beside finished work), the brand,
+  how it was made, reach (partners, press, impact), and a closing reflection naming concrete skills and successes.
+- **Headings must match the content** (not "The collection" over six of ten-plus products).
+- **Critique before showing.** Review the page at 1280 and 375 px as a hiring reviewer would: what is missing, what
+  weakens it, whether Matt's own design work is visible. Fix it or report it.
+- **Project-specific styling** goes in `projects/<slug>/<slug>.css`, loaded only by that shell and scoped to
+  `[data-project="<slug>"]`. Leave `case.css` alone so the other case pages are unaffected.
+- **Exports:** rasterize Illustrator `.ai` files with Ghostscript (`gs -sDEVICE=png16m -r300`; `sips` can't read
+  them) and PSDs with `magick 'file.psd[0]' -background white -alpha remove`. Product cutouts share one frame
+  (960×1409 on white) so the grids line up.
+
 ## Deploying (Vercel): few, small deployments
 
 Vercel team `weaver-yuwono` is on Hobby: 10 GB of Deployment Storage shared by every project. Each deployment stores
@@ -70,113 +90,6 @@ Only modify CSS when:
 2. User asks you to fix a bug or issue
 3. User gives clear permission to update styling
 
-## Component Architecture
-
-This project follows the **Component Composition Pattern** for building reusable UI components. This is the same pattern used by Bootstrap, Material Design, and other major CSS frameworks.
-
-### Pattern Overview
-
-Components use a **base + variant** approach:
-- **Base component** defines shared structure and styling
-- **Variants** extend the base with specific modifications
-- Elements use **dual class names** for composition
-
-### Component Structure
-
-```
-components/
-├── card-base/              # Base component (shared foundation)
-│   └── card-base.css       # Shared card structure & styles
-├── project-card/           # Variant component
-│   ├── project-card.css    # Project-specific overrides
-│   └── project-card.js     # Project card rendering
-└── profile-card/           # Variant component
-    ├── profile-card.css    # Profile-specific overrides
-    └── profile-card.js     # Profile card rendering
-```
-
-### How It Works
-
-**HTML with dual classes:**
-```html
-<div class="card project-card">
-  <div class="card__content-wrap">
-    <div class="card__title">Title</div>
-    <div class="card__link project-card__helper">Helper text</div>
-  </div>
-</div>
-```
-
-**CSS cascade:**
-```css
-/* card-base.css - shared foundation */
-.card { /* base structure */ }
-.card__title { /* shared element */ }
-.card__link { /* shared typography */ }
-
-/* project-card.css - variant overrides */
-.project-card:hover { /* variant behavior */ }
-.project-card__helper { /* variant-specific layout */ }
-```
-
-**Load order matters:**
-```html
-<!-- Base MUST load before variants -->
-<link rel="stylesheet" href="components/card-base/card-base.css">
-<link rel="stylesheet" href="components/project-card/project-card.css">
-```
-
-### Creating New Components
-
-**When to create a base component:**
-- Multiple variants share 80%+ of structure/styling
-- Variants differ in behavior, not fundamental structure
-- You want single source of truth for shared styles
-
-**Steps to create a base + variant:**
-
-1. **Create base component:**
-   ```
-   components/component-base/
-   └── component-base.css    # Shared structure, BEM elements
-   ```
-
-2. **Create variant components:**
-   ```
-   components/component-variant/
-   ├── component-variant.css  # Only differences from base
-   └── component-variant.js   # Variant logic
-   ```
-
-3. **Use dual class names in JavaScript:**
-   ```javascript
-   element.className = 'component component-variant';
-   element.className = 'component__element variant__element';
-   ```
-
-4. **Load CSS in correct order:**
-   ```html
-   <link rel="stylesheet" href="components/component-base/component-base.css">
-   <link rel="stylesheet" href="components/component-variant/component-variant.css">
-   ```
-
-### CSS Override Rules
-
-- **Specificity wins:** `.variant .base__element` (20) beats `.base__element` (10)
-- **Load order:** When equal specificity, last-loaded wins
-- **Variants only define differences:** Base styles inherited automatically
-- **No !important:** Never use - it prevents variant overrides
-
-### Benefits of This Pattern
-
-✅ **Single source of truth** - Base changes affect all variants
-✅ **Minimal duplication** - Variants only define differences
-✅ **Easy maintenance** - Update base once, affects all variants
-✅ **Scalable** - Easy to add new variants
-✅ **Industry standard** - Same as Bootstrap, Material, Foundation
-
-See `components/README.md` for detailed guidelines and examples.
-
 ## File Structure
 
 ```
@@ -192,7 +105,7 @@ See `components/README.md` for detailed guidelines and examples.
 │   ├── hub.js / hub.css   # Hub renderer and styles
 │   ├── projects-data.js   # Content model: WY_CATEGORIES + WY_PROJECTS, used by hub AND case pages
 │   ├── case/              # Shared case-page renderer (case.js) and styles (case.css)
-│   ├── <slug>/index.html  # One thin shell per case page (sets data-project="<slug>")
+│   ├── <slug>/index.html  # One thin shell per case page (sets data-project="<slug>"); optional <slug>.css
 │   ├── connecticut-cottage/model/  # Built 3D model (from tools/cottage-3d)
 │   └── assets/            # Projects-specific assets
 │       ├── images/        # Project images and logo

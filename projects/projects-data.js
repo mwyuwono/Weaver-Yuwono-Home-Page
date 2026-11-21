@@ -3,7 +3,9 @@
  *
  * To add a project: append an entry here, create projects/<slug>/index.html from an existing
  * case page shell (it only sets data-project="<slug>"), and put images under projects/assets/.
- * Optional fields such as galleries, drawings, model, and outcome render when present.
+ * Optional fields render only when present: hero; features (sections with heading, body, quote, facts,
+ * grid, variant, and images with caption, label, shape); moves (+ movesHeading, movesFirst); model;
+ * sheets + pdf; outcome (string or paragraphs, + outcomeHeading).
  * Entries with `href` instead of a case page (e.g. the art site) link out and need no shell.
  * `category` must match an id in WY_CATEGORIES; categories with no entries are hidden.
  *
