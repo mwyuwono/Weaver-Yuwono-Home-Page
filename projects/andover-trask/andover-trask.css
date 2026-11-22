@@ -76,6 +76,12 @@
   width: min(100%, 300px);
   margin-top: 40px;
 }
+/* The early sewing photo and the first press clipping sit side by side under the story. */
+[data-project="andover-trask"] .case-section--split .case-feature:nth-of-type(2),
+[data-project="andover-trask"] .case-section--split .case-feature:nth-of-type(3) { grid-row: 3; width: calc(50% - 12px); }
+[data-project="andover-trask"] .case-section--split .case-feature:nth-of-type(2) { justify-self: start; }
+[data-project="andover-trask"] .case-section--split .case-feature:nth-of-type(3) { justify-self: end; }
+[data-project="andover-trask"] .case-section--split .case-feature:nth-of-type(n+2) img { aspect-ratio: 1; object-fit: cover; }
 
 /* Building the line: the products on one continuous white sweep, edge to edge. */
 [data-project="andover-trask"] .case-section--catalog {
@@ -245,7 +251,6 @@
   }
   [data-project="andover-trask"] :is(.case-section--brand, .case-section--studio, .case-section--reach) > .case-sheets { grid-column: 2; }
   [data-project="andover-trask"] .case-section--reach .case-sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  [data-project="andover-trask"] .case-section--reach .case-sheet:first-child { grid-column: 1 / -1; }
 }
 
 [data-project="andover-trask"] .case-sheet a,
@@ -258,7 +263,6 @@
   [data-project="andover-trask"] .case-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   [data-project="andover-trask"] .case-facts > div:last-child { grid-column: 1 / -1; }
   [data-project="andover-trask"] .case-section--reach .case-sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  [data-project="andover-trask"] .case-section--reach .case-sheet:first-child { grid-column: 1 / -1; }
 }
 
 @media (max-width: 600px) {
@@ -271,7 +275,8 @@
   [data-project="andover-trask"] .case-section--catalog { margin-top: 56px; padding: 40px var(--at-gutter) 48px; }
   [data-project="andover-trask"] .case-section--catalog .case-sheets { gap: 28px 16px; }
   [data-project="andover-trask"] .case-section--catalog .case-sheet img { aspect-ratio: 1; scale: 1; }
-  [data-project="andover-trask"] .case-section--split .case-feature + .case-feature { width: 62%; margin-top: 28px; }
+  [data-project="andover-trask"] .case-section--split .case-feature + .case-feature { display: inline-block; width: calc(50% - 6px); margin-top: 28px; vertical-align: top; }
+  [data-project="andover-trask"] .case-section--split .case-feature:nth-of-type(3) { margin-left: 12px; }
   /* The plate scrolls sideways at a readable size instead of shrinking to a strip. */
   [data-project="andover-trask"] .case-sheet.is-plate a { overflow-x: auto; overscroll-behavior-x: contain; margin: 0 calc(-1 * var(--at-gutter)); padding: 0 var(--at-gutter); }
   [data-project="andover-trask"] .case-sheet.is-plate img { width: 260%; max-width: none; }

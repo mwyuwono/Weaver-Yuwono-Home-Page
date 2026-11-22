@@ -188,6 +188,10 @@ window.WY_PROJECTS = [
             alt: 'A man carrying a Standard Bag over his shoulder: natural canvas body, olive canvas base and dark brown leather handles',
           },
           {
+            src: '../assets/images/andover-trask-sewing-early-421.jpg',
+            alt: 'Matt Weaver smiling at a Consew industrial sewing machine, stitching a canvas strap',
+          },
+          {
             src: '../assets/images/andover-trask-press-ajc-960.jpg',
             alt: 'Newspaper clipping: a photograph of a canvas tote with leather handles, captioned “Matt Weaver’s sturdy waxed canvas bags are great for weekends, work or everyday errands”',
             caption: 'The Atlanta Journal-Constitution, December 2012'
@@ -334,8 +338,8 @@ window.WY_PROJECTS = [
             alt: 'An industrial sewing machine needle stitching a small monogram label onto natural canvas',
           },
           {
-            src: '../assets/images/andover-trask-canvas-rolls-1200.jpg',
-            alt: 'Rolls of natural and dark canvas stacked on their sides',
+            src: '../assets/images/andover-trask-boxed-orders-1200.jpg',
+            alt: 'Striped canvas totes with leather handles and hang tags packed in shipping boxes',
           }
         ]
       },
@@ -357,16 +361,28 @@ window.WY_PROJECTS = [
             alt: 'Andover Trask totes and a Harper tool bag on a wooden table on a porch, among potted plants',
           },
           {
-            src: '../assets/images/andover-trask-wild-brick-1000.jpg',
-            alt: 'A navy canvas tote with brown leather handles on a brick ledge in front of a brick wall',
+            src: '../assets/images/andover-trask-wild-beach-1000.jpg',
+            alt: 'A brown canvas tote with leather handles on a beach beside white sneakers, with aviator sunglasses hooked on its pocket',
           },
           {
             src: '../assets/images/andover-trask-wild-alley-1000.webp',
             alt: 'A man in a white polo shirt holding up a navy and natural canvas tote in a lane between brick buildings',
           },
           {
+            src: '../assets/images/andover-trask-wild-brick-1000.jpg',
+            alt: 'A navy canvas tote with brown leather handles on a brick ledge in front of a brick wall',
+          },
+          {
+            src: '../assets/images/andover-trask-wild-grey-1000.jpg',
+            alt: 'A man in a chambray shirt carrying a grey and natural canvas tote with leather handles',
+          },
+          {
             src: '../assets/images/andover-trask-scout-table-1536.jpg',
             alt: 'A natural canvas tote with leather handles lying on a wooden table with sunglasses, a scarf and a glass of whiskey',
+          },
+          {
+            src: '../assets/images/andover-trask-wild-sidewalk-480.jpg',
+            alt: 'A navy and orange canvas tote with leather straps carried on the shoulder along a sidewalk',
           },
           {
             src: '../assets/images/andover-trask-wild-camo-1000.jpg',
@@ -430,6 +446,12 @@ window.WY_PROJECTS = [
             src: '../assets/images/andover-trask-press-ahl-sq-960.jpg',
             alt: 'Atlanta Homes & Lifestyles style news page with a natural canvas tote under the heading Summertime Essential',
             caption: 'Atlanta Homes & Lifestyles, 2013 (product photograph updated to the Scout)',
+            shape: 'print'
+          },
+          {
+            src: '../assets/images/andover-trask-press-atlanta-sq-960.jpg',
+            alt: 'Atlanta magazine Style page titled Tangling with Totes, with a navy and natural Andover Trask tote among bags by local makers and two baby goats',
+            caption: 'Atlanta magazine, April 2014',
             shape: 'print'
           },
           {
