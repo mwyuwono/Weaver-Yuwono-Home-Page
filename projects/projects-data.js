@@ -443,15 +443,15 @@ window.WY_PROJECTS = [
         quote: { text: 'Take everything to go with the all-American totes of Andover Trask.', cite: 'Atlanta Homes & Lifestyles, 2013' },
         images: [
           {
+            src: '../assets/images/andover-trask-press-atlanta-page-1200.jpg',
+            alt: 'Atlanta magazine Arbiter section opener headlined Totes McGoats: a striped Andover Trask Hatteras tote with two baby goats climbing out of it, on a sky-blue background',
+            caption: 'Atlanta magazine, April 2014',
+            shape: 'feature'
+          },
+          {
             src: '../assets/images/andover-trask-press-ahl-sq-960.jpg',
             alt: 'Atlanta Homes & Lifestyles style news page with a natural canvas tote under the heading Summertime Essential',
             caption: 'Atlanta Homes & Lifestyles, 2013 (product photograph updated to the Scout)',
-            shape: 'print'
-          },
-          {
-            src: '../assets/images/andover-trask-press-atlanta-sq-960.jpg',
-            alt: 'Atlanta magazine Style page titled Tangling with Totes, with a navy and natural Andover Trask tote among bags by local makers and two baby goats',
-            caption: 'Atlanta magazine, April 2014',
             shape: 'print'
           },
           {

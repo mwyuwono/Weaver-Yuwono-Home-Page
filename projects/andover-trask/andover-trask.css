@@ -170,9 +170,29 @@
   mix-blend-mode: multiply;
 }
 
-/* Press: three clippings exported to one square frame on white, so they sit on the page at one size. */
+/* Press and community: the Atlanta magazine opener is the star, a full page shown large beside the story,
+   with the other clippings in a row beneath it (squared on white, so they sit on the page at one size). */
 [data-project="andover-trask"] .case-section--reach .case-sheets { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 [data-project="andover-trask"] .case-section--reach .case-sheet img { aspect-ratio: 1; object-fit: contain; }
+[data-project="andover-trask"] .case-section--reach .case-sheet.is-feature { grid-column: 1 / -1; }
+[data-project="andover-trask"] .case-section--reach .case-sheet.is-feature img {
+  aspect-ratio: auto;
+  border-radius: 2px;
+  box-shadow: 0 22px 44px -28px rgb(26 27 18 / 0.55);
+}
+@media (min-width: 900px) {
+  [data-project="andover-trask"] .case-section--reach {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 0 24px;
+    align-items: center;
+  }
+  [data-project="andover-trask"] .case-section--reach > .case-heading { grid-column: 1 / -1; }
+  [data-project="andover-trask"] .case-section--reach > .case-sheets { display: contents; }
+  [data-project="andover-trask"] .case-section--reach .case-sheet.is-feature { grid-column: 1 / 8; grid-row: 2; }
+  [data-project="andover-trask"] .case-section--reach > .case-section__text { grid-column: 8 / 13; grid-row: 2; max-width: none; margin: 0; padding-left: 16px; }
+  [data-project="andover-trask"] .case-section--reach .case-sheet:not(.is-feature) { grid-column: span 4; grid-row: 3; align-self: start; margin-top: 56px; }
+}
 
 /* The pull quote: the one place the display face runs large inside a section. */
 [data-project="andover-trask"] .case-quote {
@@ -236,21 +256,20 @@
   }
   [data-project="andover-trask"] :is(.case-section--catalog, .case-section--wild) .case-section__text > .case-summary { margin: 0; }
 
-  [data-project="andover-trask"] :is(.case-section--brand, .case-section--studio, .case-section--reach) {
+  [data-project="andover-trask"] :is(.case-section--brand, .case-section--studio) {
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     column-gap: 56px;
     align-items: start;
   }
-  [data-project="andover-trask"] :is(.case-section--brand, .case-section--studio, .case-section--reach) > .case-heading { grid-column: 1 / -1; }
-  [data-project="andover-trask"] :is(.case-section--brand, .case-section--studio, .case-section--reach) > .case-section__text {
+  [data-project="andover-trask"] :is(.case-section--brand, .case-section--studio) > .case-heading { grid-column: 1 / -1; }
+  [data-project="andover-trask"] :is(.case-section--brand, .case-section--studio) > .case-section__text {
     grid-column: 1;
     position: sticky;
     top: 40px;
     margin-bottom: 0;
   }
-  [data-project="andover-trask"] :is(.case-section--brand, .case-section--studio, .case-section--reach) > .case-sheets { grid-column: 2; }
-  [data-project="andover-trask"] .case-section--reach .case-sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-project="andover-trask"] :is(.case-section--brand, .case-section--studio) > .case-sheets { grid-column: 2; }
 }
 
 [data-project="andover-trask"] .case-sheet a,
@@ -262,7 +281,6 @@
   [data-project="andover-trask"] .case-section--catalog .case-sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   [data-project="andover-trask"] .case-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   [data-project="andover-trask"] .case-facts > div:last-child { grid-column: 1 / -1; }
-  [data-project="andover-trask"] .case-section--reach .case-sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 600px) {
@@ -282,8 +300,7 @@
   [data-project="andover-trask"] .case-sheet.is-plate img { width: 260%; max-width: none; }
   [data-project="andover-trask"] .case-section--studio .case-sheets,
   [data-project="andover-trask"] .case-section--collab .case-sheets,
-  [data-project="andover-trask"] .case-section--brand .case-sheets,
-  [data-project="andover-trask"] .case-section--reach .case-sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
+  [data-project="andover-trask"] .case-section--brand .case-sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
   [data-project="andover-trask"] .case-section--drawings .case-sheets { gap: 0 12px; }
   [data-project="andover-trask"] .case-sheet.is-wall { grid-column: 1 / 12; }
   [data-project="andover-trask"] .case-sheet.is-wall img { aspect-ratio: 4 / 3; }
@@ -291,6 +308,7 @@
   [data-project="andover-trask"] .case-sheet.is-bench img { outline-width: 6px; }
   [data-project="andover-trask"] .case-sheet.is-plate { margin-top: 96px; }
   [data-project="andover-trask"] .case-sheet.is-mark img { width: 64%; }
+  [data-project="andover-trask"] .case-section--reach .case-sheets { gap: 20px 10px; }
   [data-project="andover-trask"] .case-section--collab .case-sheet:is(:nth-child(1), :nth-child(4)) { grid-column: 1 / -1; grid-row: auto; margin-top: 0; }
   [data-project="andover-trask"] .case-section--collab .case-sheet:is(:nth-child(2), :nth-child(3), :nth-child(5), :nth-child(6)) { grid-column: auto; grid-row: auto; margin-top: 0; }
   [data-project="andover-trask"] .case-section--collab .case-sheet:nth-child(4) { margin-top: 24px; }
