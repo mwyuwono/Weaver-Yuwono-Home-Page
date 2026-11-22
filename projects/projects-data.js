@@ -156,7 +156,7 @@ window.WY_PROJECTS = [
     year: '2010–2015',
     headline: 'Andover Trask',
     summary: [
-      'Making a well-built canvas bag for myself grew into Andover Trask, an Atlanta brand of canvas and leather goods that West Elm stocked and more than 25 publications featured.',
+      'Making a well-built canvas bag for myself grew into Andover Trask, an Atlanta brand of canvas and leather goods, sold direct to customers and featured in more than 25 publications.',
       'Andover Trask made handsome, functional bags from American canvas and leather, built to be carried every day rather than kept for best. I taught myself to sew from library books, designed every product and the brand around it, made the bags with a small team in our own studio, and ran the business, from purchasing and bookkeeping to wholesale and press. Ledbury, The Bitter Southerner and Appointed collaborated with us, and I talked about the business on WABE, Atlanta’s NPR station.'
     ],
     facts: [
@@ -170,10 +170,9 @@ window.WY_PROJECTS = [
       alt: 'Andover Trask canvas totes with leather handles and contrasting bases'
     },
     hero: {
-      src: '../assets/images/andover-trask-bench-1536.jpg',
-      srcset: '../assets/images/andover-trask-bench-900.jpg 900w, ../assets/images/andover-trask-bench-1536.jpg 1536w',
-      alt: 'A man setting a dark green canvas tote with leather handles on a weathered wooden bench in front of a brick wall',
-      caption: 'From a 2015 product shoot'
+      src: '../assets/images/andover-trask-maker-1536.jpg',
+      srcset: '../assets/images/andover-trask-maker-900.jpg 900w, ../assets/images/andover-trask-maker-1536.jpg 1536w',
+      alt: 'Matt Weaver stitching a canvas tote handle at an industrial sewing machine, with a finished tote behind him',
     },
     features: [
       {
@@ -187,7 +186,6 @@ window.WY_PROJECTS = [
           {
             src: '../assets/images/andover-trask-standard-bag-960.jpg',
             alt: 'A man carrying a Standard Bag over his shoulder: natural canvas body, olive canvas base and dark brown leather handles',
-            caption: 'The Standard Bag in olive'
           },
           {
             src: '../assets/images/andover-trask-press-ajc-960.jpg',
@@ -208,52 +206,42 @@ window.WY_PROJECTS = [
           {
             src: '../assets/images/andover-trask-harper-line-960.jpg',
             alt: 'Harper tool tote: natural canvas lower with eight exterior pockets, olive canvas upper, zip closure and tan leather straps',
-            caption: 'Harper, our most popular design'
           },
           {
             src: '../assets/images/andover-trask-waxed-standard-960.jpg',
             alt: 'Waxed Standard tote in natural waxed canvas with a charcoal waxed base and natural leather straps',
-            caption: 'Waxed Standard, in 20-ounce waxed canvas'
           },
           {
             src: '../assets/images/andover-trask-huck-960.jpg',
             alt: 'Huck tote with a natural canvas upper, orange base and natural leather handles with washer details',
-            caption: 'Huck, a smaller tote with a contrasting base'
           },
           {
             src: '../assets/images/andover-trask-beaufort-960.jpg',
             alt: 'Beaufort tote in forest green canvas with leather shoulder straps and riveted tone-on-tone reinforcements',
-            caption: 'Beaufort, in 18-ounce canvas'
           },
           {
             src: '../assets/images/andover-trask-faulkner-line-960.jpg',
             alt: 'Faulkner bag in natural canvas with a navy base and natural webbing handles',
-            caption: 'Faulkner, in 22-ounce canvas with a double bottom'
           },
           {
             src: '../assets/images/andover-trask-hatteras-line-960.jpg',
             alt: 'Hatteras tote in gray and natural hand-woven cotton stripe with natural leather handles',
-            caption: 'Hatteras, in hand-woven cotton stripe'
           },
           {
             src: '../assets/images/andover-trask-sawyer-960.jpg',
             alt: 'Sawyer tote with a gray canvas upper, natural canvas lower, front pocket and natural leather straps',
-            caption: 'Sawyer, in 18-ounce American canvas'
           },
           {
             src: '../assets/images/andover-trask-knox-960.jpg',
             alt: 'Knox tote in navy canvas with four exterior pockets and brown bridle leather handles',
-            caption: 'Knox, with four exterior pockets'
           },
           {
             src: '../assets/images/andover-trask-apron-line-960.jpg',
             alt: 'Natural canvas apron with vegetable-tanned leather straps, brass hardware and four pockets',
-            caption: 'Canvas and leather apron, designed for creative work'
           },
           {
             src: '../assets/images/andover-trask-scout-960.jpg',
             alt: 'Scout tote in natural canvas with natural leather handles, a leather tab across the opening and a small leather label',
-            caption: 'Scout, a later design in natural canvas and leather'
           }
         ]
       },
@@ -264,22 +252,21 @@ window.WY_PROJECTS = [
         body: 'I drew each design in Illustrator, with every panel, pocket and strap measured and the construction noted, then made a prototype and refined it before it went into production.',
         images: [
           {
-            src: '../assets/sheets/andover-trask-drawings-2400.png',
-            full: '../assets/sheets/andover-trask-drawings-4000.png',
-            alt: 'Four production drawings side by side: the Finch with its three pattern pieces and measurements; the Coal Bag with a colorway table, elevations and pattern pieces; the apron outline with its pockets and leather neck strap; and a rendering of the Harper',
-            label: 'Drawings',
-            caption: 'Finch, Coal Bag, apron and Harper',
-            shape: 'plate'
-          },
-          {
             src: '../assets/images/andover-trask-design-wall-1536.jpg',
             alt: 'A studio wall with product sheets pinned in a row above two boards of drawings, notes and paper patterns',
-            caption: 'The studio wall. Photograph by Sawyer Baird.'
+            shape: 'wall'
           },
           {
             src: '../assets/images/andover-trask-workbench-1536.jpg',
             alt: 'Hand tools and a dish of brass hardware on a notebook page of measurements headed Finch, on a dark workbench',
-            caption: 'Working notes for the Finch, February 2014'
+            shape: 'bench'
+          },
+          {
+            src: '../assets/sheets/andover-trask-drawings-2400.png',
+            full: '../assets/sheets/andover-trask-drawings-4000.png',
+            alt: 'Four production drawings side by side: the Finch with its three pattern pieces and measurements; the Coal Bag with a colorway table, elevations and pattern pieces; the apron outline with its pockets and leather neck strap; and a rendering of the Harper',
+            caption: 'Finch, Coal Bag, apron and Harper',
+            shape: 'plate'
           }
         ]
       },
@@ -295,34 +282,28 @@ window.WY_PROJECTS = [
           {
             src: '../assets/images/andover-trask-mark-900.png',
             alt: 'The Andover Trask monogram, an ampersand and T in a black circle, above the wordmark',
-            caption: 'Monogram and wordmark',
             shape: 'mark'
           },
           {
             src: '../assets/images/andover-trask-stamp-labels-1536.jpg',
             alt: 'A brass branding stamp and debossed leather labels reading Andover Trask, Made in Atlanta',
-            caption: 'Branding stamp and debossed leather labels'
           },
           {
             src: '../assets/images/andover-trask-business-cards-1536.jpg',
             alt: 'Two stacks of business cards: black cards with the white monogram, and white cards with the Andover Trask / Made in Atlanta wordmark',
-            caption: 'Business cards'
           },
           {
             src: '../assets/images/andover-trask-brand-details-1536.jpg',
             alt: 'Canvas tote with riveted leather handles beside Andover Trask stationery, a brass stamp and hand tools',
-            caption: 'Stationery, branding stamp and hardware beside a finished tote. Photograph by Sawyer Baird.',
             shape: 'wide'
           },
           {
             src: '../assets/images/andover-trask-line-sheet-cover-crop-960.jpg',
             alt: 'Cover of the Andover Trask wholesale line sheet: canvas and leather totes on a stone step in front of a carved wooden door',
-            caption: 'Wholesale line sheet, 2015: cover'
           },
           {
             src: '../assets/images/andover-trask-line-sheet-harper-960.jpg',
             alt: 'Line sheet page for the Harper tool tote, with a product photograph, description and specifications',
-            caption: 'Line sheet page for the Harper',
             shape: 'print'
           }
         ]
@@ -336,51 +317,60 @@ window.WY_PROJECTS = [
           {
             src: '../assets/images/andover-trask-studio-1536.jpg',
             alt: 'Matt Weaver at a sewing machine in the Andover Trask studio',
-            caption: 'At work in the Atlanta studio. Photograph by Sawyer Baird.',
             shape: 'wide'
           },
           {
             src: '../assets/images/andover-trask-cutting-1536.jpg',
             alt: 'Matt Weaver folding canvas at a cutting table, with finished bags hanging on the wall behind him',
-            caption: 'At the cutting table. Photograph by Sawyer Baird.',
             shape: 'tall'
           },
           {
             src: '../assets/images/andover-trask-handle-punch-1536.jpg',
             alt: 'Hands using a rotary punch on a leather handle beside a canvas tote',
-            caption: 'Punching holes in a leather handle. Photograph by Sawyer Baird.',
             shape: 'tall'
           },
           {
             src: '../assets/images/andover-trask-label-sewing-1200.jpg',
             alt: 'An industrial sewing machine needle stitching a small monogram label onto natural canvas',
-            caption: 'Sewing on a label'
           },
           {
             src: '../assets/images/andover-trask-canvas-rolls-1200.jpg',
             alt: 'Rolls of natural and dark canvas stacked on their sides',
-            caption: 'Rolls of canvas'
           }
         ]
       },
       {
-        heading: 'Instagram and partners',
-        variant: 'partners',
+        heading: 'In the wild',
+        variant: 'wild',
         grid: true,
         body: [
-          'Andover Trask grew up alongside Instagram, which was still new when I started the brand. Photographs of the bags in everyday use did much of the work of introducing it, and partnerships with other businesses carried it further.',
-          'West Elm chose Andover Trask for the local makers’ collections at its Avalon store in Alpharetta, which opened in 2014, and at its Ponce City Market store in Atlanta in 2015.'
+          'Andover Trask grew up alongside Instagram, which was still new when I started the brand. Photographs of the bags out in the world, carried, packed and put to work, did much of the work of introducing it, and partnerships with other businesses carried it further.',
+          'West Elm also chose Andover Trask for West Elm Local, its program of goods from local makers, at its Avalon store in Alpharetta, which opened in 2014, and at its Ponce City Market store in Atlanta in 2015.'
         ],
         images: [
           {
             src: '../assets/images/andover-trask-scout-carried-1536.jpg',
             alt: 'A woman in a white top carrying a natural canvas Scout tote over her shoulder on a tree-lined path',
-            caption: 'The Scout, carried'
+          },
+          {
+            src: '../assets/images/andover-trask-wild-porch-1000.jpg',
+            alt: 'Andover Trask totes and a Harper tool bag on a wooden table on a porch, among potted plants',
+          },
+          {
+            src: '../assets/images/andover-trask-wild-brick-1000.jpg',
+            alt: 'A navy canvas tote with brown leather handles on a brick ledge in front of a brick wall',
+          },
+          {
+            src: '../assets/images/andover-trask-wild-alley-1000.jpg',
+            alt: 'A man in a white polo shirt holding up a navy and natural canvas tote in a lane between brick buildings',
           },
           {
             src: '../assets/images/andover-trask-scout-table-1536.jpg',
             alt: 'A natural canvas tote with leather handles lying on a wooden table with sunglasses, a scarf and a glass of whiskey',
-            caption: 'The Scout'
+          },
+          {
+            src: '../assets/images/andover-trask-wild-camo-1000.jpg',
+            alt: 'A woman carrying a natural canvas tote with a camouflage base and leather handles',
           }
         ]
       },
@@ -394,49 +384,40 @@ window.WY_PROJECTS = [
         ],
         images: [
           {
-            src: '../assets/images/andover-trask-bitter-southerner-tote-960.jpg',
-            alt: 'Natural canvas tote with a dark base, canvas handles, a leather label and a hang tag reading Andover Trask × The Bitter Southerner',
-            label: 'The Bitter Southerner',
-            caption: 'Tote, 2014',
-            shape: 'cut'
-          },
-          {
-            src: '../assets/images/andover-trask-appointed-pouch-cutout-960.jpg',
-            alt: 'Navy waxed canvas pouch with two zippers, a leather zipper pull and a leather label reading Andover Trask × Appointed',
-            label: 'Appointed',
-            caption: 'Large zip pouch, 2015',
-            shape: 'cut'
-          },
-          {
             src: '../assets/images/andover-trask-bitter-southerner-totes-1128.jpg',
             alt: 'A row of black canvas totes with black webbing handles, each with an Andover Trask × The Bitter Southerner hang tag',
             label: 'The Bitter Southerner',
-            caption: 'The batch of totes, 2014'
+            caption: '2014'
+          },
+          {
+            src: '../assets/images/andover-trask-bitter-southerner-tote-960.jpg',
+            alt: 'Natural canvas tote with a dark base, canvas handles, a leather label and a hang tag reading Andover Trask × The Bitter Southerner',
+            shape: 'cut'
+          },
+          {
+            src: '../assets/images/andover-trask-bitter-southerner-badge-800.jpg',
+            alt: 'A vegetable-tanned leather badge debossed Andover Trask × The Bitter Southerner, Made in Atlanta, stitched to black canvas',
           },
           {
             src: '../assets/images/andover-trask-appointed-pouches-1536.jpg',
             alt: 'A man in a chambray shirt holding a stack of navy and natural canvas zip pouches against a corrugated metal wall',
             label: 'Appointed',
-            caption: 'The pouches, 2015. Photograph by Sterling Graves.'
+            caption: '2015'
           },
           {
-            src: '../assets/images/andover-trask-bitter-southerner-tag-900.png',
-            alt: 'Hang tag artwork: Andover Trask × The Bitter Southerner, Made in Atlanta, above a drawing of two hands clinking glasses',
-            label: 'The Bitter Southerner',
-            caption: 'Hang tag',
-            shape: 'print'
+            src: '../assets/images/andover-trask-appointed-pouch-cutout-960.jpg',
+            alt: 'Navy waxed canvas pouch with two zippers, a leather zipper pull and a leather label reading Andover Trask × Appointed',
+            shape: 'cut'
           },
           {
             src: '../assets/images/andover-trask-appointed-drawing-1400.png',
             alt: 'Drawing of two zip pouches with measurements: a large 11 by 7 inch top-zip pouch with a zippered front pocket, and a small 8 by 3 inch top-zip pouch, both with nylon lining',
-            label: 'Appointed',
-            caption: 'Drawing of the two pouches',
             shape: 'print'
           }
         ]
       },
       {
-        heading: 'Community engagement',
+        heading: 'Press and community',
         variant: 'reach',
         grid: true,
         body: [
@@ -454,22 +435,22 @@ window.WY_PROJECTS = [
           {
             src: '../assets/images/andover-trask-press-eide-sq-960.jpg',
             alt: 'Eide Magazine page titled Travel Like a Southerner, featuring a striped Hatteras tote',
-            caption: 'Eide Magazine, Summer 2015: the Hatteras',
+            caption: 'Eide Magazine, Summer 2015',
             shape: 'print'
           },
           {
             src: '../assets/images/andover-trask-press-spread-sq-960.jpg',
             alt: 'An open magazine with the Harper tool tote on the left-hand page',
-            caption: 'The Harper in a magazine spread',
             shape: 'print'
           }
         ]
       }
     ],
-    outcomeHeading: 'What it taught me',
+    outcomeHeading: 'What I learned',
     outcome: [
       'I sold Andover Trask in 2015. Building it from a hobby was the broadest education I have had in making things and bringing them to market.',
-      'It took craft: sewing, patterning and leatherwork, learned by hand. It took product design: drawing each bag for production and refining it through prototypes. It took brand building, from the identity to the photography and website, and business management: purchasing, bookkeeping, managing a team and selling wholesale to a national retailer. The results came in the same range, from West Elm’s local makers’ collections and collaborations with Ledbury, The Bitter Southerner and Appointed to an interview on Atlanta’s NPR station and more than 25 features in three years.'
+      'It took craft: sewing, patterning and leatherwork, learned by hand. It took product design: drawing each bag for production and refining it through prototypes. It took brand building, from the identity to the photography and website, and business management: purchasing, bookkeeping, managing a team and selling wholesale to a national retailer. The results came in the same range, from West Elm Local and collaborations with Ledbury, The Bitter Southerner and Appointed to an interview on Atlanta’s NPR station and more than 25 features in three years.',
+      'Studio and brand photographs by Sawyer Baird; Appointed pouches by Sterling Graves.'
     ]
   }
 ];

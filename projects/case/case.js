@@ -201,7 +201,7 @@
       if (x.shape) fig.classList.add(`is-${x.shape}`);
       const a = el('a');
       a.href = x.full || x.src;
-      a.setAttribute('aria-label', `Open ${x.caption || f.heading} full size`);
+      a.setAttribute('aria-label', `Open ${x.caption || x.alt || f.heading} full size`);
       a.addEventListener('click', (e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey) return;
         e.preventDefault();
