@@ -361,7 +361,7 @@ window.WY_PROJECTS = [
             alt: 'A navy canvas tote with brown leather handles on a brick ledge in front of a brick wall',
           },
           {
-            src: '../assets/images/andover-trask-wild-alley-1000.jpg',
+            src: '../assets/images/andover-trask-wild-alley-1000.webp',
             alt: 'A man in a white polo shirt holding up a navy and natural canvas tote in a lane between brick buildings',
           },
           {
