@@ -156,14 +156,13 @@ window.WY_PROJECTS = [
     year: '2010–2015',
     headline: 'Andover Trask',
     summary: [
-      'I taught myself to sew from library books and turned the hobby into Andover Trask, a company that made canvas and leather bags in Atlanta for five years.',
-      'Andover Trask made handsome, functional bags from American canvas and leather, built to be carried every day rather than kept for best. I designed every product and the brand around it, made the bags with a small team in our own studio, and ran the business, from purchasing and bookkeeping to wholesale and press. West Elm stocked our bags; Ledbury, The Bitter Southerner and Appointed collaborated with us; and the brand drew more than 25 press features, including an interview on WABE, Atlanta’s NPR station.'
+      'Making a well-built canvas bag for myself grew into Andover Trask, an Atlanta brand of canvas and leather goods that West Elm stocked and more than 25 publications featured.',
+      'Andover Trask made handsome, functional bags from American canvas and leather, built to be carried every day rather than kept for best. I taught myself to sew from library books, designed every product and the brand around it, made the bags with a small team in our own studio, and ran the business, from purchasing and bookkeeping to wholesale and press. Ledbury, The Bitter Southerner and Appointed collaborated with us, and I talked about the business on WABE, Atlanta’s NPR station.'
     ],
     facts: [
       { label: 'Role', value: 'Founder and designer' },
-      { label: 'Line', value: 'About ten designs in more than 20 colorways' },
-      { label: 'Stocked by', value: 'West Elm, Avalon and Ponce City Market' },
-      { label: 'Press', value: 'More than 25 features, 2012–2015' }
+      { label: 'Products', value: 'Canvas and leather goods, including totes, tool bags, aprons and zip pouches' },
+      { label: 'Press', value: 'More than 25 features, 2012–2015, including The Atlanta Journal-Constitution, Southern Living, Atlanta magazine and WABE' }
     ],
     card: {
       src: 'assets/images/andover-trask-lineup-900.jpg',
@@ -202,7 +201,7 @@ window.WY_PROJECTS = [
         variant: 'catalog',
         grid: true,
         body: [
-          'From the Standard Bag I built a wholesale line. By 2015 it had about ten designs in more than 20 colorways, from the Huck, a smaller everyday tote, to the Harper, a take on the classic tool bag and our most popular product with florists, stylists, artists and bartenders. Many took their names from American literature; others, like the Beaufort and the Hatteras, from Southern places. Later came the Scout, and small runs made with other brands.',
+          'From the Standard Bag I built a wholesale line. By 2015 it had about ten designs in more than 20 colorways, from the Huck, a smaller everyday tote, to the Harper, a take on the classic tool bag and our most popular product with florists, stylists, artists and bartenders. Many took their names from American literature; others, like the Beaufort and the Hatteras, from Southern places. Later came the Scout, in natural canvas and natural leather: of everything we made, the closest to my vision for the brand.',
           'The materials were specified as closely as the shapes: #10 cotton duck and canvas from 14 to 22 ounces, vegetable-tanned and bridle leather, solid brass rivets and double-needle stitching. The leather came from Pennsylvania, the canvas from New England, and the machinery and sewing supplies from Georgia. Every piece carried the stamp “Andover Trask / Made in Atlanta.”'
         ],
         images: [
@@ -255,16 +254,6 @@ window.WY_PROJECTS = [
             src: '../assets/images/andover-trask-scout-960.jpg',
             alt: 'Scout tote in natural canvas with natural leather handles, a leather tab across the opening and a small leather label',
             caption: 'Scout, a later design in natural canvas and leather'
-          },
-          {
-            src: '../assets/images/andover-trask-bitter-southerner-960.jpg',
-            alt: 'Natural canvas tote with a dark green base, canvas handles, a leather label and a hang tag reading Andover Trask × The Bitter Southerner',
-            caption: 'Tote made with The Bitter Southerner, 2014'
-          },
-          {
-            src: '../assets/images/andover-trask-appointed-pouch-960.jpg',
-            alt: 'Navy canvas pouch with two zippers, leather zipper pulls and a leather label reading Andover Trask × Appointed',
-            caption: 'Zip pouch made with Appointed'
           }
         ]
       },
@@ -291,24 +280,6 @@ window.WY_PROJECTS = [
             src: '../assets/images/andover-trask-workbench-1536.jpg',
             alt: 'Hand tools and a dish of brass hardware on a notebook page of measurements headed Finch, on a dark workbench',
             caption: 'Working notes for the Finch, February 2014'
-          }
-        ]
-      },
-      {
-        heading: 'The Scout',
-        variant: 'scout',
-        grid: true,
-        body: 'The Scout was one of my later designs, in natural canvas and natural leather. Of everything we made, it comes closest to my vision for the brand, and it remains a favorite.',
-        images: [
-          {
-            src: '../assets/images/andover-trask-scout-carried-1536.jpg',
-            alt: 'A woman in a white top carrying a natural canvas Scout tote over her shoulder on a tree-lined path',
-            caption: 'The Scout, carried'
-          },
-          {
-            src: '../assets/images/andover-trask-scout-table-1536.jpg',
-            alt: 'A natural canvas tote with leather handles lying on a wooden table with sunglasses, a scarf and a glass of whiskey',
-            caption: 'The Scout'
           }
         ]
       },
@@ -393,14 +364,49 @@ window.WY_PROJECTS = [
         ]
       },
       {
+        heading: 'Instagram and partners',
+        variant: 'partners',
+        grid: true,
+        body: [
+          'Andover Trask grew up alongside Instagram, which was still new when I started the brand. Photographs of the bags in everyday use did much of the work of introducing it, and partnerships with other businesses carried it further.',
+          'West Elm chose Andover Trask for the local makers’ collections at its Avalon store in Alpharetta, which opened in 2014, and at its Ponce City Market store in Atlanta in 2015.'
+        ],
+        images: [
+          {
+            src: '../assets/images/andover-trask-scout-carried-1536.jpg',
+            alt: 'A woman in a white top carrying a natural canvas Scout tote over her shoulder on a tree-lined path',
+            caption: 'The Scout, carried'
+          },
+          {
+            src: '../assets/images/andover-trask-scout-table-1536.jpg',
+            alt: 'A natural canvas tote with leather handles lying on a wooden table with sunglasses, a scarf and a glass of whiskey',
+            caption: 'The Scout'
+          }
+        ]
+      },
+      {
         heading: 'Collaborations',
         variant: 'collab',
         grid: true,
         body: [
-          'I also made products with other brands. For The Bitter Southerner, I made a small batch of totes in late 2014: 24-ounce black canvas with black webbing handles, a leather logo badge and co-branded hang tags. For Appointed, I designed a pair of zip pouches in 2015: a large 11-by-7-inch pouch with a zippered front pocket and a small 8-by-3-inch pouch, both lined in nylon and finished with a co-branded leather label.',
+          'I also made products with other brands. For The Bitter Southerner, I made a small batch of co-branded totes in late 2014, finished with a leather logo label and a hang tag; one run was in 24-ounce black canvas with black webbing handles. For Appointed, I designed a pair of zip pouches in 2015: a large 11-by-7-inch pouch with a zippered front pocket and a small 8-by-3-inch pouch, both lined in nylon and finished with a co-branded leather label.',
           'In 2015 we also collaborated with Ledbury, the Richmond shirtmaker.'
         ],
         images: [
+          {
+            src: '../assets/images/andover-trask-bitter-southerner-tote-960.jpg',
+            alt: 'Natural canvas tote with a dark base, canvas handles, a leather label and a hang tag reading Andover Trask × The Bitter Southerner',
+            label: 'The Bitter Southerner',
+            caption: 'Tote, 2014',
+            shape: 'cut'
+          },
+          {
+            src: '../assets/images/andover-trask-appointed-pouch-cutout-960.jpg',
+            alt: 'Navy waxed canvas pouch with two zippers, a leather zipper pull and a leather label reading Andover Trask × Appointed',
+            label: 'Appointed',
+            caption: 'Large zip pouch, 2015',
+            shape: 'cut'
+          },
           {
             src: '../assets/images/andover-trask-bitter-southerner-totes-1128.jpg',
             alt: 'A row of black canvas totes with black webbing handles, each with an Andover Trask × The Bitter Southerner hang tag',
@@ -430,30 +436,29 @@ window.WY_PROJECTS = [
         ]
       },
       {
-        heading: 'Stores, press and giving back',
+        heading: 'Community engagement',
         variant: 'reach',
         grid: true,
         body: [
-          'West Elm chose Andover Trask for the local makers’ collections at its Avalon store in Alpharetta, which opened in 2014, and at its Ponce City Market store in Atlanta in 2015.',
           'Through A Book for Every Bag, each bag bought on our website paid for a new book for a child or young adult with little access to books: a fitting return for a business that began with library books.',
           'Between 2012 and 2015 the brand appeared in more than 25 publications, from The Atlanta Journal-Constitution and Southern Living’s Hot List to Atlanta magazine, Eide Magazine, UrbanDaddy and Jezebel, and I talked about the business on WABE’s City Lights.'
         ],
         quote: { text: 'Take everything to go with the all-American totes of Andover Trask.', cite: 'Atlanta Homes & Lifestyles, 2013' },
         images: [
           {
-            src: '../assets/images/andover-trask-press-ahl-960.jpg',
+            src: '../assets/images/andover-trask-press-ahl-sq-960.jpg',
             alt: 'Atlanta Homes & Lifestyles style news page with a natural canvas tote under the heading Summertime Essential',
             caption: 'Atlanta Homes & Lifestyles, 2013 (product photograph updated to the Scout)',
             shape: 'print'
           },
           {
-            src: '../assets/images/andover-trask-press-eide-960.jpg',
+            src: '../assets/images/andover-trask-press-eide-sq-960.jpg',
             alt: 'Eide Magazine page titled Travel Like a Southerner, featuring a striped Hatteras tote',
             caption: 'Eide Magazine, Summer 2015: the Hatteras',
             shape: 'print'
           },
           {
-            src: '../assets/images/andover-trask-press-spread-960.jpg',
+            src: '../assets/images/andover-trask-press-spread-sq-960.jpg',
             alt: 'An open magazine with the Harper tool tote on the left-hand page',
             caption: 'The Harper in a magazine spread',
             shape: 'print'
