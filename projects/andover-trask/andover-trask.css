@@ -1,8 +1,9 @@
 /* Andover Trask: a page-only layer over case.css (loaded by this shell alone).
-   A full-bleed photograph opens the page, the product line sits on a white "catalog" band,
-   and a dashed topstitch in veg-tan thread replaces the hairline rules. */
+   A full-bleed photograph opens the page, the product line sits on a pale "catalog" band,
+   and a dashed topstitch in veg-tan thread replaces the hairline rules. Nothing sits in a white box:
+   cutouts, drawings and printed pages are multiplied onto the surface they sit on. */
 [data-project="andover-trask"] {
-  --at-white: #fff;
+  --at-band: var(--case-paper);
   --at-thread: #a87b4f;
   --at-stitch: repeating-linear-gradient(90deg, var(--at-thread) 0 7px, transparent 7px 12px);
   --at-gutter: max(24px, calc(50vw - 496px)); /* aligns band content with the 992px column */
@@ -68,12 +69,18 @@
 [data-project="andover-trask"] .case-section--split .case-heading { grid-column: 1 / -1; }
 [data-project="andover-trask"] .case-section--split .case-section__text { margin-bottom: 0; }
 [data-project="andover-trask"] .case-section--split .case-feature img { border-radius: 4px; }
+[data-project="andover-trask"] .case-section--split .case-feature:first-of-type { grid-row: span 2; }
+[data-project="andover-trask"] .case-section--split .case-feature + .case-feature {
+  grid-column: 1;
+  width: min(100%, 300px);
+  margin-top: 40px;
+}
 
 /* Building the line: the products on one continuous white sweep, edge to edge. */
 [data-project="andover-trask"] .case-section--catalog {
   margin-top: 88px;
   padding: 56px var(--at-gutter) 64px;
-  background: var(--at-white);
+  background: var(--at-band);
 }
 [data-project="andover-trask"] .case-section--catalog + .case-section { padding-top: 88px; }
 [data-project="andover-trask"] .case-section--catalog .case-sheets {
@@ -88,21 +95,56 @@
   scale: 1.18;
   border: 0;
   border-radius: 0;
-  background: var(--at-white);
+  background: none;
+  mix-blend-mode: multiply;
 }
 
 /* Brand, studio and reach: mosaics of wide frames and pairs cropped to a shared shape. */
 [data-project="andover-trask"] .case-section--brand .case-sheets,
 [data-project="andover-trask"] .case-section--studio .case-sheets,
+[data-project="andover-trask"] .case-section--drawings .case-sheets,
+[data-project="andover-trask"] .case-section--scout .case-sheets,
+[data-project="andover-trask"] .case-section--collab .case-sheets,
 [data-project="andover-trask"] .case-section--reach .case-sheets { gap: 28px 24px; }
+[data-project="andover-trask"] .case-section .case-sheet img { border: 0; border-radius: 4px; }
+
+/* Printed matter (the mark, line-sheet and magazine pages) is multiplied onto the page, so its paper takes the page's tone. */
+[data-project="andover-trask"] .case-sheet.is-print img,
+[data-project="andover-trask"] .case-sheet.is-mark img {
+  border-radius: 0;
+  background: none;
+  mix-blend-mode: multiply;
+}
+/* The plate is exported on the page colour itself. */
+[data-project="andover-trask"] .case-sheet.is-plate img { border-radius: 0; background: none; }
+
+/* From drawing to production: the four drawings as one plate on the page, then the wall and the notebook. */
+[data-project="andover-trask"] .case-sheet.is-plate { grid-column: 1 / -1; margin-bottom: 12px; }
+[data-project="andover-trask"] .case-section--drawings .case-sheet:not(.is-plate) img { aspect-ratio: 3 / 2; object-fit: cover; }
+
+/* The Scout: two portrait frames. */
+[data-project="andover-trask"] .case-section--scout .case-sheet img { aspect-ratio: 4 / 5; object-fit: cover; }
+[data-project="andover-trask"] .case-section--scout .case-sheet:first-child img { object-position: 62% 50%; }
+
+/* The brand: the mark printed large on the page, then the pieces it was applied to. */
+[data-project="andover-trask"] .case-sheet.is-mark { grid-column: 1 / -1; padding: 8px 0 16px; }
+[data-project="andover-trask"] .case-sheet.is-mark img { width: min(380px, 72%); }
+[data-project="andover-trask"] .case-section--brand .case-sheet:not(.is-wide):not(.is-mark) img { aspect-ratio: 4 / 3; object-fit: cover; }
+[data-project="andover-trask"] .case-section--brand .case-sheet:nth-last-child(-n+2) img { aspect-ratio: 3 / 4; object-fit: cover; }
+[data-project="andover-trask"] .case-section--brand .case-sheet.is-print img { object-fit: contain; }
 [data-project="andover-trask"] .case-sheet.is-wide { grid-column: 1 / -1; }
-[data-project="andover-trask"] .case-section--brand .case-sheet img,
-[data-project="andover-trask"] .case-section--studio .case-sheet img,
-[data-project="andover-trask"] .case-section--reach .case-sheet img { border: 0; }
-[data-project="andover-trask"] .case-section--studio .case-sheet:not(.is-wide) img { aspect-ratio: 3 / 2; object-fit: cover; }
+[data-project="andover-trask"] .case-section--studio .case-sheet:not(.is-wide) img { aspect-ratio: 1; object-fit: cover; }
 [data-project="andover-trask"] .case-section--studio .case-sheet.is-tall img { aspect-ratio: 4 / 5; object-position: 58% 50%; }
 [data-project="andover-trask"] .case-section--studio .case-sheet.is-tall + .is-tall img { object-position: 50% 35%; }
+/* Collaborations: one column per partner, the product above the artwork made for it. */
+[data-project="andover-trask"] .case-section--collab .case-sheet img { aspect-ratio: 3 / 2; object-fit: cover; }
+[data-project="andover-trask"] .case-section--collab .case-sheet:first-child img { object-position: 50% 100%; }
+[data-project="andover-trask"] .case-section--collab .case-sheet.is-print img { object-fit: contain; }
+
+/* Stores and press: three pages in a row, fitted whole, their margins vanishing into the page. */
+[data-project="andover-trask"] .case-section--reach .case-sheets { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 [data-project="andover-trask"] .case-section--reach .case-sheet img { aspect-ratio: 4 / 5; object-fit: cover; }
+[data-project="andover-trask"] .case-section--reach .case-sheet.is-print img { object-fit: contain; object-position: 50% 100%; }
 
 /* The pull quote: the one place the display face runs large inside a section. */
 [data-project="andover-trask"] .case-quote {
@@ -136,6 +178,9 @@
   [data-project="andover-trask"] .case-section--split { display: block; }
   [data-project="andover-trask"] .case-section--split .case-section__text { margin-bottom: 32px; }
   [data-project="andover-trask"] .case-section--catalog .case-sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-project="andover-trask"] .case-section--reach .case-sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-project="andover-trask"] .case-section--reach .case-sheet:first-child { grid-column: 1 / -1; }
+  [data-project="andover-trask"] .case-section--reach .case-sheet:first-child img { aspect-ratio: auto; }
 }
 
 @media (max-width: 600px) {
@@ -148,8 +193,16 @@
   [data-project="andover-trask"] .case-section--catalog { margin-top: 56px; padding: 40px var(--at-gutter) 48px; }
   [data-project="andover-trask"] .case-section--catalog .case-sheets { gap: 28px 16px; }
   [data-project="andover-trask"] .case-section--catalog .case-sheet img { aspect-ratio: 1; scale: 1; }
-  [data-project="andover-trask"] .case-section--studio .case-sheet:not(.is-wide) img { aspect-ratio: auto; }
+  [data-project="andover-trask"] .case-section--split .case-feature + .case-feature { width: 62%; margin-top: 28px; }
+  /* The plate scrolls sideways at a readable size instead of shrinking to a strip. */
+  [data-project="andover-trask"] .case-sheet.is-plate a { overflow-x: auto; overscroll-behavior-x: contain; margin: 0 calc(-1 * var(--at-gutter)); padding: 0 var(--at-gutter); }
+  [data-project="andover-trask"] .case-sheet.is-plate img { width: 260%; max-width: none; }
+  [data-project="andover-trask"] .case-section--drawings .case-sheets,
   [data-project="andover-trask"] .case-section--studio .case-sheets,
-  [data-project="andover-trask"] .case-section--brand .case-sheets { grid-template-columns: 1fr; }
-  [data-project="andover-trask"] .case-section--reach .case-sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  [data-project="andover-trask"] .case-section--scout .case-sheets,
+  [data-project="andover-trask"] .case-section--collab .case-sheets,
+  [data-project="andover-trask"] .case-section--brand .case-sheets,
+  [data-project="andover-trask"] .case-section--reach .case-sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
+  [data-project="andover-trask"] .case-section--drawings .case-sheet:not(.is-plate) img { aspect-ratio: 4 / 5; }
+  [data-project="andover-trask"] .case-sheet.is-mark img { width: 64%; }
 }
