@@ -34,19 +34,28 @@ Hold every new project to the standard set by Andover Trask (Nov 2026):
 
 - **Evidence first.** Inventory the Drive sources and public coverage before writing. Every fact needs a source
   (a Drive file, press, or Matt's word). When sources conflict (dates, names, sale wording), ask Matt rather than
-  choosing. Never infer product names, materials or credits from how something looks. Copy is first person and
-  restrained; Matt approves it.
+  choosing. Never infer product names, materials or credits from how something looks. Present as Matt's
+  only what he designed; leave out partner graphics. Copy is first person and restrained; Matt approves it.
 - **A portfolio story, not a bio.** Open with the strongest true hook (origin and result). Then, as the material
   allows: the signature piece, the full range, the design process (drawings beside finished work), the brand,
   how it was made, reach (partners, press, impact), and a closing reflection naming concrete skills and successes.
+  Lead with what made the work premium (for example, selling direct to customers); retailer or wholesale programmes
+  go later or not at all. Matt judges positioning.
 - **Headings must match the content** (not "The collection" over six of ten-plus products).
 - **Critique before showing.** Review the page at 1280 and 375 px as a hiring reviewer would: what is missing, what
   weakens it, whether Matt's own design work is visible. Fix it or report it.
+- **Cut clutter.** Caption an image only when the caption adds something the image and text don't (a press source and date,
+  a disclosure). No decorative dividers. Photo credits go in one closing line.
+- **Review rounds:** render the full page at 1280 px to a PDF in `.claude/preview/` and open it in Preview; Matt annotates
+  there and you read the notes back with pypdf. Don't ask him to mark up screenshots.
+- **Flag low-resolution images** (narrower than the width they're shown at) rather than using them silently.
 - **Project-specific styling** goes in `projects/<slug>/<slug>.css`, loaded only by that shell and scoped to
   `[data-project="<slug>"]`. Leave `case.css` alone so the other case pages are unaffected.
 - **Exports:** rasterize Illustrator `.ai` files with Ghostscript (`gs -sDEVICE=png16m -r300`; `sips` can't read
   them) and PSDs with `magick 'file.psd[0]' -background white -alpha remove`. Product cutouts share one frame
   (960×1409 on white) so the grids line up.
+  Cut subjects out with `tools/cutout/fgmask.swift` (macOS Vision foreground mask). In zsh write `"${f}[0]"`, since
+  `"$f[0]"` indexes the string. Convert supplied PNG photos to WebP.
 
 ## Deploying (Vercel): few, small deployments
 
