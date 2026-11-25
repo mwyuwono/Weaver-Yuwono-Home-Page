@@ -83,13 +83,16 @@ window.WY_PROJECTS = [
     location: 'Rome, Georgia',
     year: '2021',
     type: 'Renovation · Owner and designer',
-    headline: 'Renovation of a historic house I owned. The kitchen was the highlight.',
-    summary: 'I owned this house in Rome, Georgia and designed its renovation. I measured and drew the existing house first, then redesigned the kitchen and the primary and guest baths and added a rear porch.',
+    headline: 'A new kitchen for a historic house.',
+    summary: [
+      'I owned this house below Rome’s city clock tower and designed its renovation in 2021. I focused on the kitchen, redesigned the two upstairs baths and drew a covered porch for the rear courtyard.',
+      'I began by measuring and drawing both floors in AutoCAD. The survey recorded details that would affect the work, including the sloping dormer ceilings and changes in ceiling height upstairs. From there I drew the demolition and proposed plans, then worked through the rooms in elevation.'
+    ],
     facts: [
       { label: 'Role', value: 'Designer and owner' },
-      { label: 'Scope', value: 'About 2,500 sq ft; kitchen, two baths, rear porch' },
-      { label: 'Drawings', value: '10-sheet set, kitchen renderings' },
-      { label: 'Tools', value: 'AutoCAD' }
+      { label: 'Existing house', value: 'About 2,500 sq ft' },
+      { label: 'Scope', value: 'Kitchen, two baths and rear porch' },
+      { label: 'Drawings', value: '10 AutoCAD sheets and renderings' }
     ],
     card: {
       src: '../projects/assets/images/rome-thumb-900.jpg',
@@ -102,26 +105,75 @@ window.WY_PROJECTS = [
       alt: 'Rendering of the house from the street: gray shingle walls, steep gables and an arched front door, with the city clock tower behind',
       caption: 'Rendering, the house from the street'
     },
-    feature: {
-      heading: 'The kitchen',
-      images: [
-        {
-          src: '../assets/images/rome-kitchen-view.jpg',
-          alt: 'Rendering of the kitchen: a marble-topped island with four leather stools, a range wall between two refrigerators, beadboard walls, a tall window and a half-glass black door',
-          caption: 'Rendering of the kitchen'
-        },
-        {
-          src: '../assets/images/rome-kitchen-2000.jpg',
-          full: '../assets/images/rome-kitchen-full.jpg',
-          alt: 'Rendered elevations of two kitchen walls: glass-front cabinets, a marble backsplash and an arched opening above; a range wall between two refrigerators, a window and a half-glass door below',
-          caption: 'Rendered elevations of the main kitchen walls'
-        }
-      ]
-    },
-    moves: [
-      { title: 'Measured the house first', body: 'As-built plans of both floors were the starting point for design, pricing and demolition.' },
-      { title: 'Showed what changes', body: 'Demolition plans mark what stays, what comes out and what is new.' },
-      { title: 'Detailed the key rooms', body: 'The kitchen, both baths and the rear porch are drawn in elevation.' }
+    features: [
+      {
+        heading: 'The kitchen',
+        body: [
+          'I put the sink, dishwasher and pull-out bins on the working side of a ten-foot island, with seating for four on the other. A refrigerator and a separate freezer flank the range. The elevations show how the cabinetry fits around the tall window and the proposed Dutch door.',
+          'I drew all four walls and all four sides of the island, down to the inset beadboard panels and the cabinet profile. At the arched opening, the marble backsplash continues to the floor and meets an ogee-edged marble base.'
+        ],
+        images: [
+          {
+            src: '../assets/images/rome-kitchen-view.jpg',
+            alt: 'Perspective of the kitchen showing four stools at the marble-topped island and the range framed by tall appliances',
+            caption: 'Kitchen perspective rendering'
+          },
+          {
+            src: '../assets/images/rome-kitchen-2000.jpg',
+            full: '../assets/images/rome-kitchen-full.jpg',
+            alt: 'Rendered elevations of the glass-front cabinetry and arched opening, and of the range wall with its tall window and Dutch door',
+            caption: 'Rendered elevations of the cabinet and range walls'
+          }
+        ]
+      },
+      {
+        heading: 'First-floor changes',
+        body: 'I drew the first-floor demolition and proposed plans at the same scale, using the main stair and entry hall as reference points. The island appears in the kitchen on the left, and the new porch projects into the courtyard at the rear.',
+        grid: true,
+        images: [
+          {
+            src: '../assets/images/rome-first-floor-demolition.webp',
+            alt: 'First-floor demolition plan, with the existing kitchen left of the entry hall and the main stair in the center',
+            caption: 'Demolition plan · Orange marks removals'
+          },
+          {
+            src: '../assets/images/rome-first-floor-proposed.webp',
+            alt: 'Proposed first-floor plan at the same scale, with the new kitchen island at left and the rear porch above the study',
+            caption: 'Proposed plan · Blue marks new construction'
+          }
+        ]
+      },
+      {
+        heading: 'The courtyard porch',
+        body: 'I set the porch floor level with the rear entry and specified a brick floor, a metal roof and four Doric wood columns. The porch drawings also show fixed shutters for privacy and a Roman-lattice railing at the rear entry. I proposed a wood-burning fireplace opposite the existing fireplace in the study, with the possibility of using the existing chimney.',
+        images: [
+          {
+            src: '../assets/images/rome-rear-porch-elevation.webp',
+            alt: 'Rear elevation showing the proposed pedimented porch and its columns in front of the existing house',
+            label: 'A201',
+            caption: 'Rear elevation with the proposed porch'
+          }
+        ]
+      },
+      {
+        heading: 'The upstairs baths',
+        body: 'In the primary bath, I detailed marble trim and a recessed shower niche. The guest bath drawings record a ceiling that varies by several inches and show storage recessed into the wall beside the sink, concealed behind a flush door.',
+        grid: true,
+        images: [
+          {
+            src: '../assets/images/rome-primary-bath-elevation.webp',
+            alt: 'Primary bath elevation showing the fireplace surround between two windows',
+            label: 'A203',
+            caption: 'Primary bath, fireplace wall'
+          },
+          {
+            src: '../assets/images/rome-guest-bath-elevation.webp',
+            alt: 'Guest bath elevation with a pedestal sink and a section through the adjacent concealed storage',
+            label: 'A204',
+            caption: 'Guest bath, concealed storage beside the sink'
+          }
+        ]
+      }
     ],
     sheets: [
       { src: '../assets/sheets/rome-renovation-01.jpg', full: '../assets/sheets/rome-renovation-01.svg', label: 'A101', title: 'Existing conditions, as built' },
