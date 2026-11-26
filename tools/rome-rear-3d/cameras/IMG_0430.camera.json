@@ -1,0 +1,32 @@
+{
+  "photo": "IMG_0430",
+  "width": 4032,
+  "height": 3024,
+  "position": [
+    51.581,
+    56.579,
+    3.59
+  ],
+  "target": [
+    32.133,
+    52.295,
+    5.444
+  ],
+  "up": [
+    0.08903,
+    0.02679,
+    0.99567
+  ],
+  "yawDeg": 192.42,
+  "pitchDeg": 5.319,
+  "rollDeg": -0.402,
+  "focalPx": 3109.24,
+  "vfovDeg": 51.867,
+  "k1": 0,
+  "rmsPx": 15.39,
+  "lineRmsPx": 15.42,
+  "rmsPctWidth": 0.382,
+  "nPoints": 4,
+  "nVerticalLines": 6,
+  "dropped": []
+}

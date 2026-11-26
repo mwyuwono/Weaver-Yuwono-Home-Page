@@ -1,0 +1,716 @@
+{
+ "photo": "IMG_0429",
+ "width": 2730,
+ "height": 2048,
+ "note": "px = full-res pixels; window corners are the sash/opening outer edge; \"hiX\" = larger plan x (photo left)",
+ "hint": {
+  "pos": [
+   14,
+   62,
+   4.5
+  ],
+  "yawDeg": -55
+ },
+ "points": [
+  {
+   "label": "208-N-east centre",
+   "xyz": [
+    48.989999999999995,
+    33.01,
+    18.15
+   ],
+   "px": [
+    823.5,
+    611.5
+   ]
+  },
+  {
+   "label": "208-N-east hiX-top",
+   "xyz": [
+    50.41,
+    33.01,
+    20.8
+   ],
+   "px": [
+    783,
+    502
+   ],
+   "exclude": true
+  },
+  {
+   "label": "208-N-east loX-top",
+   "xyz": [
+    47.57,
+    33.01,
+    20.8
+   ],
+   "px": [
+    865,
+    493
+   ],
+   "exclude": true
+  },
+  {
+   "label": "208-N-east hiX-bot",
+   "xyz": [
+    50.41,
+    33.01,
+    15.5
+   ],
+   "px": [
+    787,
+    731
+   ],
+   "exclude": true
+  },
+  {
+   "label": "208-N-east loX-bot",
+   "xyz": [
+    47.57,
+    33.01,
+    15.5
+   ],
+   "px": [
+    859,
+    720
+   ],
+   "exclude": true
+  },
+  {
+   "label": "208-N-west centre",
+   "xyz": [
+    38.28,
+    33.01,
+    18.15
+   ],
+   "px": [
+    1224.2,
+    526.2
+   ]
+  },
+  {
+   "label": "208-N-west hiX-top",
+   "xyz": [
+    39.7,
+    33.01,
+    20.8
+   ],
+   "px": [
+    1165,
+    402
+   ],
+   "exclude": true
+  },
+  {
+   "label": "208-N-west loX-top",
+   "xyz": [
+    36.86,
+    33.01,
+    20.8
+   ],
+   "px": [
+    1288,
+    375
+   ],
+   "exclude": true
+  },
+  {
+   "label": "208-N-west hiX-bot",
+   "xyz": [
+    39.7,
+    33.01,
+    15.5
+   ],
+   "px": [
+    1162,
+    675
+   ],
+   "exclude": true
+  },
+  {
+   "label": "208-N-west loX-bot",
+   "xyz": [
+    36.86,
+    33.01,
+    15.5
+   ],
+   "px": [
+    1282,
+    653
+   ],
+   "exclude": true
+  },
+  {
+   "label": "108-N-west centre",
+   "xyz": [
+    38.39,
+    33.01,
+    6.7
+   ],
+   "px": [
+    1210.8,
+    1151.2
+   ]
+  },
+  {
+   "label": "108-N-west hiX-top",
+   "xyz": [
+    39.77,
+    33.01,
+    9.0
+   ],
+   "px": [
+    1147,
+    1032
+   ],
+   "exclude": true
+  },
+  {
+   "label": "108-N-west loX-top",
+   "xyz": [
+    37.01,
+    33.01,
+    9.0
+   ],
+   "px": [
+    1277,
+    1028
+   ],
+   "exclude": true
+  },
+  {
+   "label": "108-N-west hiX-bot",
+   "xyz": [
+    39.77,
+    33.01,
+    4.4
+   ],
+   "px": [
+    1145,
+    1273
+   ],
+   "exclude": true
+  },
+  {
+   "label": "108-N-west loX-bot",
+   "xyz": [
+    37.01,
+    33.01,
+    4.4
+   ],
+   "px": [
+    1274,
+    1272
+   ],
+   "exclude": true
+  },
+  {
+   "label": "108-N-east centre",
+   "xyz": [
+    48.879999999999995,
+    33.01,
+    6.7
+   ],
+   "px": [
+    800.5,
+    1160.5
+   ]
+  },
+  {
+   "label": "108-N-east hiX-top",
+   "xyz": [
+    50.25,
+    33.01,
+    9.0
+   ],
+   "px": [
+    758,
+    1055
+   ],
+   "exclude": true
+  },
+  {
+   "label": "108-N-east loX-top",
+   "xyz": [
+    47.51,
+    33.01,
+    9.0
+   ],
+   "px": [
+    848,
+    1052
+   ],
+   "exclude": true
+  },
+  {
+   "label": "108-N-east hiX-bot",
+   "xyz": [
+    50.25,
+    33.01,
+    4.4
+   ],
+   "px": [
+    753,
+    1268
+   ],
+   "exclude": true
+  },
+  {
+   "label": "108-N-east loX-bot",
+   "xyz": [
+    47.51,
+    33.01,
+    4.4
+   ],
+   "px": [
+    843,
+    1267
+   ],
+   "exclude": true
+  },
+  {
+   "label": "201-N-landing centre",
+   "xyz": [
+    30.97,
+    29.86,
+    16.3
+   ],
+   "px": [
+    1690.8,
+    624.5
+   ]
+  },
+  {
+   "label": "201-N-landing hiX-top",
+   "xyz": [
+    32.39,
+    29.86,
+    19.8
+   ],
+   "px": [
+    1620,
+    455
+   ],
+   "exclude": true
+  },
+  {
+   "label": "201-N-landing loX-top",
+   "xyz": [
+    29.55,
+    29.86,
+    19.8
+   ],
+   "px": [
+    1763,
+    418
+   ],
+   "exclude": true
+  },
+  {
+   "label": "201-N-landing hiX-bot",
+   "xyz": [
+    32.39,
+    29.86,
+    12.8
+   ],
+   "px": [
+    1620,
+    820
+   ],
+   "exclude": true
+  },
+  {
+   "label": "201-N-landing loX-bot",
+   "xyz": [
+    29.55,
+    29.86,
+    12.8
+   ],
+   "px": [
+    1760,
+    805
+   ],
+   "exclude": true
+  },
+  {
+   "label": "203-N centre",
+   "xyz": [
+    23.745,
+    29.86,
+    18.15
+   ],
+   "px": [
+    2122.2,
+    411.5
+   ]
+  },
+  {
+   "label": "203-N hiX-top",
+   "xyz": [
+    25.12,
+    29.86,
+    20.8
+   ],
+   "px": [
+    2028,
+    268
+   ],
+   "exclude": true
+  },
+  {
+   "label": "203-N loX-top",
+   "xyz": [
+    22.37,
+    29.86,
+    20.8
+   ],
+   "px": [
+    2207,
+    223
+   ],
+   "exclude": true
+  },
+  {
+   "label": "203-N hiX-bot",
+   "xyz": [
+    25.12,
+    29.86,
+    15.5
+   ],
+   "px": [
+    2032,
+    590
+   ],
+   "exclude": true
+  },
+  {
+   "label": "203-N loX-bot",
+   "xyz": [
+    22.37,
+    29.86,
+    15.5
+   ],
+   "px": [
+    2222,
+    565
+   ],
+   "exclude": true
+  },
+  {
+   "label": "109-door centre",
+   "xyz": [
+    30.86,
+    33.0,
+    4.55
+   ],
+   "px": [
+    1587.0,
+    1362.2
+   ],
+   "exclude": true
+  },
+  {
+   "label": "109-door hiX-top",
+   "xyz": [
+    32.16,
+    33.0,
+    7.95
+   ],
+   "px": [
+    1510,
+    1145
+   ],
+   "exclude": true
+  },
+  {
+   "label": "109-door loX-top",
+   "xyz": [
+    29.56,
+    33.0,
+    7.95
+   ],
+   "px": [
+    1663,
+    1142
+   ],
+   "exclude": true
+  },
+  {
+   "label": "109-door hiX-bot",
+   "xyz": [
+    32.16,
+    33.0,
+    1.15
+   ],
+   "px": [
+    1508,
+    1570
+   ],
+   "exclude": true
+  },
+  {
+   "label": "109-door loX-bot",
+   "xyz": [
+    29.56,
+    33.0,
+    1.15
+   ],
+   "px": [
+    1667,
+    1592
+   ],
+   "exclude": true
+  },
+  {
+   "label": "109-N-west win centre",
+   "xyz": [
+    28.13,
+    33.0,
+    5.85
+   ],
+   "px": [
+    1759.8,
+    1265.0
+   ],
+   "exclude": true
+  },
+  {
+   "label": "109-N-west win hiX-top",
+   "xyz": [
+    29.18,
+    33.0,
+    7.6
+   ],
+   "px": [
+    1693,
+    1165
+   ],
+   "exclude": true
+  },
+  {
+   "label": "109-N-west win loX-top",
+   "xyz": [
+    27.08,
+    33.0,
+    7.6
+   ],
+   "px": [
+    1825,
+    1155
+   ],
+   "exclude": true
+  },
+  {
+   "label": "109-N-west win hiX-bot",
+   "xyz": [
+    29.18,
+    33.0,
+    4.1
+   ],
+   "px": [
+    1693,
+    1368
+   ],
+   "exclude": true
+  },
+  {
+   "label": "109-N-west win loX-bot",
+   "xyz": [
+    27.08,
+    33.0,
+    4.1
+   ],
+   "px": [
+    1828,
+    1372
+   ],
+   "exclude": true
+  },
+  {
+   "label": "garage-N-east centre",
+   "xyz": [
+    17.869999999999997,
+    40.62,
+    5.275
+   ],
+   "px": [
+    2419.0,
+    1278.5
+   ]
+  },
+  {
+   "label": "garage-N-east hiX-top",
+   "xyz": [
+    19.25,
+    40.62,
+    7.15
+   ],
+   "px": [
+    2258,
+    1108
+   ],
+   "exclude": true
+  },
+  {
+   "label": "garage-N-east loX-top",
+   "xyz": [
+    16.49,
+    40.62,
+    7.15
+   ],
+   "px": [
+    2565,
+    1098
+   ],
+   "exclude": true
+  },
+  {
+   "label": "garage-N-east hiX-bot",
+   "xyz": [
+    19.25,
+    40.62,
+    3.4
+   ],
+   "px": [
+    2268,
+    1450
+   ],
+   "exclude": true
+  },
+  {
+   "label": "garage-N-east loX-bot",
+   "xyz": [
+    16.49,
+    40.62,
+    3.4
+   ],
+   "px": [
+    2585,
+    1458
+   ],
+   "exclude": true
+  },
+  {
+   "label": "garage NE corner frieze bottom",
+   "xyz": [
+    20.53,
+    40.62,
+    8.69
+   ],
+   "px": [
+    2122,
+    962
+   ]
+  },
+  {
+   "label": "east-block NW corner x34.77 y33.01",
+   "vline": [
+    34.77,
+    33.01
+   ],
+   "px": [
+    1395,
+    500
+   ]
+  },
+  {
+   "label": "east-block NW corner x34.77 y33.01 b",
+   "vline": [
+    34.77,
+    33.01
+   ],
+   "px": [
+    1392,
+    900
+   ]
+  },
+  {
+   "label": "recess corner x34.77 y29.86",
+   "vline": [
+    34.77,
+    29.86
+   ],
+   "px": [
+    1495,
+    500
+   ]
+  },
+  {
+   "label": "recess corner x34.77 y29.86 b",
+   "vline": [
+    34.77,
+    29.86
+   ],
+   "px": [
+    1497,
+    850
+   ]
+  },
+  {
+   "label": "chimney front-east edge x20.53 y31.34",
+   "vline": [
+    20.53,
+    31.34
+   ],
+   "px": [
+    2323,
+    170
+   ]
+  },
+  {
+   "label": "chimney front-east edge b",
+   "vline": [
+    20.53,
+    31.34
+   ],
+   "px": [
+    2337,
+    650
+   ]
+  },
+  {
+   "label": "chimney front-west edge x18.3 y31.34",
+   "vline": [
+    18.3,
+    31.34
+   ],
+   "px": [
+    2498,
+    250
+   ]
+  },
+  {
+   "label": "chimney front-west edge b",
+   "vline": [
+    18.3,
+    31.34
+   ],
+   "px": [
+    2503,
+    600
+   ]
+  },
+  {
+   "label": "garage NE corner x20.53 y40.62",
+   "vline": [
+    20.53,
+    40.62
+   ],
+   "px": [
+    2122,
+    1000
+   ]
+  },
+  {
+   "label": "garage NE corner b",
+   "vline": [
+    20.53,
+    40.62
+   ],
+   "px": [
+    2135,
+    1500
+   ]
+  }
+ ]
+}

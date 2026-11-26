@@ -148,9 +148,42 @@ window.WY_PROJECTS = [
         body: 'I set the porch floor level with the rear entry and specified a brick floor, a metal roof and four Doric wood columns. The porch drawings also show fixed shutters for privacy and a Roman-lattice railing at the rear entry. I proposed a wood-burning fireplace opposite the existing fireplace in the study, with the possibility of using the existing chimney.',
         images: [
           {
-            src: '../assets/images/rome-courtyard-porch-rendering.webp',
-            alt: 'Rendering of the rear of the house, with a planted courtyard, a columned brick porch and a brick fireplace aligned beneath the exterior chimney',
-            caption: 'Concept rendering of the proposed rear porch and garden courtyard'
+            compare: {
+              before: {
+                src: '../assets/images/rome-courtyard-2021-1600.webp',
+                srcset: '../assets/images/rome-courtyard-2021-900.webp 900w, ../assets/images/rome-courtyard-2021-1600.webp 1600w',
+                alt: 'The rear courtyard in 2021: brown shingle house, rear entry under a shed roof, concrete paving and a garage wing at right',
+                label: '2021'
+              },
+              after: {
+                src: '../assets/images/rome-courtyard-proposed-1600.webp',
+                srcset: '../assets/images/rome-courtyard-proposed-900.webp 900w, ../assets/images/rome-courtyard-proposed-1600.webp 1600w',
+                alt: 'Concept rendering of the same view with the columned brick porch, exterior brick chimney, Greek-key parapet over the rear entry and a loosely planted walled garden',
+                label: 'Proposed'
+              },
+              width: 2048,
+              height: 1728
+            },
+            caption: 'The courtyard in 2021, and as proposed. The after image is a concept rendering made with AI from my 3D model, matched to the original photo; both are extended at the top to show the chimney.'
+          },
+          {
+            compare: {
+              before: {
+                src: '../assets/images/rome-gate-2021-1600.webp',
+                srcset: '../assets/images/rome-gate-2021-900.webp 900w, ../assets/images/rome-gate-2021-1600.webp 1600w',
+                alt: 'The courtyard in 2021 looking west: garage wing with two doors, a painted mural wall and the driveway gate',
+                label: '2021'
+              },
+              after: {
+                src: '../assets/images/rome-gate-proposed-1600.webp',
+                srcset: '../assets/images/rome-gate-proposed-900.webp 900w, ../assets/images/rome-gate-proposed-1600.webp 1600w',
+                alt: 'Concept rendering from beside the new porch: Doric columns and exposed rafters, a single garage door, parged walls with climbing roses, and a gravel path to the gate',
+                label: 'Proposed'
+              },
+              width: 2048,
+              height: 1536
+            },
+            caption: 'Looking toward the driveway gate from the porch corner, in 2021 and as proposed.'
           },
           {
             src: '../assets/images/rome-rear-porch-elevation.webp',

@@ -163,6 +163,78 @@
   }
   if (p.movesFirst) renderMoves();
 
+  // Before/after slider. An image entry with `compare: { before, after, width, height }` (each side
+  // { src, srcset, alt, label }) renders as two stacked images; enhance() turns that into a draggable
+  // slider, so the stacked markup is also the fallback if the script fails.
+  function compareFigure(x) {
+    const c = x.compare;
+    const sizes = '(max-width: 1088px) 100vw, 1040px';
+    const fig = el('figure', 'case-feature case-compare');
+    const frame = el('div', 'case-compare__frame');
+    const panes = [c.before, c.after].map((side, n) => {
+      const pane = el('div', `case-compare__pane case-compare__pane--${n ? 'after' : 'before'}`);
+      const im = img(side.src, side.alt, side.srcset, sizes);
+      if (c.width && c.height) { im.width = c.width; im.height = c.height; }
+      pane.append(im);
+      if (side.label) pane.append(el('span', 'case-compare__label', side.label));
+      frame.append(pane);
+      return pane;
+    });
+    fig.append(frame);
+    if (x.caption) fig.append(el('figcaption', null, x.caption));
+    try { enhanceCompare(fig, frame, panes[1], c); } catch (e) { fig.classList.remove('is-enhanced'); }
+    return fig;
+  }
+
+  function enhanceCompare(fig, frame, after, c) {
+    const handle = el('div', 'case-compare__handle');
+    handle.tabIndex = 0;
+    handle.setAttribute('role', 'slider');
+    handle.setAttribute('aria-label', 'Before and after comparison');
+    handle.setAttribute('aria-valuemin', '0');
+    handle.setAttribute('aria-valuemax', '100');
+    handle.setAttribute('aria-orientation', 'horizontal');
+    handle.append(el('span', 'case-compare__knob'));
+    if (c.width && c.height) frame.style.aspectRatio = `${c.width} / ${c.height}`;
+    let pos = 50;
+    const set = (v) => {
+      pos = Math.min(100, Math.max(0, v));
+      frame.style.setProperty('--pos', `${pos}%`);
+      handle.setAttribute('aria-valuenow', String(Math.round(pos)));
+      handle.setAttribute('aria-valuetext', `${Math.round(pos)}% ${c.before.label || 'before'} image, ${Math.round(100 - pos)}% ${c.after.label || 'after'} image`);
+    };
+    const fromPointer = (e) => {
+      const r = frame.getBoundingClientRect();
+      if (r.width) set(((e.clientX - r.left) / r.width) * 100);
+    };
+    let dragging = false;
+    frame.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      dragging = true;
+      frame.setPointerCapture(e.pointerId);
+      frame.classList.add('is-dragging');
+      fromPointer(e);
+      handle.focus({ preventScroll: true });
+      e.preventDefault();
+    });
+    frame.addEventListener('pointermove', (e) => { if (dragging) fromPointer(e); });
+    const end = () => { dragging = false; frame.classList.remove('is-dragging'); };
+    frame.addEventListener('pointerup', end);
+    frame.addEventListener('pointercancel', end);
+    frame.addEventListener('lostpointercapture', end);
+    handle.addEventListener('keydown', (e) => {
+      const step = { ArrowLeft: -5, ArrowDown: -5, ArrowRight: 5, ArrowUp: 5, PageDown: -10, PageUp: 10 }[e.key];
+      if (step != null) set(pos + step);
+      else if (e.key === 'Home') set(0);
+      else if (e.key === 'End') set(100);
+      else return;
+      e.preventDefault();
+    });
+    frame.append(handle);
+    set(50);
+    fig.classList.add('is-enhanced');
+  }
+
   // Sections: a heading, optional text (body paragraphs, a quote, a facts list) and an optional gallery.
   // Galleries open their images in the same viewer as the drawing sets.
   // Optional: `variant` adds a section class; an image's `shape` adds an is-<shape> class;
@@ -170,7 +242,8 @@
   const features = p.features || (p.feature ? [p.feature] : []);
   features.forEach((f) => {
     const shots = f.images || (f.src ? [f] : []);
-    const viewerItems = shots.map((x) => ({ src: x.src, full: x.full, alt: x.alt, label: x.label || f.heading, title: x.caption || '' }));
+    const zoomable = shots.filter((x) => !x.compare);
+    const viewerItems = zoomable.map((x) => ({ src: x.src, full: x.full, alt: x.alt, label: x.label || f.heading, title: x.caption || '' }));
     const sec = el('section', 'case-section');
     if (f.variant) sec.classList.add(`case-section--${f.variant}`);
     const gallery = f.grid ? el('div', 'case-sheets') : sec;
@@ -196,7 +269,12 @@
       }
       sec.append(text);
     }
-    shots.forEach((x, i) => {
+    shots.forEach((x) => {
+      if (x.compare) {
+        gallery.append(compareFigure(x));
+        return;
+      }
+      const i = zoomable.indexOf(x);
       const fig = el('figure', figureClass);
       if (x.shape) fig.classList.add(`is-${x.shape}`);
       const a = el('a');

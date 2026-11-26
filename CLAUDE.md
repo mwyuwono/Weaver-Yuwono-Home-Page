@@ -100,6 +100,13 @@ Editable model of the Rome house rear (existing) with the proposed porch, rear e
 - **Decisions (Nov 2026).** A104 governs the porch column spacing (A201 A2 is superseded). The circular courtyard planter is
   removed in the renovation. Exposed chimney with tapered shoulders per A201; all-brick surround and hearth on the
   fireplace centreline. The west-block roof is reconstructed from photos; the garden is conceptual.
+- **Before/after renderings (Rome case page, "The courtyard porch").** The befores are Matt's 2021 photos (IMG_0429,
+  IMG_0430). `cameras/*.camera.json` holds each photo's solved camera (`camera-solve.mjs`); `render-photo.sh` renders the
+  model from it. `render-ai.mjs` edits the photo with the OpenAI Images API, using the model render (plus the front photo for
+  palette) as references; prompts are in `ai/prompts/`. Key: `OPENAI_API_KEY` in `~/.zshenv` (never print or commit it).
+  Models: `gpt-image-2.6-flare` to iterate, `gpt-image-2.6-sunburst` for finals. Approved look: walled "secret garden",
+  loose planting, zinc or terra cotta planters, murals removed and walls parged; both chimneys clear the roof (code).
+  The courtyard pair is extended 192 px at the top to show the chimney, and the caption says so.
 
 ## CSS Modification Policy
 

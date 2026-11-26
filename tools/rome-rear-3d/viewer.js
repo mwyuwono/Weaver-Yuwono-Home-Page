@@ -12,9 +12,15 @@ const view = q.get('view') || 'orbit';
 const mode = q.get('mode') || 'proposed';
 if (q.has('shot')) document.body.classList.add('shot');
 
+// view=photo&cam=<name>: camera solved from a site photo (cameras/<name>.camera.json), rendered at the photo's pixel size.
+// &mask=proposed|removed: white = Proposed (or Removed) geometry, black everything else, unlit (inpainting masks).
+const photoCam = view === 'photo' ? await fetch(`./cameras/${q.get('cam')}.camera.json`, { cache: 'no-store' }).then((r) => r.json()) : null;
+const maskKind = q.get('mask'); // 'proposed' | 'removed' | null
+const VW = photoCam ? photoCam.width : innerWidth, VH = photoCam ? photoCam.height : innerHeight;
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-renderer.setPixelRatio(q.has('shot') ? 1 : Math.min(2, devicePixelRatio));
-renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(q.has('shot') || photoCam ? 1 : Math.min(2, devicePixelRatio));
+renderer.setSize(VW, VH);
+if (photoCam) renderer.domElement.style.cssText = `position:fixed;left:0;top:0;width:${VW}px;height:${VH}px`;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -23,7 +29,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(view === 'rear' || view === 'plan' ? '#eef0f1' : '#dfe7ec');
+scene.background = new THREE.Color(maskKind ? '#000000' : view === 'rear' || view === 'plan' ? '#eef0f1' : '#dfe7ec');
 
 // lights
 scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
@@ -102,14 +108,17 @@ const [gltf, checks] = await Promise.all([
   fetch('./out/checks.json', { cache: 'no-store' }).then((r) => r.json()),
 ]);
 const root = gltf.scene;
+const inGroup = (o, re) => { for (let n = o; n && n !== root; n = n.parent) if (re.test(n.name)) return true; return false; };
+const WHITE = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false }), BLACK = new THREE.MeshBasicMaterial({ color: 0x000000, toneMapped: false });
 root.traverse((o) => {
-  const hidden = mode === 'existing' ? /^Proposed(_\d+)?$/ : /^Removed(_\d+)?$/;
+  const hidden = mode === 'existing' || maskKind === 'removed' ? /^Proposed(_\d+)?$/ : /^Removed(_\d+)?$/;
   if (hidden.test(o.name)) o.visible = false;
   if (q.has('clean') && /^(Site|Garden)(_\d+)?$/.test(o.name) && o.parent && o.parent !== root) o.visible = false;
   if (!o.isMesh) return;
+  if (maskKind) { o.material = inGroup(o, maskKind === 'removed' ? /^Removed(_\d+)?$/ : /^Proposed(_\d+)?$/) ? WHITE : BLACK; o.castShadow = o.receiveShadow = false; return; }
   const m = o.material, name = m.name;
   const nm = new THREE.MeshStandardMaterial({ name, color: m.color.clone(), roughness: m.roughness, metalness: m.metalness });
-  if (TEX[name]) { nm.map = TEX[name]; nm.color.multiplyScalar(1.12); }
+  if (TEX[name] && !q.has('flat')) { nm.map = TEX[name]; nm.color.multiplyScalar(1.12); }
   if (name === 'glass') nm.envMapIntensity = 1.5;
   o.material = nm; o.castShadow = !/ground|Lawn|paving|approach|paths|beds/i.test(o.name); o.receiveShadow = true;
 });
@@ -117,13 +126,18 @@ scene.add(root);
 
 // ---------------------------------------------------------------- cameras
 let camera, controls = null;
-const aspect = innerWidth / innerHeight;
+const aspect = VW / VH;
 function ortho(cx, cz, widthFt, from, to, up) {
   const hFt = widthFt / aspect;
   camera = new THREE.OrthographicCamera(-widthFt / 2 * FT, widthFt / 2 * FT, hFt / 2 * FT, -hFt / 2 * FT, 0.1, 400);
   camera.position.copy(from); camera.up.copy(up); camera.lookAt(to);
 }
-if (view === 'rear') {
+if (view === 'photo') {
+  camera = new THREE.PerspectiveCamera(photoCam.vfovDeg, aspect, 0.1, 500);
+  camera.position.copy(W3(...photoCam.position));
+  camera.up.set(photoCam.up[0], photoCam.up[2], -photoCam.up[1]);
+  camera.lookAt(W3(...photoCam.target));
+} else if (view === 'rear') {
   // north elevation looking south; cut away everything north of y = 57 (retaining wall, north bed)
   ortho(0, 0, 63, W3(27.5, 140, 15.5), W3(27.5, 0, 15.5), new THREE.Vector3(0, 1, 0));
   renderer.clippingPlanes = [new THREE.Plane(new THREE.Vector3(0, 0, 1), 57 * FT)];
@@ -147,4 +161,4 @@ function frame() { if (controls) controls.update(); renderer.render(scene, camer
 renderer.setAnimationLoop(controls ? frame : null);
 frame();
 requestAnimationFrame(() => { frame(); document.title = 'ready'; window.__ready = true; });
-addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); frame(); });
+addEventListener('resize', () => { if (photoCam) return; renderer.setSize(innerWidth, innerHeight); frame(); });

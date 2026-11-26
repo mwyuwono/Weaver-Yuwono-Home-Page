@@ -1,0 +1,246 @@
+{
+ "photo": "IMG_0430",
+ "width": 4032,
+ "height": 3024,
+ "note": "px = full-res pixels; camera looks west",
+ "hint": {
+  "pos": [
+   43.5,
+   53,
+   5.5
+  ],
+  "yawDeg": 191
+ },
+ "points": [
+  {
+   "label": "door pair S jamb head (20.53,32.75,7.0)",
+   "xyz": [
+    20.53,
+    32.75,
+    7.0
+   ],
+   "px": [
+    498,
+    1505
+   ],
+   "exclude": true
+  },
+  {
+   "label": "door pair S jamb foot (20.53,32.75,0.15)",
+   "xyz": [
+    20.53,
+    32.75,
+    0.15
+   ],
+   "px": [
+    455,
+    2178
+   ],
+   "exclude": true
+  },
+  {
+   "label": "door pair N jamb head (20.53,39.65,7.0)",
+   "xyz": [
+    20.53,
+    39.65,
+    7.0
+   ],
+   "px": [
+    1155,
+    1498
+   ],
+   "exclude": true
+  },
+  {
+   "label": "door pair N jamb foot (20.53,39.65,0.15)",
+   "xyz": [
+    20.53,
+    39.65,
+    0.15
+   ],
+   "px": [
+    1140,
+    2195
+   ],
+   "exclude": true
+  },
+  {
+   "label": "door pair centre line x20.53 y36.2",
+   "vline": [
+    20.53,
+    36.2
+   ],
+   "px": [
+    812,
+    1850
+   ]
+  },
+  {
+   "label": "door pair centre head (20.53,36.2,7.0)",
+   "xyz": [
+    20.53,
+    36.2,
+    7.0
+   ],
+   "px": [
+    826.5,
+    1501.5
+   ],
+   "exclude": true
+  },
+  {
+   "label": "door pair centre foot (20.53,36.2,0.15)",
+   "xyz": [
+    20.53,
+    36.2,
+    0.15
+   ],
+   "px": [
+    797.5,
+    2186.5
+   ],
+   "exclude": true
+  },
+  {
+   "label": "garage-N-east centre",
+   "xyz": [
+    17.87,
+    40.62,
+    5.275
+   ],
+   "px": [
+    1308,
+    1671
+   ]
+  },
+  {
+   "label": "garage-N-west centre",
+   "xyz": [
+    8.12,
+    40.62,
+    5.275
+   ],
+   "px": [
+    1608,
+    1685
+   ]
+  },
+  {
+   "label": "203-N centre (glass)",
+   "xyz": [
+    23.745,
+    29.86,
+    18.15
+   ],
+   "px": [
+    201,
+    476
+   ]
+  },
+  {
+   "label": "garage NE corner x20.53 y40.62",
+   "vline": [
+    20.53,
+    40.62
+   ],
+   "px": [
+    1200,
+    1600
+   ]
+  },
+  {
+   "label": "garage NW corner x0.29 y40.62",
+   "vline": [
+    0.29,
+    40.62
+   ],
+   "px": [
+    1770,
+    1700
+   ]
+  },
+  {
+   "label": "chimney N face east edge x20.53 y31.34",
+   "vline": [
+    20.53,
+    31.34
+   ],
+   "px": [
+    418,
+    500
+   ],
+   "exclude": true
+  },
+  {
+   "label": "chimney N face west edge x18.3 y31.34",
+   "vline": [
+    18.3,
+    31.34
+   ],
+   "px": [
+    598,
+    500
+   ]
+  },
+  {
+   "label": "west block NW corner x10.04 y29.86",
+   "vline": [
+    10.04,
+    29.86
+   ],
+   "px": [
+    889,
+    800
+   ]
+  },
+  {
+   "label": "west block NW corner eave underside (10.04,29.86,22.2)",
+   "xyz": [
+    10.04,
+    29.86,
+    22.2
+   ],
+   "px": [
+    889,
+    598
+   ]
+  },
+  {
+   "label": "mural wall end x0.96 y56.71",
+   "vline": [
+    0.96,
+    56.71
+   ],
+   "px": [
+    2702,
+    1800
+   ]
+  },
+  {
+   "label": "mural wall end top (0.96,56.71,6.0)",
+   "xyz": [
+    0.96,
+    56.71,
+    6.0
+   ],
+   "px": [
+    2702,
+    1600
+   ],
+   "exclude": true
+  },
+  {
+   "label": "mural wall end foot (0.96,56.71,0)",
+   "xyz": [
+    0.96,
+    56.71,
+    0.0
+   ],
+   "px": [
+    2703,
+    2068
+   ],
+   "exclude": true
+  }
+ ]
+}

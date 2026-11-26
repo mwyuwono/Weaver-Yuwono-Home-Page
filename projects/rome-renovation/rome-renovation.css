@@ -1,0 +1,100 @@
+/* Before/after comparison slider (built by projects/case/case.js). Without .is-enhanced the two
+   images simply stack, each with its label. */
+[data-project="rome-renovation"] .case-compare__pane { position: relative; }
+[data-project="rome-renovation"] .case-compare__pane + .case-compare__pane { margin-top: 12px; }
+[data-project="rome-renovation"] .case-compare__label {
+  position: absolute;
+  top: 12px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  background: rgba(248, 247, 243, 0.86);
+  color: var(--case-ink);
+  font: 400 12px/1.4 var(--case-label);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+[data-project="rome-renovation"] .case-compare__pane--before .case-compare__label { left: 12px; }
+[data-project="rome-renovation"] .case-compare__pane--after .case-compare__label { right: 12px; }
+
+[data-project="rome-renovation"] .case-compare.is-enhanced .case-compare__frame {
+  --pos: 50%;
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--case-paper);
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+[data-project="rome-renovation"] .case-compare.is-enhanced .case-compare__pane {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+}
+[data-project="rome-renovation"] .case-compare.is-enhanced .case-compare__pane--after {
+  clip-path: inset(0 0 0 var(--pos));
+}
+[data-project="rome-renovation"] .case-compare.is-enhanced .case-compare__pane img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  -webkit-user-drag: none;
+}
+[data-project="rome-renovation"] .case-compare__handle { display: none; }
+[data-project="rome-renovation"] .case-compare.is-enhanced .case-compare__handle {
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--pos);
+  width: 44px;
+  margin-left: -22px;
+  outline: none;
+  cursor: ew-resize;
+}
+[data-project="rome-renovation"] .case-compare__handle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--case-paper);
+}
+[data-project="rome-renovation"] .case-compare__knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  box-sizing: border-box;
+  border: 2px solid var(--case-paper);
+  border-radius: 50%;
+  background: rgba(26, 27, 18, 0.55);
+}
+[data-project="rome-renovation"] .case-compare__knob::before,
+[data-project="rome-renovation"] .case-compare__knob::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border: solid var(--case-paper);
+  border-width: 2px 0 0 2px;
+}
+[data-project="rome-renovation"] .case-compare__knob::before { left: 7px; transform: rotate(-45deg); }
+[data-project="rome-renovation"] .case-compare__knob::after { right: 7px; transform: rotate(135deg); }
+[data-project="rome-renovation"] .case-compare__handle:focus-visible .case-compare__knob {
+  outline: 2px solid var(--case-accent);
+  outline-offset: 2px;
+  background: rgba(26, 27, 18, 0.8);
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-project="rome-renovation"] .case-compare__knob { transition: background-color 0.15s; }
+}
