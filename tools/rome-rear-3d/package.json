@@ -1,0 +1,8 @@
+{
+  "name": "rome-rear-3d",
+  "private": true,
+  "type": "module",
+  "description": "Rome house rear exterior: existing + proposed porch model (data.mjs -> out/rome-rear.glb) and review renders",
+  "scripts": { "build": "node build.mjs", "render": "./render.sh", "review": "node review.mjs", "dxf": "node dxf.mjs" },
+  "dependencies": { "three": "0.187.0" }
+}

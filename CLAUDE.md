@@ -85,6 +85,22 @@ deploying less often and smaller does. When the `vercel-deployment-guardrails` s
   `model/assets/` are immutable. Give a replacement asset a new filename, or returning visitors see the old one for up to a day.
 - **Domain:** the canonical host is `weaver-yuwono.com` (the pages' canonical tags); `www` should redirect to it.
 
+## Rome rear 3D model (`tools/rome-rear-3d/`)
+
+Editable model of the Rome house rear (existing) with the proposed porch, rear entry and garden. Not served by the site.
+
+- **Sources.** All on Drive, in the Rome house folder; exact paths are in `tools/rome-rear-3d/sources.local.json`
+  (gitignored, because the folder names contain the street address; keep addresses out of this public repo). CAD: the DXF
+  Matt exported in Nov 2026 from the newest DWG ("Clocktower Cottage 2022"; inches), read by `dxf.mjs` and mapped to model
+  feet with `DXF_TO_MODEL`. Also the Jan 2022 plot PDF, and the rear photos with Matt's tape marks (Image 38/40). Palette: the portfolio front photo.
+- **Never commit the DXF/DWG or source PDF**: their title blocks carry names and the street address, and CAD is source material.
+- **Workflow.** Edit dimensions in `data.mjs` (each tagged with its source) → `node build.mjs` (writes `out/rome-rear.glb`,
+  root scaled to metres, groups Existing / Proposed / Removed, plus `out/checks.json`) → `./render.sh` (needs the static
+  server on 8765) → `node review.mjs` (review PDF in `.claude/preview/rome-rear/`). `node_modules/` (three 0.187) and `out/` are gitignored.
+- **Decisions (Nov 2026).** A104 governs the porch column spacing (A201 A2 is superseded). The circular courtyard planter is
+  removed in the renovation. Exposed chimney with tapered shoulders per A201; all-brick surround and hearth on the
+  fireplace centreline. The west-block roof is reconstructed from photos; the garden is conceptual.
+
 ## CSS Modification Policy
 
 **IMPORTANT**: The user has custom-tweaked the CSS styling. Do NOT modify CSS files without explicit user instruction or permission. This includes:

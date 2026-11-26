@@ -6,3 +6,8 @@ tools/cottage-3d/node_modules
 __pycache__/
 tools/cottage-3d/qa/out
 .DS_Store
+
+# Rome rear 3D: dependencies and generated model/renders
+tools/rome-rear-3d/node_modules
+tools/rome-rear-3d/out
+tools/rome-rear-3d/sources.local.json

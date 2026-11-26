@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rome rear: 3D review</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #e9ecee; overflow: hidden; font: 13px/1.4 -apple-system, Helvetica, sans-serif; }
+  canvas { display: block; }
+  #ui { position: fixed; top: 10px; left: 10px; background: rgba(255,255,255,.88); padding: 8px 10px; border-radius: 6px; }
+  #ui a { margin-right: 8px; color: #333; }
+  body.shot #ui { display: none; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }
+</script>
+</head>
+<body>
+<div id="ui">
+  Views:
+  <a href="?view=orbit&mode=proposed">orbit (proposed)</a>
+  <a href="?view=orbit&mode=existing">orbit (existing)</a>
+  <a href="?view=rear&mode=proposed">rear elevation</a>
+  <a href="?view=rear&mode=existing">rear existing</a>
+  <a href="?view=garage-side">garage side</a>
+  <a href="?view=gate">from the gate</a>
+  <a href="?view=plan">plan</a>
+  <a href="?view=axo">axo</a>
+</div>
+<script type="module" src="./viewer.js"></script>
+</body>
+</html>
