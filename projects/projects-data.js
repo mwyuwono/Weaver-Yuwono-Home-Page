@@ -148,6 +148,11 @@ window.WY_PROJECTS = [
         body: 'I set the porch floor level with the rear entry and specified a brick floor, a metal roof and four Doric wood columns. The porch drawings also show fixed shutters for privacy and a Roman-lattice railing at the rear entry. I proposed a wood-burning fireplace opposite the existing fireplace in the study, with the possibility of using the existing chimney.',
         images: [
           {
+            src: '../assets/images/rome-courtyard-porch-rendering.webp',
+            alt: 'Rendering of the rear of the house, with a planted courtyard, a columned brick porch and a brick fireplace aligned beneath the exterior chimney',
+            caption: 'Concept rendering of the proposed rear porch and garden courtyard'
+          },
+          {
             src: '../assets/images/rome-rear-porch-elevation.webp',
             alt: 'Rear elevation showing the proposed pedimented porch and its columns in front of the existing house',
             label: 'A201',
