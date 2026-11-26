@@ -106,7 +106,8 @@ Editable model of the Rome house rear (existing) with the proposed porch, rear e
   palette) as references; prompts are in `ai/prompts/`. Key: `OPENAI_API_KEY` in `~/.zshenv` (never print or commit it).
   Models: `gpt-image-2.6-flare` to iterate, `gpt-image-2.6-sunburst` for finals. Approved look: walled "secret garden",
   loose planting, zinc or terra cotta planters, murals removed and walls parged; both chimneys clear the roof (code).
-  The courtyard pair is extended 192 px at the top to show the chimney, and the caption says so.
+  Fix problems with tight-mask edits of the approved image, compositing back only the masked patch (as for the chimney
+  top and the removed annotation marks); never re-generate or extend the whole frame, which distorted it (Nov 2026).
 
 ## CSS Modification Policy
 

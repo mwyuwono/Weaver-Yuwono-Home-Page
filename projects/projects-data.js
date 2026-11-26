@@ -150,21 +150,21 @@ window.WY_PROJECTS = [
           {
             compare: {
               before: {
-                src: '../assets/images/rome-courtyard-2021-1600.webp',
-                srcset: '../assets/images/rome-courtyard-2021-900.webp 900w, ../assets/images/rome-courtyard-2021-1600.webp 1600w',
+                src: '../assets/images/rome-courtyard-2021-v2-1600.webp',
+                srcset: '../assets/images/rome-courtyard-2021-v2-900.webp 900w, ../assets/images/rome-courtyard-2021-v2-1600.webp 1600w',
                 alt: 'The rear courtyard in 2021: brown shingle house, rear entry under a shed roof, concrete paving and a garage wing at right',
                 label: '2021'
               },
               after: {
-                src: '../assets/images/rome-courtyard-proposed-1600.webp',
-                srcset: '../assets/images/rome-courtyard-proposed-900.webp 900w, ../assets/images/rome-courtyard-proposed-1600.webp 1600w',
+                src: '../assets/images/rome-courtyard-proposed-v2-1600.webp',
+                srcset: '../assets/images/rome-courtyard-proposed-v2-900.webp 900w, ../assets/images/rome-courtyard-proposed-v2-1600.webp 1600w',
                 alt: 'Concept rendering of the same view with the columned brick porch, exterior brick chimney, Greek-key parapet over the rear entry and a loosely planted walled garden',
                 label: 'Proposed'
               },
               width: 2048,
-              height: 1728
+              height: 1536
             },
-            caption: 'The courtyard in 2021, and as proposed. The after image is a concept rendering made with AI from my 3D model, matched to the original photo; both are extended at the top to show the chimney.'
+            caption: 'The courtyard in 2021, and as proposed. The after image is a concept rendering made with AI from my 3D model, matched to the original photo.'
           },
           {
             compare: {
