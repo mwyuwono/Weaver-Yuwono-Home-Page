@@ -46,8 +46,9 @@ Hold every new project to the standard set by Andover Trask (Nov 2026):
   weakens it, whether Matt's own design work is visible. Fix it or report it.
 - **Cut clutter.** Caption an image only when the caption adds something the image and text don't (a press source and date,
   a disclosure). No decorative dividers. Photo credits go in one closing line.
-- **Review rounds:** render the full page at 1280 px to a PDF in `.claude/preview/` and open it in Preview; Matt annotates
-  there and you read the notes back with pypdf. Don't ask him to mark up screenshots.
+- **Review rounds:** for a new case page, render the full page at 1280 px to a PDF in `.claude/preview/` and open it in
+  Preview; Matt annotates there and you read the notes back with pypdf. For a change to an existing page, send the changed
+  section at 1280 and 375 px as images instead. Don't ask him to mark up screenshots.
 - **Flag low-resolution images** (narrower than the width they're shown at) rather than using them silently.
 - **Project-specific styling** goes in `projects/<slug>/<slug>.css`, loaded only by that shell and scoped to
   `[data-project="<slug>"]`. Leave `case.css` alone so the other case pages are unaffected.
@@ -55,7 +56,12 @@ Hold every new project to the standard set by Andover Trask (Nov 2026):
   them) and PSDs with `magick 'file.psd[0]' -background white -alpha remove`. Product cutouts share one frame
   (960×1409 on white) so the grids line up.
   Cut subjects out with `tools/cutout/fgmask.swift` (macOS Vision foreground mask). In zsh write `"${f}[0]"`, since
-  `"$f[0]"` indexes the string. Convert supplied PNG photos to WebP.
+  `"$f[0]"` indexes the string. Convert supplied PNG photos to WebP. Strip metadata from every exported photo
+  (`magick … -strip`): phone photos carry GPS coordinates.
+- **AI-edited images.** Fix an approved image with a tight-mask edit and composite back only the masked patch, blended
+  2–3 px at the mask edge (wider fades ghost, because the model shifts unmasked pixels too). Never regenerate or extend
+  the whole frame: it distorts everything else. Chimneys in renderings must clear the roof. Don't add AI disclosures
+  to captions; Matt adds them himself where needed.
 
 ## Deploying (Vercel): few, small deployments
 
@@ -70,7 +76,8 @@ deploying less often and smaller does. When the `vercel-deployment-guardrails` s
 - **Pushes that change only `*.md` or `tools/` skip the build** (`ignoreCommand` in `vercel.json`; it shows as a
   canceled deployment and stores almost nothing). Keep repo-only material in those paths or extend the exclusions.
 - **One push per finished change.** Batch commits and preview locally instead of pushing to look. Push only when Matt
-  approves that push. Work done on a branch is merged into `main` and pushed once.
+  approves that push. Work done on a branch is merged into `main` and pushed once. Fetch first: other workspaces push to
+  `main` too; rebase unpushed local commits onto `origin/main`, never force-push.
 - **Never run `vercel --prod` or `vercel deploy`.** The project is Git-linked, so either duplicates the Git deployment.
   The installed CLI (v48) has no `vercel api` subcommand and parses `vercel api …` as a deploy. When the Vercel MCP
   lacks an operation (for example domain redirects or project settings), make it in the dashboard with Matt's OK.
@@ -106,8 +113,8 @@ Editable model of the Rome house rear (existing) with the proposed porch, rear e
   palette) as references; prompts are in `ai/prompts/`. Key: `OPENAI_API_KEY` in `~/.zshenv` (never print or commit it).
   Models: `gpt-image-2.6-flare` to iterate, `gpt-image-2.6-sunburst` for finals. Approved look: walled "secret garden",
   loose planting, zinc or terra cotta planters, murals removed and walls parged; both chimneys clear the roof (code).
-  Fix problems with tight-mask edits of the approved image, compositing back only the masked patch (as for the chimney
-  top and the removed annotation marks); never re-generate or extend the whole frame, which distorted it (Nov 2026).
+  Known model gaps (fix in data.mjs before reusing the model): the garden is still the old lawn layout; the existing
+  chimney top (24.0) is too low; the photos put the 109 door/windows ~0.5 ft lower and the 110 doors wider than the model.
 
 ## CSS Modification Policy
 
@@ -161,9 +168,11 @@ Only modify CSS when:
 
 ### Public-content rule
 
-Every committed file is publicly served unless listed in `.vercelignore`. Plan sets must have owner names,
-street addresses and phone numbers removed from title blocks (and any street names on site plans) before
-they are committed.
+The GitHub repo is public, and every committed file is publicly served unless listed in `.vercelignore` (which hides
+files from the site, not from GitHub). Plan sets must have owner names, street addresses and phone numbers removed from
+title blocks (and any street names on site plans) before they are committed. In every committed file, including `tools/`
+and `*.md`, also keep out street addresses (several Drive folder names contain one), Matt's email, absolute home or Drive
+paths, and keys; keep such paths in a gitignored `*.local.json`. Scan the staged diff before committing.
 
 ### File Structure Notes
 
