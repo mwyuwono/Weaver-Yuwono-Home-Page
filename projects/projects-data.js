@@ -129,17 +129,33 @@ window.WY_PROJECTS = [
       {
         heading: 'First-floor changes',
         body: 'I drew the first-floor demolition and proposed plans at the same scale, using the main stair and entry hall as reference points. The island appears in the kitchen on the left, and the new porch projects into the courtyard at the rear.',
-        grid: true,
         images: [
           {
-            src: '../assets/images/rome-first-floor-demolition.webp',
-            alt: 'First-floor demolition plan, with the existing kitchen left of the entry hall and the main stair in the center',
-            caption: 'Demolition plan · Orange marks removals'
-          },
-          {
-            src: '../assets/images/rome-first-floor-proposed.webp',
-            alt: 'Proposed first-floor plan at the same scale, with the new kitchen island at left and the rear porch above the study',
-            caption: 'Proposed plan · Blue marks new construction'
+            // Drawn from the AutoCAD file by tools/rome-plans/export.mjs; rome-renovation.js adds the state tabs.
+            src: '../assets/plans/rome-first-floor.svg',
+            shape: 'plan',
+            alt: 'Proposed first-floor plan, with new construction in green: the kitchen island and cabinetry, new partitions and doors between the kitchen and the garage, new powder-room fixtures, new work on the side porch, and the rear porch addition with its fireplace in the courtyard',
+            plan: {
+              initial: 'proposed',
+              states: [
+                {
+                  id: 'existing',
+                  label: 'Existing',
+                  alt: 'Existing first-floor plan: the kitchen left of the entry hall and main stair, the family room at right, the study, powder room and rear entry behind them, and the garage wing and side porch at left, with the courtyard to the rear'
+                },
+                {
+                  id: 'changes',
+                  label: 'Changes',
+                  alt: 'Demolition plan, with removals dashed in terracotta: the wall between the garage and its storage room, part of the wall behind the kitchen, two doors, the casework in the study, and the fixtures in the powder room and the storage room'
+                },
+                {
+                  id: 'proposed',
+                  label: 'Proposed',
+                  alt: 'Proposed first-floor plan, with new construction in green: the kitchen island and cabinetry, new partitions and doors between the kitchen and the garage, new powder-room fixtures, new work on the side porch, and the rear porch addition with its fireplace in the courtyard'
+                }
+              ],
+              legend: { existing: 'Existing walls', removed: 'Removed', new: 'New construction' }
+            }
           }
         ]
       },

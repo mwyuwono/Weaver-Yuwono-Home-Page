@@ -116,6 +116,18 @@ Editable model of the Rome house rear (existing) with the proposed porch, rear e
   Known model gaps (fix in data.mjs before reusing the model): the garden is still the old lawn layout; the existing
   chimney top (24.0) is too low; the photos put the 109 door/windows ~0.5 ft lower and the 110 doors wider than the model.
 
+## Rome first-floor plan (`tools/rome-plans/`)
+
+`node tools/rome-plans/export.mjs` (needs rsvg-convert, magick, autotrace) writes `projects/assets/plans/rome-first-floor.svg`
+from the DXF: layer groups `.rp-base` / `.rp-demo` / `.rp-new`, room names from the DXF room schedule, wall poché by
+flood fill. `projects/rome-renovation/rome-renovation.js` inlines it with Existing / Changes / Proposed tabs (copy and alt
+text in projects-data.js); without the script the SVG shows as a plain image of the proposed plan.
+
+- Use the DXF plan copy near y 4090 (has the porch, matches the plotted sheets). The sheet viewports all point at the
+  porch-less copy near y 423, so don't pick a plan by its layout.
+- Labels: names, line breaks, nudges, hidden-on-phone (`MINOR`) and skipped rooms are constants at the top of export.mjs.
+- `projects/assets/` is cached for a day: give a changed plan a new filename (e.g. `-v2`) and update projects-data.js.
+
 ## CSS Modification Policy
 
 **IMPORTANT**: The user has custom-tweaked the CSS styling. Do NOT modify CSS files without explicit user instruction or permission. This includes:
@@ -150,6 +162,7 @@ Only modify CSS when:
 │   └── assets/            # Projects-specific assets
 │       ├── images/        # Project images and logo
 │       ├── sheets/        # Selected sheets: .jpg thumbnails + .svg (vector) for the zoom viewer
+│       ├── plans/         # Interactive plan SVGs (from tools/rome-plans)
 │       ├── social/        # 1200x630 Open Graph images
 │       └── pdfs/          # Project PDFs (title blocks redacted: no names, addresses or phone)
 ├── components/            # Modular components (shared)

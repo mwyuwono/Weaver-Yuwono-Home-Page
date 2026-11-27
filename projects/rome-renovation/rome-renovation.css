@@ -98,3 +98,130 @@
 @media (prefers-reduced-motion: no-preference) {
   [data-project="rome-renovation"] .case-compare__knob { transition: background-color 0.15s; }
 }
+
+/* First-floor plan (projects/assets/plans/rome-first-floor.svg, enhanced by rome-renovation.js): one plan with
+   Existing / Changes / Proposed tabs. The figure's data-state picks which layer groups show. */
+[data-project="rome-renovation"] .is-plan.is-enhanced {
+  --rp-removed: #b4572e;
+  --rp-new: #5f8a5c;
+  --rp-new-line: #3f6a45;
+  padding: 24px 24px 20px;
+  border-radius: 8px;
+  background: var(--case-paper);
+}
+[data-project="rome-renovation"] .rp-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 0 0 16px;
+}
+[data-project="rome-renovation"] .rp-tab {
+  padding: 9px 16px;
+  border: 1px solid var(--case-rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--case-soft);
+  font: 400 13px/1 var(--case-label);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+[data-project="rome-renovation"] .rp-tab:hover { color: var(--case-ink); border-color: rgba(26, 27, 18, 0.3); }
+[data-project="rome-renovation"] .rp-tab[aria-selected="true"] {
+  border-color: var(--case-ink);
+  background: var(--case-ink);
+  color: var(--case-paper);
+}
+[data-project="rome-renovation"] .rp-tab:focus-visible { outline: 2px solid var(--case-accent); outline-offset: 2px; }
+
+[data-project="rome-renovation"] .rp-stage { position: relative; max-width: 760px; margin: 0 auto; }
+[data-project="rome-renovation"] .rp-stage svg { display: block; width: 100%; height: 100%; overflow: hidden; }
+
+[data-project="rome-renovation"] .rp-poche { fill: var(--case-ink); }
+[data-project="rome-renovation"] .rp-wall,
+[data-project="rome-renovation"] .rp-line,
+[data-project="rome-renovation"] .rp-fine,
+[data-project="rome-renovation"] .rp-head,
+[data-project="rome-renovation"] .rp-site {
+  fill: none;
+  stroke: var(--case-ink);
+  stroke-width: 0.8px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+[data-project="rome-renovation"] .rp-fine { stroke: var(--case-soft); stroke-width: 0.55px; }
+[data-project="rome-renovation"] .rp-head { stroke: var(--case-soft); stroke-width: 0.55px; stroke-dasharray: 4 3; }
+[data-project="rome-renovation"] .rp-site { stroke: var(--case-soft); }
+
+[data-project="rome-renovation"] .rp-demo,
+[data-project="rome-renovation"] .rp-new { opacity: 0; }
+[data-project="rome-renovation"] [data-state="existing"] .rp-demo,
+[data-project="rome-renovation"] [data-state="changes"] .rp-demo,
+[data-project="rome-renovation"] [data-state="proposed"] .rp-new { opacity: 1; }
+
+[data-project="rome-renovation"] [data-state="changes"] .rp-demo .rp-poche { fill: var(--rp-removed); fill-opacity: 0.22; }
+[data-project="rome-renovation"] [data-state="changes"] .rp-demo .rp-wall,
+[data-project="rome-renovation"] [data-state="changes"] .rp-demo .rp-line,
+[data-project="rome-renovation"] [data-state="changes"] .rp-demo .rp-fine { stroke: var(--rp-removed); stroke-width: 0.9px; stroke-dasharray: 3 2; }
+[data-project="rome-renovation"] .rp-new .rp-poche { fill: var(--rp-new); }
+[data-project="rome-renovation"] .rp-new .rp-wall,
+[data-project="rome-renovation"] .rp-new .rp-line,
+[data-project="rome-renovation"] .rp-new .rp-fine { stroke: var(--rp-new-line); }
+
+[data-project="rome-renovation"] .rp-tags { position: absolute; inset: 0; pointer-events: none; }
+[data-project="rome-renovation"] .rp-tag {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  color: var(--case-soft);
+  font: 400 12px/1.25 var(--case-label);
+  letter-spacing: 0.03em;
+  text-align: center;
+  white-space: pre;
+}
+[data-project="rome-renovation"] .rp-tag.is-new { opacity: 0; }
+[data-project="rome-renovation"] [data-state="proposed"] .rp-tag.is-new { opacity: 1; }
+[data-project="rome-renovation"] .rp-tag--scale { font-size: 11px; transform: translate(-50%, 0); }
+
+[data-project="rome-renovation"] .rp-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 22px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--case-soft);
+  font: 400 12px/1.4 var(--case-label);
+}
+[data-project="rome-renovation"] .rp-legend__item[hidden] { display: none; }
+[data-project="rome-renovation"] .rp-legend__swatch {
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  margin-right: 7px;
+  vertical-align: -1px;
+  box-sizing: border-box;
+  background: var(--case-ink);
+}
+[data-project="rome-renovation"] .rp-legend__item--removed .rp-legend__swatch {
+  border: 1.5px dashed var(--rp-removed);
+  background: rgba(180, 87, 46, 0.22);
+}
+[data-project="rome-renovation"] .rp-legend__item--new .rp-legend__swatch { background: var(--rp-new); }
+
+@media (max-width: 600px) {
+  [data-project="rome-renovation"] .is-plan.is-enhanced { padding: 16px 10px 14px; }
+  [data-project="rome-renovation"] .rp-tab { padding: 8px 13px; }
+  [data-project="rome-renovation"] .rp-tag { font-size: 10px; letter-spacing: 0.02em; }
+  [data-project="rome-renovation"] .rp-tag.is-minor { display: none; }
+  [data-project="rome-renovation"] .rp-tag--scale { font-size: 9.5px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-project="rome-renovation"] .rp-demo,
+  [data-project="rome-renovation"] .rp-new,
+  [data-project="rome-renovation"] .rp-tag { transition: opacity 0.25s ease; }
+  [data-project="rome-renovation"] .rp-demo .rp-poche,
+  [data-project="rome-renovation"] .rp-demo .rp-wall,
+  [data-project="rome-renovation"] .rp-demo .rp-line,
+  [data-project="rome-renovation"] .rp-demo .rp-fine { transition: fill 0.25s ease, stroke 0.25s ease, fill-opacity 0.25s ease; }
+}

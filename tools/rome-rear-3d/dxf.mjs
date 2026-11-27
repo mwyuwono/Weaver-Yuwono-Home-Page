@@ -12,8 +12,10 @@ const LOCAL = path.join(HERE, 'sources.local.json'); // gitignored: Drive paths 
 export const SOURCES = fs.existsSync(LOCAL) ? JSON.parse(fs.readFileSync(LOCAL, 'utf8')) : {};
 export const DXF_PATH = process.env.ROME_DXF || SOURCES.dxf;
 
-// DXF (inches) -> model plan feet. The first-floor plan near DXF y 4090–5034 is the A104 plan; the one near y 423–1366
-// carries an earlier porch layout. Second floor plan: DXF x 1030–1535, y 501–922 (A105). Elevations: y ≈ 3035 ground line.
+// DXF (inches) -> model plan feet. The first-floor plan near DXF y 4090–5034 has the rear porch and matches the plotted
+// A102/A104 sheets; the copy near y 423–1366 (offset -382, -3668) has no porch, yet every paper-space viewport in this DXF
+// (A101, A102, A104) points at it, so the layouts are not a guide to the current design. Second floor plan: DXF x 1030–1535,
+// y 501–922 (A105). Elevations: y ≈ 3035 ground line.
 export const DXF_TO_MODEL = { scale: 1 / 12, ox: -26.882, oy: -349.459 };
 export const dxfToModel = ([x, y]) => [x * DXF_TO_MODEL.scale + DXF_TO_MODEL.ox, y * DXF_TO_MODEL.scale + DXF_TO_MODEL.oy];
 
